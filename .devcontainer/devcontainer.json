@@ -1,0 +1,24 @@
+{
+    "name": "YueJi Dev Container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "redhat.vscode-xml",
+                "vmware.vscode-boot-dev-pack"
+            ]
+        }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/java:1": {
+            "version": "17",
+            "installMaven": "true",
+            "installGradle": "false"
+        }
+    },
+    "postCreateCommand": "mvn clean install -DskipTests",
+    "remoteUser": "vscode"
+}

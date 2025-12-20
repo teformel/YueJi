@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/java:17
+    volumes:
+      - ../:/workspace:cached
+    command: sleep infinity
+    network_mode: service:db
+    
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: yueji_user
+      POSTGRES_PASSWORD: yueji_password
+      POSTGRES_DB: yueji_db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
