@@ -6,8 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>个人中心 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="../static/style.css">
-        <script src="../static/script.js"></script>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
+        <script src="${pageContext.request.contextPath}/static/script.js"></script>
     </head>
 
     <body class="bg-glow">
@@ -229,9 +229,9 @@
                     }
 
                     async function loadProfile() {
-                        const data = await fetchJson("${pageContext.request.contextPath}/user/info");
-                        if (data && data.status === 200) {
-                            const u = data.data;
+                        const result = await fetchJson("${pageContext.request.contextPath}/user/info");
+                        if (result && result.status === 200) {
+                            const u = result.data.data;
                             document.getElementById('infoUsername').innerText = u.username;
                             document.getElementById('infoNickname').value = u.nickname || '';
                             document.getElementById('infoGold').innerText = u.goldBalance;
@@ -259,15 +259,15 @@
                             showToast("标识更新完成", "success");
                             loadProfile();
                         } else {
-                            showToast("更新同步失败", "error");
+                            showToast((result.data && result.data.msg) || "更新同步失败", "error");
                         }
                     }
 
                     async function loadCollection() {
                         const list = document.getElementById('collectionList');
-                        const data = await fetchJson("${pageContext.request.contextPath}/interaction/collection/list");
-                        if (data && data.status === 200) {
-                            const items = data.data;
+                        const res = await fetchJson("${pageContext.request.contextPath}/interaction/collection/list");
+                        if (res && res.status === 200) {
+                            const items = res.data.data;
                             if (!items || items.length === 0) {
                                 list.innerHTML = `
                         <div class="col-span-full py-24 text-center luminous-panel rounded-3xl opacity-40">
@@ -324,7 +324,7 @@
                             showToast(`\${gold} 金币已存入您的账户`, "success");
                             loadProfile();
                         } else {
-                            showToast("支付渠道连接受阻", "error");
+                            showToast((result.data && result.data.msg) || "支付渠道连接受阻", "error");
                         }
                     }
                 </script>

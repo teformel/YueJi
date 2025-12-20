@@ -6,8 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>阅己 YueJi - 探索无限故事</title>
-        <link rel="stylesheet" href="../static/style.css">
-        <script src="../static/script.js"></script>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
+        <script src="${pageContext.request.contextPath}/static/script.js"></script>
     </head>
 
     <body class="bg-glow">
@@ -17,7 +17,7 @@
                 <!-- V2 Theater Hero Spotlight -->
                 <section class="mb-16">
                     <div class="luminous-panel rounded-[3rem] p-1 overflow-hidden relative group">
-                        <div class="flex flex-col lg:flex-row items-stretch min-h-[460px]">
+                        <div class="flex flex-col lg:flex-row items-stretch min-h-[560px]">
                             <!-- Spotlight Image -->
                             <div class="lg:w-1/2 relative overflow-hidden">
                                 <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=1200"
@@ -29,7 +29,7 @@
                             </div>
                             <!-- Spotlight Content -->
                             <div
-                                class="lg:w-1/2 p-10 lg:p-16 flex flex-col justify-center relative bg-canvas/40 backdrop-blur-sm lg:backdrop-blur-0">
+                                class="lg:w-1/2 p-10 lg:p-16 pb-24 lg:pb-32 flex flex-col justify-center relative bg-canvas/40 backdrop-blur-sm lg:backdrop-blur-0">
                                 <div class="flex items-center gap-3 mb-6">
                                     <span
                                         class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold tracking-widest uppercase">今日聚焦</span>
@@ -131,13 +131,16 @@
                         const rank = document.getElementById('rankingList');
 
                         try {
-                            const data = await fetchJson("${pageContext.request.contextPath}/novel/list");
-                            if (data && data.status === 200) {
-                                const novels = data.data;
+                            const result = await fetchJson("${pageContext.request.contextPath}/novel/list");
+                            if (result && result.status === 200 && result.data.code === 200) {
+                                const novels = result.data.data;
                                 renderGrid(novels.slice(0, 9));
                                 renderRankings(novels.slice(0, 5));
+                            } else {
+                                grid.innerHTML = '<p class="col-span-full text-center text-text-dim">云端响应异常</p>';
                             }
                         } catch (e) {
+                            console.error("Load novels failed:", e);
                             grid.innerHTML = '<p class="col-span-full text-center text-text-dim">云端连接受阻，请刷新重试</p>';
                         }
                     }
@@ -151,7 +154,8 @@
                         container.innerHTML = novels.map(n => `
                 <div class="theater-card reveal" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
                      <div class="cover-wrapper aspect-[3/4]">
-                         <img src="https://images.unsplash.com/photo-1543004471-240ce49a2a2f?w=400" alt="\${n.title}">
+                         <img src="\${n.coverUrl || 'https://images.unsplash.com/photo-1543004471-240ce49a2a2f?w=400'}" alt="\${n.title}" 
+                               onerror="this.src='https://images.unsplash.com/photo-1543004471-240ce49a2a2f?w=400'">
                      </div>
                      <div class="overlay p-4">
                          <h4 class="text-sm font-black text-white truncate">\${n.title}</h4>

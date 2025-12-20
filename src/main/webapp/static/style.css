@@ -20,11 +20,13 @@
     --text-muted: #94a3b8;
     --text-dim: #64748b;
 
-    --border-dim: rgba(51, 65, 85, 0.4);
-    --border-highlight: rgba(148, 163, 184, 0.2);
+    --border-dim: rgba(51, 65, 85, 0.3);
+    --border-highlight: rgba(148, 163, 184, 0.15);
 
-    --glow-strength: 20px;
+    --glow-strength: 12px;
+    /* Softened from 20px for elegance */
     --radius-fluid: 1.5rem;
+    --font-serif: 'Noto Serif SC', serif;
 }
 
 /* Base Leveling */
@@ -157,26 +159,25 @@ footer {
 /* --- V2 Global Utility --- */
 .luminous-panel {
     background: var(--surface);
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-highlight);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 .btn-ultimate {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: var(--primary);
     color: white;
-    border: none;
+    padding: 0.8rem 2rem;
     border-radius: 1rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    border: none;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 10px 20px -5px var(--primary-glow);
 }
 
 .btn-ultimate:hover {
@@ -247,21 +248,26 @@ footer {
 }
 
 .uc-nav-item.active {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 10px 15px -3px var(--primary-glow);
+    background: var(--primary-glow);
+    color: var(--primary);
+    border-color: var(--primary);
 }
 
-/* --- Manage List --- */
+.uc-nav-item.active>div {
+    background: var(--primary) !important;
+    color: white !important;
+}
+
+/* --- Manage Matrix --- */
 .manage-list-item {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-highlight);
-    border-radius: 1rem;
-    padding: 1rem 1.5rem;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: all 0.2s;
+    transition: all 0.3s;
 }
 
 .manage-list-item:hover {
@@ -284,4 +290,110 @@ footer {
 
 #toast.show {
     transform: translateY(0);
+}
+
+/* --- V2 Theater Card Matrix --- */
+.theater-card {
+    position: relative;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-highlight);
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.theater-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--primary);
+    box-shadow: 0 20px 40px -10px var(--primary-glow);
+}
+
+.theater-card .cover-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.theater-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s;
+}
+
+.theater-card:hover img {
+    transform: scale(1.1);
+}
+
+.theater-card .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(2, 6, 23, 1), transparent);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border-highlight);
+    transform: translateY(0);
+    transition: all 0.4s;
+}
+
+/* --- V2 Ranking System --- */
+.v2-ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-highlight);
+    border-radius: 1.25rem;
+    transition: all 0.3s;
+}
+
+.v2-ranking-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent);
+}
+
+.rank-num {
+    font-size: 1.5rem;
+    font-weight: 900;
+    font-family: 'Outfit', sans-serif;
+    min-width: 2rem;
+    text-align: center;
+}
+
+/* --- Animation Utilities --- */
+.reveal {
+    animation: revealEffect 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@keyframes revealEffect {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Scrollbar Customization --- */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--border-highlight);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
 }

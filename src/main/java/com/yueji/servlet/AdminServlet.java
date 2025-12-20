@@ -50,6 +50,14 @@ public class AdminServlet extends HttpServlet {
         } else if ("/chapter/list".equals(path)) {
             int novelId = Integer.parseInt(req.getParameter("novelId"));
             ResponseUtils.writeJson(resp, 200, "Chapters", chapterDao.findByNovelId(novelId));
+        } else if ("/chapter/detail".equals(path)) {
+            int id = Integer.parseInt(req.getParameter("id"));
+            Chapter chapter = chapterDao.findById(id);
+            if (chapter != null) {
+                ResponseUtils.writeJson(resp, 200, "Chapter Detail", chapter);
+            } else {
+                ResponseUtils.writeJson(resp, 404, "Chapter not found", null);
+            }
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }

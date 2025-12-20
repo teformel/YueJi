@@ -6,8 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>开启旅程 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="../static/style.css">
-        <script src="../static/script.js"></script>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
+        <script src="${pageContext.request.contextPath}/static/script.js"></script>
     </head>
 
     <body class="bg-glow min-h-screen flex flex-col">

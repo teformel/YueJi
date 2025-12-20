@@ -16,6 +16,7 @@ public class ResponseUtils {
     }
 
     public static void writeJson(HttpServletResponse response, int code, String msg, Object data) throws IOException {
+        response.setStatus(code);
         Result result = new Result(code, msg, data);
         writeJson(response, result);
     }

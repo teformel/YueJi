@@ -6,8 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>正在阅读 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="../static/style.css">
-        <script src="../static/script.js"></script>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
+        <script src="${pageContext.request.contextPath}/static/script.js"></script>
         <style>
             /* Immersive Themes */
             .theme-paper {
@@ -171,9 +171,9 @@
             });
 
             async function loadContent() {
-                const data = await fetchJson("${pageContext.request.contextPath}/chapter/content?id=" + chapterId);
-                if (data && data.status === 200) {
-                    const ch = data.data;
+                const result = await fetchJson("${pageContext.request.contextPath}/chapter/content?id=" + chapterId);
+                if (result && result.status === 200) {
+                    const ch = result.data.data;
                     currentNovelId = ch.novelId;
                     document.getElementById('chapterTitle').innerText = ch.title;
                     document.getElementById('chapterTitleHeader').innerText = ch.title;
@@ -183,7 +183,7 @@
                         document.getElementById('paywall').classList.remove('hidden');
                         document.getElementById('chapterPrice').innerText = ch.price;
                     } else {
-                        document.getElementById('textContent').innerHTML = ch.content ? ch.content.split('\n').map(p => `<p class="mb-8">${p}</p>`).join('') : '正文内容暂不翼而飞...';
+                        document.getElementById('textContent').innerHTML = ch.content ? ch.content.split('\n').map(p => `<p class="mb-8">\${p}</p>`).join('') : '正文内容暂不翼而飞...';
                     }
                     lucide.createIcons();
                 } else {
