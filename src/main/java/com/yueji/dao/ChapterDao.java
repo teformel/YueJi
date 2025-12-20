@@ -58,9 +58,19 @@ public class ChapterDao {
         }
     }
 
-    // Update and Delete can be similar... omitting for brevity unless needed
-    // immediately.
-    // Plan requires CRUD for admin. So I should add them.
+    public void update(Chapter chapter) throws SQLException {
+        String sql = "UPDATE sys_chapter SET title=?, content=?, word_count=?, price=?, sort_order=? WHERE id=?";
+        try (Connection conn = DbUtils.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, chapter.getTitle());
+            stmt.setString(2, chapter.getContent());
+            stmt.setInt(3, chapter.getWordCount());
+            stmt.setInt(4, chapter.getPrice());
+            stmt.setInt(5, chapter.getSortOrder());
+            stmt.setInt(6, chapter.getId());
+            stmt.executeUpdate();
+        }
+    }
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM sys_chapter WHERE id = ?";
         try (Connection conn = DbUtils.getConnection();

@@ -1,198 +1,155 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <!DOCTYPE html>
-    <html lang="zh-CN">
+    </div>
 
-    <head>
-        <meta charset="UTF-8">
-        <title>小说详情 - 阅己</title>
-        <link rel="stylesheet" href="../static/style.css">
-        <script src="../static/script.js"></script>
-        <style>
-            .novel-header {
-                display: flex;
-                gap: 30px;
-                background: white;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                margin-bottom: 2rem;
-            }
+    <div class="glass-panel p-6 rounded-2xl mb-8 relative">
+        <i data-lucide="quote" class="absolute top-4 right-4 w-12 h-12 opacity-10"></i>
+        <p class="text-muted leading-relaxed line-clamp-4 hover:line-clamp-none transition-all duration-500">
+            \${novel.intro || '这本小说很神秘，还没有写下任何简介...'}
+        </p>
+    </div>
 
-            .novel-cover-lg {
-                width: 200px;
-                height: 280px;
-                object-fit: cover;
-                border-radius: 4px;
-            }
+    <div class="flex flex-wrap gap-4">
+        <button class="btn-primary flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-4 text-lg"
+            onclick="startReading()">
+            <i data-lucide="book-open-check" class="w-6 h-6"></i>
+            立即阅读
+        </button>
+        <button
+            class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-4 text-lg bg-slate-800 border border-slate-700 rounded-xl hover:bg-slate-700 transition-all"
+            onclick="toggleCollection()">
+            <i data-lucide="heart" class="w-6 h-6"></i>
+            加入书架
+        </button>
+    </div>
+    </div>
+    `;
+    }
 
-            .chapter-list {
-                background: white;
-                padding: 20px;
-                border-radius: 8px;
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                gap: 10px;
-            }
+    function renderChapters(chapters, isNovelFree) {
+    const container = document.getElementById('chapterList');
+    document.getElementById('chapterCount').textContent = '共 ' + chapters.length + ' 章';
+    container.innerHTML = '';
 
-            .chapter-item {
-                padding: 10px;
-                border: 1px solid #eee;
-                border-radius: 4px;
-                cursor: pointer;
-            }
+    chapters.forEach((ch, index) => {
+    const item = document.createElement('a');
+    item.href = 'read.jsp?chapterId=' + ch.id;
+    item.className = 'group flex items-center justify-between p-4 bg-slate-800/40 border border-slate-700/50 rounded-xl
+    hover:bg-slate-700/60 hover:border-primary/50 transition-all';
 
-            .chapter-item:hover {
-                background: #f9f9f9;
-            }
+    let statusIcon = '<i data-lucide="chevron-right"
+        class="w-4 h-4 opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>';
+    if (!isNovelFree && ch.price > 0) {
+    statusIcon = '<span class="flex items-center gap-1 text-xs text-amber-500 font-bold"><i data-lucide="lock"
+            class="w-3 h-3"></i>' + ch.price + '</span>';
+    }
 
-            .lock-icon {
-                float: right;
-                color: #f39c12;
-            }
-        </style>
-    </head>
+    item.innerHTML = `
+    <div class="flex items-center gap-4">
+        <span class="text-xs font-mono text-muted group-hover:text-primary transition-colors">\${(index +
+            1).toString().padStart(2, '0')}</span>
+        <span class="text-sm font-medium truncate max-w-[150px] sm:max-w-none">\${ch.title}</span>
+    </div>
+    \${statusIcon}
+    `;
+    container.appendChild(item);
+    });
+    }
 
-    <body>
-        <%@ include file="header.jsp" %>
+    async function loadComments() {
+    try {
+    const result = await fetchJson('${pageContext.request.contextPath}/interaction/comment/list?novelId=' + novelId);
+    if (result && result.status === 200) {
+    const list = document.getElementById('commentList');
+    list.innerHTML = '';
+    const comments = result.data.data;
 
-            <div class="container">
-                <div id="novelInfo" class="novel-header">
-                    <!-- Loaded via JS -->
-                    Loading...
-                </div>
+    if (comments.length === 0) {
+    list.innerHTML = `
+    <div class="py-8 text-center opacity-30">
+        <i data-lucide="messages-square" class="w-12 h-12 mx-auto mb-2"></i>
+        <p class="text-sm">还没有评论，快来抢沙发</p>
+    </div>
+    `;
+    lucide.createIcons();
+    return;
+    }
 
-                <h3>目录</h3>
-                <div id="chapterList" class="chapter-list">
-                    Loading...
-                </div>
+    comments.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'flex gap-3 group';
+    div.innerHTML = `
+    <div
+        class="w-8 h-8 rounded-full bg-slate-700 flex-shrink-0 flex items-center justify-center text-xs font-bold text-primary border border-primary/20">
+        \${c.username ? c.username[0].toUpperCase() : 'U'}
+    </div>
+    <div class="flex-1">
+        <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold">\${c.username || '匿名读者'}</span>
+            <span class="text-[10px] text-muted">\${c.createdAt}</span>
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">\${c.content}</p>
+    </div>
+    `;
+    list.appendChild(div);
+    });
+    lucide.createIcons();
+    }
+    } catch (e) {
+    console.error(e);
+    }
+    }
 
-                <h3 style="margin-top: 30px;">评论</h3>
-                <div id="commentSection" style="background: white; padding: 20px; border-radius: 8px;">
-                    <textarea id="commentInput" style="width: 100%; height: 80px; margin-bottom: 10px;"
-                        placeholder="写下你的评论..."></textarea>
-                    <button class="btn" onclick="postComment()">发表评论</button>
-                    <div id="commentList" style="margin-top: 20px;"></div>
-                </div>
-            </div>
+    async function postComment() {
+    const content = document.getElementById('commentInput').value.trim();
+    if (!content) return;
 
-            <%@ include file="footer.jsp" %>
+    const params = new URLSearchParams();
+    params.append('novelId', novelId);
+    params.append('content', content);
 
-                <script>
-                    const novelId = getQueryParam('id');
-                    let currentNovel = null;
+    try {
+    const result = await fetchJson('${pageContext.request.contextPath}/interaction/comment/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params
+    });
 
-                    document.addEventListener('DOMContentLoaded', () => {
-                        if (novelId) {
-                            loadDetail();
-                            loadComments();
-                        } else {
-                            document.getElementById('novelInfo').innerText = "无效的小说ID";
-                        }
-                    });
+    if (result && result.status === 200) {
+    showToast("评论发表成功！", "success");
+    document.getElementById('commentInput').value = '';
+    loadComments();
+    } else {
+    showToast("评论失败，请检查登录状态", "error");
+    }
+    } catch (e) {
+    showToast("发表失败", "error");
+    }
+    }
 
-                    async function loadDetail() {
-                        const result = await fetchJson('${pageContext.request.contextPath}/novel/detail?id=' + novelId);
-                        if (result && result.status === 200) {
-                            const data = result.data.data; // ResponseUtils wraps in data object
-                            currentNovel = data.novel;
-                            renderInfo(data.novel);
-                            renderChapters(data.chapters, data.novel.isFree);
-                        }
-                    }
+    async function toggleCollection() {
+    const params = new URLSearchParams();
+    params.append('novelId', novelId);
+    try {
+    const result = await fetchJson('${pageContext.request.contextPath}/interaction/collection/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params
+    });
+    if (result && result.status === 200) {
+    showToast("已成功加入书架", "success");
+    } else {
+    showToast("账户异常，加入失败", "error");
+    }
+    } catch (e) {
+    showToast("操作失败", "error");
+    }
+    }
 
-                    function renderInfo(novel) {
-                        const cover = novel.coverUrl ? novel.coverUrl : 'https://via.placeholder.com/200x280?text=Novel';
-                        document.getElementById('novelInfo').innerHTML = `
-                <img src="${cover}" class="novel-cover-lg">
-                <div>
-                    <h1>${novel.title}</h1>
-                    <p>作者: ${novel.authorName || 'Unknown'}</p>
-                    <p>分类: ${novel.category || 'General'}</p>
-                    <p>简介: ${novel.intro || '暂无简介'}</p>
-                    <div style="margin-top: 20px;">
-                        <button class="btn" onclick="toggleCollection()">收藏小说</button>
-                    </div>
-                </div>
-            `;
-                    }
-
-                    function renderChapters(chapters, isNovelFree) {
-                        const container = document.getElementById('chapterList');
-                        container.innerHTML = '';
-                        chapters.forEach(ch => {
-                            const div = document.createElement('div');
-                            div.className = 'chapter-item';
-                            div.onclick = () => window.location.href = 'read.jsp?chapterId=' + ch.id;
-
-                            let lock = '';
-                            if (!isNovelFree && ch.price > 0) {
-                                lock = '<span class="lock-icon">🔒 ' + ch.price + '金币</span>';
-                            }
-
-                            div.innerHTML = `
-                    <span>${ch.title}</span>
-                    ${lock}
-                `;
-                            container.appendChild(div);
-                        });
-                    }
-
-                    async function loadComments() {
-                        const result = await fetchJson('${pageContext.request.contextPath}/interaction/comment/list?novelId=' + novelId);
-                        if (result && result.status === 200) {
-                            const list = document.getElementById('commentList');
-                            list.innerHTML = '';
-                            result.data.data.forEach(c => {
-                                const div = document.createElement('div');
-                                div.style.borderBottom = '1px solid #eee';
-                                div.style.padding = '10px 0';
-                                div.innerHTML = `
-                        <strong>${c.username || 'User ' + c.userId}</strong>: ${c.content}
-                        <div style="font-size: 0.8rem; color: #999;">${c.createdAt}</div>
-                    `;
-                                list.appendChild(div);
-                            });
-                        }
-                    }
-
-                    async function postComment() {
-                        const content = document.getElementById('commentInput').value;
-                        if (!content) return;
-
-                        const params = new URLSearchParams();
-                        params.append('novelId', novelId);
-                        params.append('content', content);
-
-                        const result = await fetchJson('${pageContext.request.contextPath}/interaction/comment/create', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: params
-                        });
-
-                        if (result && result.status === 200) {
-                            showToast("评论成功");
-                            document.getElementById('commentInput').value = '';
-                            loadComments();
-                        } else if (result && result.status === 401) {
-                            // handled by fetchJson redirect usually, but logical check here
-                        } else {
-                            showToast("评论失败");
-                        }
-                    }
-
-                    async function toggleCollection() {
-                        const params = new URLSearchParams();
-                        params.append('novelId', novelId);
-                        const result = await fetchJson('${pageContext.request.contextPath}/interaction/collection/add', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: params
-                        });
-                        if (result && result.status === 200) {
-                            showToast("已加入书架");
-                        }
-                    }
-                </script>
+    function startReading() {
+    const firstChapter = document.querySelector('#chapterList a');
+    if (firstChapter) firstChapter.click();
+    }
+    </script>
     </body>
 
     </html>

@@ -41,17 +41,42 @@ public class AdminServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String path = req.getPathInfo();
+        if ("/novel/list".equals(path)) {
+            ResponseUtils.writeJson(resp, 200, "Novels", novelDao.findAll());
+        } else if ("/author/list".equals(path)) {
+            ResponseUtils.writeJson(resp, 200, "Authors", authorDao.findAll());
+        } else if ("/chapter/list".equals(path)) {
+            int novelId = Integer.parseInt(req.getParameter("novelId"));
+            ResponseUtils.writeJson(resp, 200, "Chapters", chapterDao.findByNovelId(novelId));
+        } else {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getPathInfo();
         try {
             if ("/novel/create".equals(path)) {
                 handleCreateNovel(req, resp);
+            } else if ("/novel/update".equals(path)) {
+                handleUpdateNovel(req, resp);
             } else if ("/novel/delete".equals(path)) {
                 handleDeleteNovel(req, resp);
             } else if ("/author/create".equals(path)) {
                 handleCreateAuthor(req, resp);
+            } else if ("/author/update".equals(path)) {
+                handleUpdateAuthor(req, resp);
+            } else if ("/author/delete".equals(path)) {
+                handleDeleteAuthor(req, resp);
             } else if ("/chapter/create".equals(path)) {
                 handleCreateChapter(req, resp);
+            } else if ("/chapter/update".equals(path)) {
+                handleUpdateChapter(req, resp);
+            } else if ("/chapter/delete".equals(path)) {
+                handleDeleteChapter(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -73,6 +98,19 @@ public class AdminServlet extends HttpServlet {
         ResponseUtils.writeJson(resp, 200, "Novel created", null);
     }
 
+    private void handleUpdateNovel(HttpServletRequest req, HttpServletResponse resp) throws IOException, SQLException {
+        Novel novel = new Novel();
+        novel.setId(Integer.parseInt(req.getParameter("id")));
+        novel.setTitle(req.getParameter("title"));
+        novel.setAuthorId(Integer.parseInt(req.getParameter("authorId")));
+        novel.setCategory(req.getParameter("category"));
+        novel.setIntro(req.getParameter("intro"));
+        novel.setCoverUrl(req.getParameter("coverUrl"));
+        novel.setIsFree(Boolean.parseBoolean(req.getParameter("isFree")));
+        novelDao.update(novel);
+        ResponseUtils.writeJson(resp, 200, "Novel updated", null);
+    }
+
     private void handleDeleteNovel(HttpServletRequest req, HttpServletResponse resp) throws IOException, SQLException {
         int id = Integer.parseInt(req.getParameter("id"));
         novelDao.delete(id);
@@ -87,8 +125,22 @@ public class AdminServlet extends HttpServlet {
         ResponseUtils.writeJson(resp, 200, "Author created", null);
     }
 
-    private void handleCreateChapter(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException, SQLException {
+    private void handleUpdateAuthor(HttpServletRequest req, HttpServletResponse resp) throws IOException, SQLException {
+        Author author = new Author();
+        author.setId(Integer.parseInt(req.getParameter("id")));
+        author.setName(req.getParameter("name"));
+        author.setBio(req.getParameter("bio"));
+        authorDao.update(author);
+        ResponseUtils.writeJson(resp, 200, "Author updated", null);
+    }
+
+    private void handleDeleteAuthor(HttpServletRequest req, HttpServletResponse resp) throws IOException, SQLException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        authorDao.delete(id);
+        ResponseUtils.writeJson(resp, 200, "Author deleted", null);
+    }
+
+    private void handleCreateChapter(HttpServletRequest req, HttpServletResponse resp) throws IOException, SQLException {
         Chapter chapter = new Chapter();
         chapter.setNovelId(Integer.parseInt(req.getParameter("novelId")));
         chapter.setTitle(req.getParameter("title"));
@@ -98,5 +150,23 @@ public class AdminServlet extends HttpServlet {
         chapter.setSortOrder(Integer.parseInt(req.getParameter("sortOrder")));
         chapterDao.create(chapter);
         ResponseUtils.writeJson(resp, 200, "Chapter created", null);
+    }
+
+    private void handleUpdateChapter(HttpServletRequest req, HttpServletResponse resp) throws IOException, SQLException {
+        Chapter chapter = new Chapter();
+        chapter.setId(Integer.parseInt(req.getParameter("id")));
+        chapter.setTitle(req.getParameter("title"));
+        chapter.setContent(req.getParameter("content"));
+        chapter.setWordCount(req.getParameter("content").length());
+        chapter.setPrice(Integer.parseInt(req.getParameter("price")));
+        chapter.setSortOrder(Integer.parseInt(req.getParameter("sortOrder")));
+        chapterDao.update(chapter);
+        ResponseUtils.writeJson(resp, 200, "Chapter updated", null);
+    }
+
+    private void handleDeleteChapter(HttpServletRequest req, HttpServletResponse resp) throws IOException, SQLException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        chapterDao.delete(id);
+        ResponseUtils.writeJson(resp, 200, "Chapter deleted", null);
     }
 }
