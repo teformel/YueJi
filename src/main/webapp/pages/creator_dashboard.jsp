@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>上帝模式 - 阅己 YueJi 管理后台</title>
+        <title>创作者工作台 - 阅己 YueJi Creator Portal</title>
         <!-- Tailwind CSS for Utility First Styling -->
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
@@ -51,12 +51,12 @@
                         <h1
                             class="text-3xl md:text-5xl font-black tracking-tighter text-white uppercase italic flex items-baseline gap-3">
                             <span style="font-family: var(--font-serif);"
-                                class="not-italic font-black text-white/90">上帝模式</span>
+                                class="not-italic font-black text-white/90">创作者工作台</span>
                             <span
-                                class="text-primary text-xl font-mono not-italic tracking-normal opacity-50">v2.1_Commercial</span>
+                                class="text-primary text-xl font-mono not-italic tracking-normal opacity-50">v1.0_Creator</span>
                         </h1>
                         <p class="text-text-muted font-bold tracking-[0.3em] text-[10px] mt-1 uppercase opacity-60">
-                            Control every pixel, every word, every world.</p>
+                            Compose your soul, build your world, share your vision.</p>
                     </div>
                 </div>
 
@@ -68,16 +68,8 @@
                                 class="px-5 py-3 text-[10px] font-black text-primary uppercase tracking-[0.3em] opacity-80">
                                 导航枢纽
                             </div>
-                            <button onclick="showSection('author')"
-                                class="uc-nav-item active flex items-center gap-4 w-full" id="btn-author">
-                                <div
-                                    class="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                    <i data-lucide="user-plus" class="w-5 h-5"></i>
-                                </div>
-                                <span class="font-bold">新作者录入</span>
-                            </button>
-                            <button onclick="showSection('novel')" class="uc-nav-item flex items-center gap-4 w-full"
-                                id="btn-novel">
+                            <button onclick="showSection('novel')"
+                                class="uc-nav-item active flex items-center gap-4 w-full" id="btn-novel">
                                 <div
                                     class="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                                     <i data-lucide="book-plus" class="w-5 h-5"></i>
@@ -112,7 +104,7 @@
                             </div>
                             <div class="relative z-10">
                                 <div class="flex items-center justify-between mb-6">
-                                    <div class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">系统环境监测
+                                    <div class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">同步状态监测
                                     </div>
                                     <span class="flex h-2 w-2 relative">
                                         <span
@@ -145,78 +137,10 @@
                                 class="absolute -top-40 -right-40 w-96 h-96 bg-primary/5 blur-[150px] rounded-full pointer-events-none">
                             </div>
 
-                            <!-- Author Section -->
-                            <div id="sec-author" class="admin-section active space-y-12">
-                                <div class="relative">
-                                    <div class="flex items-center gap-4 mb-2">
-                                        <div class="w-1.5 h-10 bg-primary rounded-full"></div>
-                                        <h3 class="text-4xl font-black text-white tracking-tighter"
-                                            style="font-family: var(--font-serif);">录入新作者</h3>
-                                    </div>
-                                    <p class="text-text-muted ml-6 font-medium">定义文学世界的创造者，记录他们的精神印记。</p>
-                                </div>
-
-                                <div
-                                    class="grid grid-cols-1 md:grid-cols-2 gap-10 bg-white/5 p-8 md:p-12 rounded-[2.5rem] border border-white/5 relative group">
-                                    <div
-                                        class="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent">
-                                    </div>
-                                    <input type="hidden" id="authorId">
-
-                                    <div class="space-y-4">
-                                        <label
-                                            class="flex items-center gap-3 text-xs font-black text-primary uppercase tracking-[0.2em]">
-                                            <i data-lucide="at-sign" class="w-4 h-4"></i>
-                                            作者姓名
-                                        </label>
-                                        <input id="authorName"
-                                            class="v2-admin-input bg-black/40 border-white/5 focus:bg-black/60 transition-all text-lg font-bold"
-                                            placeholder="实名或笔名...">
-                                    </div>
-
-                                    <div class="space-y-4">
-                                        <label
-                                            class="flex items-center gap-3 text-xs font-black text-primary uppercase tracking-[0.2em]">
-                                            <i data-lucide="user-circle" class="w-4 h-4"></i>
-                                            关联系统账号
-                                        </label>
-                                        <div class="relative">
-                                            <select id="authorUserId"
-                                                class="v2-admin-input bg-black/40 border-white/5 appearance-none cursor-pointer pr-10 focus:bg-black/60 transition-all font-bold">
-                                                <option value="">不关联账号 (仅展示名义作者)</option>
-                                            </select>
-                                            <i data-lucide="chevron-down"
-                                                class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-dim pointer-events-none"></i>
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-4 md:col-span-2">
-                                        <label
-                                            class="flex items-center gap-3 text-xs font-black text-primary uppercase tracking-[0.2em]">
-                                            <i data-lucide="quote" class="w-4 h-4"></i>
-                                            灵魂简介
-                                        </label>
-                                        <textarea id="authorBio"
-                                            class="v2-admin-input bg-black/40 border-white/5 focus:bg-black/60 transition-all h-40 resize-none pt-5 text-base"
-                                            placeholder="描述其文字风格、创作理念..."></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center gap-6 mt-10">
-                                    <button
-                                        class="btn-ultimate px-16 py-6 text-lg shadow-[0_20px_50px_rgba(139,92,246,0.3)]"
-                                        onclick="submitAuthor()">
-                                        <i data-lucide="zap" class="w-6 h-6"></i>
-                                        <span id="authorBtnText">执行录入程序</span>
-                                    </button>
-                                    <button id="authorCancelBtn"
-                                        class="hidden px-10 py-6 border border-white/10 rounded-2xl text-text-dim hover:text-white hover:bg-white/5 transition-all font-bold"
-                                        onclick="resetAuthorForm()">终止当前任务</button>
-                                </div>
-                            </div>
+                            <!-- Author Section Removed -->
 
                             <!-- Novel Section -->
-                            <div id="sec-novel" class="admin-section hidden space-y-12">
+                            <div id="sec-novel" class="admin-section active space-y-12">
                                 <div class="relative">
                                     <div class="flex items-center gap-4 mb-2">
                                         <div class="w-1.5 h-10 bg-accent rounded-full"></div>
@@ -248,15 +172,12 @@
                                         <label
                                             class="flex items-center gap-3 text-xs font-black text-accent uppercase tracking-[0.2em] opacity-80">
                                             <i data-lucide="users" class="w-4 h-4"></i>
-                                            创建者绑定
+                                            作者身份权限
                                         </label>
-                                        <div class="relative">
-                                            <select id="novelAuthor"
-                                                class="v2-admin-input bg-black/40 border-white/5 appearance-none cursor-pointer pr-10 focus:bg-black/60 transition-all font-bold">
-                                                <option value="">选择核心作者...</option>
-                                            </select>
-                                            <i data-lucide="chevron-down"
-                                                class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-dim pointer-events-none"></i>
+                                        <div
+                                            class="v2-admin-input bg-black/20 border-white/5 flex items-center gap-3 text-text-muted">
+                                            <i data-lucide="shield-check" class="w-4 h-4 text-green-400"></i>
+                                            <span class="font-bold">身份已自动关联</span>
                                         </div>
                                     </div>
 
@@ -416,10 +337,7 @@
                                         <div class="flex gap-2 p-1 bg-black/30 rounded-2xl">
                                             <button onclick="loadManageList('novel')"
                                                 class="px-4 py-2 rounded-xl text-xs font-black transition-all bg-primary text-white"
-                                                id="list-tab-novel">作品</button>
-                                            <button onclick="loadManageList('author')"
-                                                class="px-4 py-2 rounded-xl text-xs font-black transition-all hover:bg-white/5 text-text-dim"
-                                                id="list-tab-author">作者</button>
+                                                id="list-tab-novel">我的作品</button>
                                         </div>
                                     </div>
                                     <p class="text-text-muted ml-6 font-medium">审视、修补或抹除现存的数字节点，确保生态平衡。</p>
@@ -480,38 +398,13 @@
                     document.addEventListener('DOMContentLoaded', () => {
                         try {
                             if (typeof lucide !== 'undefined') lucide.createIcons();
-                            loadAuthors(); // Pre-load authors for the select dropdown
-                            loadUsers();   // Pre-load users for the account binding select
+                            showSection('novel');
                         } catch (e) { console.warn("Lucide init failed"); }
                     });
 
-                    async function loadUsers() {
-                        try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/user/list");
-                            const data = await res.json();
-                            if (data.code === 200) {
-                                const select = document.getElementById('authorUserId');
-                                select.innerHTML = '<option value="">不关联账号 (仅展示名义作者)</option>' +
-                                    data.data.map(u => `<option value="\${u.id}">\${u.username} (\${u.nickname || '无昵称'})</option>`).join('');
-                            }
-                        } catch (e) { console.error("Failed to load users", e); }
-                    }
-
-                    async function loadAuthors() {
-                        try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/author/list");
-                            const data = await res.json();
-                            if (data.code === 200) {
-                                const select = document.getElementById('novelAuthor');
-                                select.innerHTML = '<option value="">选择核心作者...</option>' +
-                                    data.data.map(a => `<option value="${a.id}">${a.name} (ID: ${a.id})</option>`).join('');
-                            }
-                        } catch (e) { console.error("Failed to load authors", e); }
-                    }
-
                     async function post(endpoint, params) {
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/" + endpoint, {
+                            const res = await fetch("${pageContext.request.contextPath}/creator/" + endpoint, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body: params
@@ -530,50 +423,13 @@
                         }
                     }
 
-                    // --- AUTHOR ---
-                    async function submitAuthor() {
-                        const params = new URLSearchParams();
-                        const id = document.getElementById('authorId').value;
-                        const userId = document.getElementById('authorUserId').value;
-                        params.append('name', document.getElementById('authorName').value.trim());
-                        params.append('bio', document.getElementById('authorBio').value.trim());
-                        params.append('userId', userId);
-
-                        let success;
-                        if (id) {
-                            params.append('id', id);
-                            success = await post('author/update', params);
-                        } else {
-                            success = await post('author/create', params);
-                        }
-                        if (success) resetAuthorForm();
-                    }
-
-                    function editAuthor(id, name, bio, userId) {
-                        document.getElementById('authorId').value = id;
-                        document.getElementById('authorName').value = name;
-                        document.getElementById('authorBio').value = bio;
-                        document.getElementById('authorUserId').value = userId || '';
-                        document.getElementById('authorBtnText').innerText = "确认修改";
-                        document.getElementById('authorCancelBtn').classList.remove('hidden');
-                        showSection('author');
-                    }
-
-                    function resetAuthorForm() {
-                        document.getElementById('authorId').value = '';
-                        document.getElementById('authorName').value = '';
-                        document.getElementById('authorBio').value = '';
-                        document.getElementById('authorUserId').value = '';
-                        document.getElementById('authorBtnText').innerText = "提交录入";
-                        document.getElementById('authorCancelBtn').classList.add('hidden');
-                    }
+                    // Author logic removed
 
                     // --- NOVEL ---
                     async function submitNovel() {
                         const params = new URLSearchParams();
                         const id = document.getElementById('novelId').value;
                         params.append('title', document.getElementById('novelTitle').value.trim());
-                        params.append('authorId', document.getElementById('novelAuthor').value);
                         params.append('category', document.getElementById('novelCategory').value);
                         params.append('isFree', document.getElementById('novelIsFree').value);
                         params.append('coverUrl', document.getElementById('novelCover').value.trim());
@@ -592,7 +448,6 @@
                     function editNovel(id, title, authorId, category, isFree, cover, intro) {
                         document.getElementById('novelId').value = id;
                         document.getElementById('novelTitle').value = title;
-                        document.getElementById('novelAuthor').value = authorId;
                         document.getElementById('novelCategory').value = category;
                         document.getElementById('novelIsFree').value = isFree;
                         document.getElementById('novelCover').value = cover;
@@ -605,7 +460,6 @@
                     function resetNovelForm() {
                         document.getElementById('novelId').value = '';
                         document.getElementById('novelTitle').value = '';
-                        document.getElementById('novelAuthor').value = '';
                         document.getElementById('novelCover').value = '';
                         document.getElementById('novelIntro').value = '';
                         document.getElementById('novelBtnText').innerText = "启动发布";
@@ -664,7 +518,7 @@
                         document.getElementById('list-tab-' + type).classList.add('bg-primary', 'text-white');
 
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/" + type + "/list");
+                            const res = await fetch("${pageContext.request.contextPath}/creator/" + type + "/list");
                             const data = await res.json();
                             if (data.code === 200) {
                                 renderManageList(type, data.data);
@@ -705,28 +559,6 @@
                                         </div>
                                     </div>
                                 `;
-                            } else if (type === 'author') {
-                                const userIdTag = item.userId ? `<span class="px-2 py-0.5 rounded bg-primary/20 text-[10px] font-bold text-primary uppercase">UID关联: \${item.userId}</span>` : '';
-                                return `
-                                    <div class="p-6 rounded-3xl bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all reveal">
-                                        <div class="flex items-center gap-6">
-                                            <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                                                <i data-lucide="user" class="w-8 h-8"></i>
-                                            </div>
-                                            <div class="space-y-1">
-                                                <div class="flex items-center gap-2">
-                                                    <div class="text-lg font-black text-white group-hover:text-primary transition-colors">\${item.name}</div>
-                                                    \${userIdTag}
-                                                </div>
-                                                <div class="text-[10px] text-text-dim uppercase font-bold tracking-widest">ID: \${item.id}</div>
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-3 opacity-40 group-hover:opacity-100 transition-opacity">
-                                            <button onclick="editAuthor('\${item.id}', '\${item.name.replace(/'/g, "\\'")}', '\${item.bio.replace(/'/g, "\\'")}', '\${item.userId || ''}')" class="w-12 h-12 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center hover:bg-accent/20 hover:text-accent transition-all" title="修改档案"><i data-lucide="edit-3" class="w-5 h-5"></i></button>
-                                            <button onclick="deleteResource('author', '\${item.id}')" class="w-12 h-12 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-all" title="终结创造者项"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                                        </div>
-                                    </div>
-                                `;
                             }
                         }).join('');
                         lucide.createIcons();
@@ -751,7 +583,7 @@
                         list.innerHTML = '<div class="py-10 text-center opacity-20">正在调档...</div>';
 
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/chapter/list?novelId=" + novelId);
+                            const res = await fetch("${pageContext.request.contextPath}/creator/chapter/list?novelId=" + novelId);
                             const data = await res.json();
                             if (data.code === 200) {
                                 list.innerHTML = data.data.map(c => `
@@ -778,7 +610,7 @@
                         try {
                             closeChapterModal();
                             showToast("正在同步云端档案...", "info");
-                            const res = await fetch("${pageContext.request.contextPath}/admin/chapter/detail?id=" + id);
+                            const res = await fetch("${pageContext.request.contextPath}/creator/chapter/detail?id=" + id);
                             const data = await res.json();
                             if (data.code === 200 && data.data) {
                                 const c = data.data;

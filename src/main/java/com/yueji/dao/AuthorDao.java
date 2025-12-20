@@ -37,24 +37,42 @@ public class AuthorDao {
         }
         return null;
     }
-
-    public void create(Author author) throws SQLException {
-        String sql = "INSERT INTO sys_author (name, bio, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)";
+    public Author findByUserId(int userId) {
+        String sql = "SELECT * FROM sys_author WHERE user_id = ?";
         try (Connection conn = DbUtils.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, author.getName());
-            stmt.setString(2, author.getBio());
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next())
+                    return mapRow(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void create(Author author) throws SQLException {
+        String sql = "INSERT INTO sys_author (user_id, name, bio, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
+        try (Connection conn = DbUtils.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            if (author.getUserId() != null) stmt.setInt(1, author.getUserId());
+            else stmt.setNull(1, Types.INTEGER);
+            stmt.setString(2, author.getName());
+            stmt.setString(3, author.getBio());
             stmt.executeUpdate();
         }
     }
 
     public void update(Author author) throws SQLException {
-        String sql = "UPDATE sys_author SET name = ?, bio = ? WHERE id = ?";
+        String sql = "UPDATE sys_author SET user_id = ?, name = ?, bio = ? WHERE id = ?";
         try (Connection conn = DbUtils.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, author.getName());
-            stmt.setString(2, author.getBio());
-            stmt.setInt(3, author.getId());
+            if (author.getUserId() != null) stmt.setInt(1, author.getUserId());
+            else stmt.setNull(1, Types.INTEGER);
+            stmt.setString(2, author.getName());
+            stmt.setString(3, author.getBio());
+            stmt.setInt(4, author.getId());
             stmt.executeUpdate();
         }
     }
@@ -71,6 +89,8 @@ public class AuthorDao {
     private Author mapRow(ResultSet rs) throws SQLException {
         Author a = new Author();
         a.setId(rs.getInt("id"));
+        int userId = rs.getInt("user_id");
+        if (!rs.wasNull()) a.setUserId(userId);
         a.setName(rs.getString("name"));
         a.setBio(rs.getString("bio"));
         a.setCreatedAt(rs.getTimestamp("created_at"));

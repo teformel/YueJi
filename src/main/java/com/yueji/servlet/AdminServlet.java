@@ -23,6 +23,7 @@ public class AdminServlet extends HttpServlet {
     private final NovelDao novelDao = new NovelDao();
     private final AuthorDao authorDao = new AuthorDao();
     private final ChapterDao chapterDao = new ChapterDao();
+    private final com.yueji.dao.UserDao userDao = new com.yueji.dao.UserDao();
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -47,6 +48,8 @@ public class AdminServlet extends HttpServlet {
             ResponseUtils.writeJson(resp, 200, "Novels", novelDao.findAll());
         } else if ("/author/list".equals(path)) {
             ResponseUtils.writeJson(resp, 200, "Authors", authorDao.findAll());
+        } else if ("/user/list".equals(path)) {
+            ResponseUtils.writeJson(resp, 200, "Users", userDao.findAll());
         } else if ("/chapter/list".equals(path)) {
             int novelId = Integer.parseInt(req.getParameter("novelId"));
             ResponseUtils.writeJson(resp, 200, "Chapters", chapterDao.findByNovelId(novelId));
@@ -129,6 +132,10 @@ public class AdminServlet extends HttpServlet {
         Author author = new Author();
         author.setName(req.getParameter("name"));
         author.setBio(req.getParameter("bio"));
+        String userIdStr = req.getParameter("userId");
+        if (userIdStr != null && !userIdStr.isEmpty()) {
+            author.setUserId(Integer.parseInt(userIdStr));
+        }
         authorDao.create(author);
         ResponseUtils.writeJson(resp, 200, "Author created", null);
     }
@@ -138,6 +145,10 @@ public class AdminServlet extends HttpServlet {
         author.setId(Integer.parseInt(req.getParameter("id")));
         author.setName(req.getParameter("name"));
         author.setBio(req.getParameter("bio"));
+        String userIdStr = req.getParameter("userId");
+        if (userIdStr != null && !userIdStr.isEmpty()) {
+            author.setUserId(Integer.parseInt(userIdStr));
+        }
         authorDao.update(author);
         ResponseUtils.writeJson(resp, 200, "Author updated", null);
     }

@@ -58,6 +58,21 @@ public class UserDao {
         }
     }
 
+    public java.util.List<User> findAll() {
+        java.util.List<User> list = new java.util.ArrayList<>();
+        String sql = "SELECT * FROM sys_user ORDER BY id DESC";
+        try (Connection conn = DbUtils.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     // Helper to map ResultSet to User object
     private User mapRow(ResultSet rs) throws SQLException {
         User user = new User();

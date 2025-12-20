@@ -66,6 +66,22 @@
                                 <i data-lucide="power" class="w-5 h-5"></i>
                                 <span>安全离线</span>
                             </button>
+
+                            <div id="privileged-nav" class="mt-8 space-y-1 hidden">
+                                <div
+                                    class="px-5 py-3 text-[10px] font-black text-primary uppercase tracking-[0.3em] opacity-60">
+                                    特权枢纽</div>
+                                <button id="btn-creator" onclick="location.href='creator_dashboard.jsp'"
+                                    class="uc-nav-item border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary !gap-4">
+                                    <i data-lucide="pen-tool" class="w-5 h-5"></i>
+                                    <span>创作者工作台</span>
+                                </button>
+                                <button id="btn-admin" onclick="location.href='admin_dashboard.jsp'"
+                                    class="uc-nav-item border border-accent/20 bg-accent/5 hover:bg-accent/10 text-accent !gap-4 !hidden">
+                                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                                    <span>上帝模式 (后台)</span>
+                                </button>
+                            </div>
                         </nav>
                     </aside>
 
@@ -240,6 +256,18 @@
                             document.getElementById('sidebarNickname').innerText = u.nickname || '新启读者';
                             document.getElementById('sidebarUsername').innerText = '@' + u.username;
                             document.getElementById('avatarInitial').innerText = (u.nickname || u.username)[0].toUpperCase();
+
+                            // Privileged checks
+                            const privNav = document.getElementById('privileged-nav');
+                            const creatorBtn = document.getElementById('btn-creator');
+                            const adminBtn = document.getElementById('btn-admin');
+
+                            if (u.isAuthor || u.role === 'admin') {
+                                privNav.classList.remove('hidden');
+                                if (u.isAuthor) creatorBtn.classList.remove('!hidden'); else creatorBtn.classList.add('!hidden');
+                                if (u.role === 'admin') adminBtn.classList.remove('!hidden'); else adminBtn.classList.add('!hidden');
+                            }
+                            lucide.createIcons();
                         }
                     }
 

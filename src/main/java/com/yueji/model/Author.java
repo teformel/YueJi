@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 public class Author {
     private Integer id;
+    private Integer userId; // Added to link with User account
     private String name;
     private String bio;
     private Timestamp createdAt;
@@ -17,6 +18,14 @@ public class Author {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getName() {

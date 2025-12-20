@@ -66,6 +66,25 @@ public class NovelDao {
         return null;
     }
 
+    public List<Novel> findByAuthorId(int authorId) {
+        List<Novel> list = new ArrayList<>();
+        String sql = "SELECT n.*, a.name as author_name FROM sys_novel n " +
+                "LEFT JOIN sys_author a ON n.author_id = a.id WHERE n.author_id = ? " +
+                "ORDER BY n.created_at DESC";
+        try (Connection conn = DbUtils.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, authorId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public void create(Novel novel) throws SQLException {
         String sql = "INSERT INTO sys_novel (title, author_id, category, intro, cover_url, is_free, created_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
         try (Connection conn = DbUtils.getConnection();

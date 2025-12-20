@@ -25,6 +25,7 @@ CREATE TABLE sys_user (
 -- 2. Authors
 CREATE TABLE sys_author (
     id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES sys_user(id) ON DELETE SET NULL, -- Linked to a user account
     name VARCHAR(100) NOT NULL,
     bio TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

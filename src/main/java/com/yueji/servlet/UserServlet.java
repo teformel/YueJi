@@ -16,6 +16,7 @@ import java.sql.SQLException;
 @WebServlet("/user/*")
 public class UserServlet extends HttpServlet {
     private final UserDao userDao = new UserDao();
+    private final com.yueji.dao.AuthorDao authorDao = new com.yueji.dao.AuthorDao();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -49,7 +50,12 @@ public class UserServlet extends HttpServlet {
         // Refresh from DB
         User user = userDao.findByUsername(sessionUser.getUsername());
         user.setPassword(null); // Don't send password
-        ResponseUtils.writeJson(resp, 200, "User info", user);
+        
+        com.google.gson.JsonObject json = new com.google.gson.Gson().toJsonTree(user).getAsJsonObject();
+        boolean isAuthor = authorDao.findByUserId(user.getId()) != null;
+        json.addProperty("isAuthor", isAuthor);
+        
+        ResponseUtils.writeJson(resp, 200, "User info", json);
     }
 
     private void handleUpdateInfo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
