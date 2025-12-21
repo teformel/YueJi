@@ -2,9 +2,11 @@ package com.yueji.servlet;
 
 import com.yueji.common.ResponseUtils;
 import com.yueji.dao.ChapterDao;
+import com.yueji.dao.CollectionDao;
 import com.yueji.dao.NovelDao;
 import com.yueji.model.Chapter;
 import com.yueji.model.Novel;
+import com.yueji.model.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,6 +22,7 @@ import java.util.Map;
 public class NovelServlet extends HttpServlet {
     private final NovelDao novelDao = new NovelDao();
     private final ChapterDao chapterDao = new ChapterDao();
+    private final CollectionDao collectionDao = new CollectionDao();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -58,6 +61,13 @@ public class NovelServlet extends HttpServlet {
         Map<String, Object> data = new HashMap<>();
         data.put("novel", novel);
         data.put("chapters", chapters);
+
+        User user = (User) req.getSession().getAttribute("user");
+        if (user != null) {
+            data.put("isCollected", collectionDao.isCollected(user.getId(), id));
+        } else {
+            data.put("isCollected", false);
+        }
 
         ResponseUtils.writeJson(resp, 200, "Success", data);
     }

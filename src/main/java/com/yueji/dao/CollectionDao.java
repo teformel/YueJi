@@ -51,4 +51,19 @@ public class CollectionDao {
             stmt.executeUpdate();
         }
     }
+
+    public boolean isCollected(int userId, int novelId) {
+        String sql = "SELECT 1 FROM sys_collection WHERE user_id = ? AND novel_id = ?";
+        try (Connection conn = DbUtils.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, novelId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
