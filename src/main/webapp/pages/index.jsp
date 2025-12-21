@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" trimDirectiveWhitespaces="true" %>
     <!DOCTYPE html>
     <html lang="zh-CN">
 
@@ -6,116 +6,101 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>阅己 YueJi - 探索无限故事</title>
-        <link rel="stylesheet" href="../static/css/style.css">
+        <link rel="stylesheet" href="../static/css/style.css?v=3">
         <script src="../static/js/script.js"></script>
     </head>
 
-    <body class="bg-glow">
+    <body class="bg-gray-50 min-h-screen">
         <%@ include file="header.jsp" %>
 
-            <main class="container py-8 reveal">
-                <!-- V2 Theater Hero Spotlight -->
-                <section class="mb-16">
-                    <div class="luminous-panel rounded-[3rem] p-1 overflow-hidden relative group">
-                        <div class="flex flex-col lg:flex-row items-stretch min-h-[560px]">
-                            <!-- Spotlight Image -->
-                            <div class="lg:w-1/2 relative overflow-hidden">
-                                <img src="../static/images/hero.jpg"
-                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                    alt="Feature">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-r from-canvas via-transparent to-transparent hidden lg:block">
-                                </div>
-                            </div>
-                            <!-- Spotlight Content -->
-                            <div
-                                class="lg:w-1/2 p-10 lg:p-16 pb-24 lg:pb-32 flex flex-col justify-center relative bg-canvas/40 backdrop-blur-sm lg:backdrop-blur-0">
-                                <div class="flex items-center gap-3 mb-6">
-                                    <span
-                                        class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold tracking-widest uppercase">今日聚焦</span>
-                                    <span class="text-text-dim text-xs">• 1.2w 人在读</span>
-                                </div>
-                                <h1 class="text-5xl lg:text-7xl font-black mb-6 leading-[1.1]">阅见<span
-                                        class="text-primary">新境</span></h1>
-                                <p class="text-text-muted text-lg mb-10 max-w-lg leading-relaxed">
-                                    在这个被光影编织的故事之城，每一页都是通往异世界的门扉。我们精选了本周最受瞩目的文字，邀您共同开启一段波澜壮阔的旅程。
-                                </p>
-                                <div class="flex items-center gap-4">
-                                    <button class="btn-ultimate px-10 py-4 text-lg"
-                                        onclick="document.getElementById('novelGrid').scrollIntoView({behavior: 'smooth'})">开启阅读</button>
-                                    <button
-                                        class="w-14 h-14 rounded-full border border-border-dim flex items-center justify-center hover:bg-white/5 transition-all text-text-muted hover:text-white">
-                                        <i data-lucide="bookmark-plus" class="w-6 h-6"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Search Floating bar -->
-                        <div class="absolute bottom-10 right-10 left-10 lg:left-auto lg:right-16 lg:w-[450px]">
-                            <div class="relative group/search">
-                                <div
-                                    class="absolute -inset-1 bg-gradient-to-r from-primary/30 to-accent/30 rounded-2xl blur opacity-0 group-focus-within/search:opacity-100 transition-opacity">
-                                </div>
-                                <div
-                                    class="relative flex items-center bg-surface-elevated border border-border-highlight rounded-2xl overflow-hidden shadow-2xl">
-                                    <i data-lucide="search" class="ml-5 w-5 h-5 text-text-dim"></i>
-                                    <input type="text" id="searchInput" placeholder="搜索书名、作者或关键词..."
-                                        class="flex-1 bg-transparent px-4 py-5 outline-none text-white text-base">
-                                    <button onclick="handleSearch()"
-                                        class="px-6 py-5 bg-white/5 hover:bg-white/10 text-white font-bold border-l border-border-highlight transition-all">
-                                        寻找
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+            <main class="py-10">
+                <div class="container space-y-16">
 
-                <!-- Multi-Dimensional Content Matrix -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    <!-- Left: Curated Masterpieces (Grid) -->
-                    <div class="lg:col-span-8">
-                        <div class="flex items-center justify-between mb-8">
-                            <h2 class="text-3xl font-black flex items-center gap-3">
-                                <i data-lucide="sparkles" class="w-8 h-8 text-primary"></i>
-                                精选作品
-                            </h2>
-                            <div class="flex gap-2">
-                                <button onclick="loadNovels()"
-                                    class="p-2 rounded-xl bg-surface-elevated hover:bg-slate-700 transition-all text-text-dim">
-                                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    <!-- Standard Hero Section -->
+                    <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div class="space-y-8">
+                            <div class="space-y-4">
+                                <span
+                                    class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold tracking-wide uppercase">本周精选</span>
+                                <h1 class="text-4xl lg:text-6xl font-black text-slate-900 leading-tight">
+                                    阅见<span class="text-blue-600">新世界</span>
+                                </h1>
+                                <p class="text-lg text-slate-600 leading-relaxed max-w-lg">
+                                    在这个被文字编织的故事之城，每一页都是通往异世界的门扉。我们精选了本周最受瞩目的佳作，邀您共同开启一段波澜壮阔的旅程。
+                                </p>
+                            </div>
+
+                            <!-- Search Box (Integrated in Hero) -->
+                            <div
+                                class="flex items-center p-2 bg-white border border-gray-200 rounded-lg shadow-sm max-w-md focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                                <i data-lucide="search" class="ml-3 w-5 h-5 text-gray-400"></i>
+                                <input type="text" id="searchInput"
+                                    class="flex-1 px-4 py-2 outline-none text-slate-700 placeholder-gray-400 bg-transparent"
+                                    placeholder="搜索书名、作者...">
+                                <button onclick="handleSearch()"
+                                    class="px-6 py-2 bg-slate-900 text-white font-medium rounded-md hover:bg-slate-800 transition-colors">
+                                    搜索
                                 </button>
                             </div>
                         </div>
-                        <div id="novelGrid" class="grid grid-cols-2 md:grid-cols-3 gap-6">
-                            <!-- Cards will be injected here -->
-                            <div class="col-span-full py-20 text-center opacity-30">正在同步书卷资源...</div>
-                        </div>
-                    </div>
 
-                    <!-- Right: Rankings -->
-                    <div class="lg:col-span-4 space-y-12">
-                        <section>
-                            <h2 class="text-2xl font-black mb-8 flex items-center gap-3">
-                                <i data-lucide="crown" class="w-6 h-6 text-accent"></i>
-                                风云榜单
-                            </h2>
-                            <div id="rankingList" class="space-y-4">
-                                <!-- Rankings injected here -->
-                                <div class="py-10 text-center opacity-20 italic">正在排位中...</div>
-                            </div>
-                        </section>
-
+                        <!-- Hero Image -->
                         <div
-                            class="luminous-panel rounded-3xl p-8 bg-gradient-to-br from-accent/10 to-transparent border border-accent/20">
-                            <h4 class="text-lg font-black text-white mb-2">加入创作者行列</h4>
-                            <p class="text-sm text-text-dim mb-6">让您的想象力在悦己的空间绽放。每一位伟大的作者都始于第一行文字。</p>
-                            <button
-                                class="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-bold transition-all">
-                                立即投稿
-                            </button>
+                            class="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/3] lg:aspect-auto lg:h-[500px]">
+                            <img src="../static/images/hero.jpg" class="w-full h-full object-cover">
+                            <!-- Gradient Overlay for lower text contrast if needed, strictly subtle -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
                         </div>
+                    </section>
+
+                    <!-- Main Content Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+                        <!-- Novel Grid (8 cols) -->
+                        <div class="lg:col-span-8 space-y-8">
+                            <div class="flex items-center justify-between border-b border-gray-200 pb-4">
+                                <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                                    <i data-lucide="sparkles" class="w-6 h-6 text-yellow-500"></i> 精选推荐
+                                </h2>
+                                <button onclick="loadNovels()"
+                                    class="p-2 text-slate-400 hover:text-blue-600 transition-colors">
+                                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div id="novelGrid" class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                <!-- Loading State -->
+                                <div class="col-span-full py-12 text-center text-slate-400">正在加载书库资源...</div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar (4 cols) -->
+                        <aside class="lg:col-span-4 space-y-10">
+                            <!-- Rankings -->
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                                <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                    <i data-lucide="trophy" class="w-5 h-5 text-orange-500"></i> 风云榜
+                                </h3>
+                                <div id="rankingList" class="space-y-1">
+                                    <!-- Skeleton -->
+                                    <div class="h-10 bg-gray-100 rounded animate-pulse"></div>
+                                    <div class="h-10 bg-gray-100 rounded animate-pulse"></div>
+                                    <div class="h-10 bg-gray-100 rounded animate-pulse"></div>
+                                </div>
+                            </div>
+
+                            <!-- CTA -->
+                            <div class="bg-slate-900 rounded-xl p-8 text-center text-white shadow-lg">
+                                <h4 class="text-xl font-bold mb-2">成为创作者</h4>
+                                <p class="text-slate-300 text-sm mb-6">让您的想象力绽放。每一位伟大的作者都始于第一行文字。</p>
+                                <button
+                                    class="w-full py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-gray-100 transition-colors">
+                                    立即投稿
+                                </button>
+                            </div>
+                        </aside>
                     </div>
+
                 </div>
             </main>
 
@@ -129,8 +114,6 @@
 
                     async function loadNovels() {
                         const grid = document.getElementById('novelGrid');
-                        const rank = document.getElementById('rankingList');
-
                         try {
                             const result = await fetchJson("../novel/list");
                             if (result && result.status === 200 && result.data.code === 200) {
@@ -138,30 +121,31 @@
                                 renderGrid(novels.slice(0, 9));
                                 renderRankings(novels.slice(0, 5));
                             } else {
-                                grid.innerHTML = '<p class="col-span-full text-center text-text-dim">云端响应异常</p>';
+                                grid.innerHTML = '<p class="col-span-full text-center text-slate-500">暂无数据</p>';
                             }
                         } catch (e) {
-                            console.error("加载小说失败:", e);
-                            grid.innerHTML = '<p class="col-span-full text-center text-text-dim">云端连接受阻，请刷新重试</p>';
+                            console.error("加载失败:", e);
+                            grid.innerHTML = '<p class="col-span-full text-center text-red-500">连接服务器失败</p>';
                         }
                     }
 
                     function renderGrid(novels) {
                         const container = document.getElementById('novelGrid');
                         if (!novels.length) {
-                            container.innerHTML = '<p class="col-span-full text-center opacity-30">这里暂时是一片荒野...</p>';
+                            container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400">暂无书籍</div>';
                             return;
                         }
                         container.innerHTML = novels.map(n => `
-                <div class="theater-card reveal" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
-                     <div class="cover-wrapper aspect-[3/4]">
-                         <img src="\${n.coverUrl || '../static/images/cover_placeholder.jpg'}" alt="\${n.title}" 
-                               onerror="this.src='../static/images/cover_placeholder.jpg'">
-                     </div>
-                     <div class="overlay p-4">
-                         <h4 class="text-sm font-black text-white truncate">\${n.title}</h4>
-                         <p class="text-[10px] text-text-dim mt-1 font-bold tracking-widest uppercase">\${n.authorName || '佚名'}</p>
-                     </div>
+                <div class="standard-card group cursor-pointer" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
+                    <div class="aspect-[2/3] overflow-hidden bg-gray-100 relative">
+                        <img src="\${n.coverUrl || '../static/images/cover_placeholder.jpg'}" 
+                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                             onerror="this.src='../static/images/cover_placeholder.jpg'">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-slate-900 truncate mb-1 group-hover:text-blue-600 transition-colors">\${n.title}</h4>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">\${n.authorName || '佚名'}</p>
+                    </div>
                 </div>
             `).join('');
                         lucide.createIcons();
@@ -170,11 +154,11 @@
                     function renderRankings(novels) {
                         const container = document.getElementById('rankingList');
                         container.innerHTML = novels.map((n, i) => `
-                <div class="v2-ranking-item group cursor-pointer" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
-                    <div class="rank-num \${i < 3 ? 'text-accent' : 'text-text-dim'}">\${i + 1}</div>
-                    <div class="rank-info flex-1">
-                        <div class="text-sm font-black text-white group-hover:text-primary transition-colors">\${n.title}</div>
-                        <div class="text-[10px] text-text-muted font-bold">\${n.category || '通俗文采'}</div>
+                <div class="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
+                    <span class="text-lg font-black w-6 text-center \${i < 3 ? 'text-orange-500' : 'text-slate-300'}">\${i + 1}</span>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-bold text-slate-700 truncate hover:text-blue-600 transition-colors">\${n.title}</div>
+                        <div class="text-xs text-slate-400">\${n.category || '综合'}</div>
                     </div>
                 </div>
             `).join('');
@@ -183,7 +167,7 @@
                     async function handleSearch() {
                         const q = document.getElementById('searchInput').value.trim();
                         if (!q) return;
-                        location.href = "index.jsp?keyword=" + encodeURIComponent(q);
+                        location.href = `index.jsp?keyword=\${encodeURIComponent(q)}`;
                     }
 
                     document.getElementById('searchInput').addEventListener('keypress', (e) => {

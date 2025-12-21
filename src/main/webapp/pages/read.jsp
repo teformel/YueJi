@@ -1,252 +1,138 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" trimDirectiveWhitespaces="true" %>
     <!DOCTYPE html>
     <html lang="zh-CN">
 
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>正在阅读 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="../static/css/style.css">
-        <script src="../static/js/lucide.js"></script>
+        <title>阅读 - 阅己 YueJi</title>
+        <link rel="stylesheet" href="../static/css/style.css?v=3">
         <script src="../static/js/script.js"></script>
         <style>
-            /* Immersive Themes */
-            .theme-paper {
-                --bg: #f4ecd8;
-                --text: #332b1d;
-                --panel: rgba(51, 43, 29, 0.05);
-                --shadow: rgba(0, 0, 0, 0.1);
-            }
-
-            .theme-midnight {
-                --bg: #020617;
-                --text: #94a3b8;
-                --panel: rgba(255, 255, 255, 0.05);
-                --shadow: rgba(0, 0, 0, 0.5);
-            }
-
-            .theme-ocean {
-                --bg: #0f172a;
-                --text: #cbd5e1;
-                --panel: rgba(255, 255, 255, 0.08);
-                --shadow: rgba(0, 0, 0, 0.4);
-            }
-
-            .theme-eye {
-                --bg: #ceddcd;
-                --text: #2d3e2d;
-                --panel: rgba(45, 62, 45, 0.05);
-                --shadow: rgba(0, 0, 0, 0.05);
-            }
-
-            body.reading-mode {
-                background-color: var(--bg);
-                color: var(--text);
-                transition: all 0.5s ease;
-            }
-
-            .read-container {
-                max-width: 860px;
-                margin: 0 auto;
-                padding: 8rem 2rem;
-                min-height: 100vh;
-            }
-
-            .reading-content {
-                font-size: 20px;
-                line-height: 2.1;
-                letter-spacing: 0.02em;
+            /* Specific Reader Tweaks */
+            .reader-content {
+                font-family: "Noto Serif SC", serif;
+                font-size: 1.25rem;
+                line-height: 2;
                 text-align: justify;
             }
 
-            /* V2 Floating Hub */
-            .floating-hub {
-                position: fixed;
-                left: 2rem;
-                bottom: 2rem;
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-                z-index: 100;
-            }
-
-            .hub-btn {
-                width: 3.5rem;
-                height: 3.5rem;
-                border-radius: 1.25rem;
-                background: var(--panel);
-                backdrop-filter: blur(12px);
-                border: 1px solid rgba(0, 0, 0, 0.05);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                color: var(--text);
-                box-shadow: 0 8px 24px var(--shadow);
-            }
-
-            .hub-btn:hover {
-                transform: scale(1.1) translateY(-5px);
-                background: var(--primary);
-                color: white;
-                border-color: transparent;
+            .reader-content p {
+                margin-bottom: 1.5rem;
+                text-indent: 2em;
             }
         </style>
     </head>
 
-    <body class="reading-mode theme-ocean">
-        <!-- Immersive Header -->
-        <header
-            class="fixed top-0 left-0 right-0 py-6 px-10 flex items-center justify-between z-50 bg-transparent pointer-events-none">
-            <button onclick="goBack()" class="hub-btn pointer-events-auto shadow-xl">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </button>
-            <div class="pointer-events-auto flex flex-col items-center">
-                <span id="chapterTitleHeader"
-                    class="text-xs font-bold tracking-widest uppercase opacity-40">阅己阅读空间</span>
-                <div class="w-12 h-0.5 bg-primary/30 mt-1 rounded-full"></div>
+    <body class="bg-[#f0f2f5] min-h-screen text-[#2c3e50]">
+
+        <!-- Reader Header (Float/Fixed) -->
+        <header class="fixed top-0 w-full bg-white/95 backdrop-blur shadow-sm z-50 transition-transform duration-300"
+            id="readerHeader">
+            <div class="container h-14 flex items-center justify-between">
+                <a href="javascript:history.back()"
+                    class="flex items-center gap-2 text-slate-600 hover:text-blue-600 text-sm font-bold">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i> 返回书页
+                </a>
+                <span id="chapterTitleHeader" class="text-sm font-bold text-slate-900 truncate max-w-xs">加载中...</span>
+                <div class="flex items-center gap-4">
+                    <a href="index.jsp" class="text-slate-400 hover:text-slate-900"><i data-lucide="home"
+                            class="w-5 h-5"></i></a>
+                </div>
             </div>
-            <button onclick="location.href='index.jsp'" class="hub-btn pointer-events-auto shadow-xl">
-                <i data-lucide="home" class="w-5 h-5"></i>
-            </button>
         </header>
 
-        <!-- Reading Stage -->
-        <main class="read-container reveal">
-            <article class="space-y-12">
-                <div class="text-center mb-16">
-                    <h1 id="chapterTitle" class="text-4xl lg:text-5xl font-black mb-6">正在翻开书页...</h1>
-                    <div class="w-24 h-1 bg-primary mx-auto rounded-full opacity-30"></div>
-                </div>
+        <div class="pt-24 pb-32 container max-w-3xl">
+            <article class="bg-white rounded-xl shadow-sm px-8 py-12 md:px-16 md:py-20 min-h-[80vh]">
+                <h1 id="chapterTitle" class="text-3xl font-black text-slate-900 mb-12 text-center leading-tight">...
+                </h1>
 
-                <div id="textContent" class="reading-content serif-content">
-                    <!-- Content will be injected here -->
-                </div>
-
-                <!-- Paywall Interceptor -->
-                <div id="paywall"
-                    class="hidden py-20 px-8 rounded-[3rem] border-2 border-dashed border-primary/20 text-center space-y-8 bg-black/5 backdrop-blur-md">
-                    <div
-                        class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto text-primary">
-                        <i data-lucide="lock" class="w-10 h-10"></i>
-                    </div>
-                    <h3 class="text-3xl font-black">支付 <span id="chapterPrice" class="text-primary">--</span> 金币以续读</h3>
-                    <p class="text-text-muted max-w-sm mx-auto">
-                        每一段精彩的故事都值得被珍视。支持原创，让阅读更有温度。
-                    </p>
-                    <div class="flex items-center justify-center gap-4">
-                        <button class="btn-ultimate px-12 py-4" onclick="buyChapter()">立即开启</button>
-                        <button onclick="location.href='user_center.jsp'"
-                            class="font-bold text-accent px-6 py-4 hover:underline">充值金币</button>
+                <div id="content" class="reader-content text-slate-700">
+                    <div class="space-y-6 animate-pulse">
+                        <div class="h-4 bg-gray-100 rounded"></div>
+                        <div class="h-4 bg-gray-100 rounded w-11/12"></div>
+                        <div class="h-4 bg-gray-100 rounded w-10/12"></div>
                     </div>
                 </div>
             </article>
-        </main>
 
-        <!-- Controls Hub -->
-        <div class="floating-hub" id="floatingHub">
-            <div class="hub-menu flex flex-col gap-4 transition-all duration-300 origin-bottom scale-100 opacity-100">
-                <button class="hub-btn" onclick="toggleTheme('theme-paper')" title="经典纸感">
-                    <i data-lucide="book" class="w-5 h-5"></i>
+            <!-- Navigation -->
+            <div class="mt-10 grid grid-cols-2 gap-4">
+                <button id="prevBtn" onclick="goPrev()"
+                    class="p-4 bg-white rounded-lg border border-gray-200 text-slate-600 font-bold hover:bg-blue-50 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    上一章
                 </button>
-                <button class="hub-btn" onclick="toggleTheme('theme-midnight')" title="深夜静读">
-                    <i data-lucide="moon" class="w-5 h-5"></i>
-                </button>
-                <button class="hub-btn" onclick="toggleTheme('theme-eye')" title="舒爽护眼">
-                    <i data-lucide="leaf" class="w-5 h-5"></i>
+                <button id="nextBtn" onclick="goNext()"
+                    class="p-4 bg-blue-600 rounded-lg shadow-lg shadow-blue-500/20 text-white font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    下一章
                 </button>
             </div>
-            <button class="hub-btn mt-4" onclick="toggleHub()" id="hubToggleBtn">
-                <i data-lucide="x" class="w-5 h-5 transition-transform duration-300"></i>
-            </button>
         </div>
 
         <script>
-            const chapterId = getQueryParam('id') || getQueryParam('chapterId');
-            let currentNovelId = null;
-            let currentPrice = 0;
-
             document.addEventListener('DOMContentLoaded', () => {
-                if (chapterId) {
-                    loadContent();
-                }
                 lucide.createIcons();
+                loadContent();
             });
 
+            const novelId = getQueryParam('novelId');
+            const chapterId = getQueryParam('chapterId');
+            let currentChapterIndex = -1;
+            let allChapters = [];
+
             async function loadContent() {
-                const result = await fetchJson("../read/content?chapterId=" + chapterId);
-                if (result && result.status === 200) {
-                    const ch = result.data.data;
-                    currentNovelId = ch.novelId;
-                    document.getElementById('chapterTitle').innerText = ch.title;
-                    document.getElementById('chapterTitleHeader').innerText = ch.title;
-                    document.title = ch.title + " - 阅己 YueJi";
+                if (!novelId || !chapterId) return;
 
-                    if (ch.isLocked) {
-                        document.getElementById('paywall').classList.remove('hidden');
-                        document.getElementById('chapterPrice').innerText = ch.price;
-                        currentPrice = ch.price;
-                    } else {
-                        document.getElementById('textContent').innerHTML = ch.content ? ch.content.split('\n').map(p => `<p class="mb-8">\${p}</p>`).join('') : '正文内容暂不翼而飞...';
+                // Load Chapter Detail
+                try {
+                    const res = await fetchJson(`../novel/chapter?novelId=\${novelId}&chapterId=\${chapterId}`);
+                    if (res.code === 200) {
+                        const ch = res.data;
+                        document.title = `\${ch.title} - 阅读`;
+                        document.getElementById('chapterTitle').innerText = ch.title;
+                        document.getElementById('chapterTitleHeader').innerText = ch.title;
+                        // Format content: convert newlines to paragraphs
+                        const formatted = ch.content.split('\n').map(p => `<p>\${p}</p>`).join('');
+                        document.getElementById('content').innerHTML = formatted;
+
+                        // Allow scroll to top
+                        window.scrollTo(0, 0);
+
+                        // Setup Nav
+                        setupNavigation();
                     }
-                    // Icons in content are not dynamic, so no need to call createIcons here again
-                    // to avoid potential duplication or double-rendering issues.
-                } else {
-                    showToast("未找到此章节内容", "error");
+                } catch (e) {
+                    console.error(e);
                 }
             }
 
-            function toggleTheme(theme) {
-                document.body.className = 'reading-mode ' + theme;
-                showToast("场景已切换", "success");
-            }
+            async function setupNavigation() {
+                // We need full list to know prev/next
+                const res = await fetchJson(`../novel/detail?id=\${novelId}`);
+                if (res.code === 200) {
+                    allChapters = res.data.chapters;
+                    currentChapterIndex = allChapters.findIndex(c => c.id == chapterId);
 
-            function scrollToTop() {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+                    const prev = document.getElementById('prevBtn');
+                    const next = document.getElementById('nextBtn');
 
-            function goBack() {
-                if (currentNovelId) {
-                    location.href = "novel_detail.jsp?id=" + currentNovelId;
-                } else {
-                    history.back();
+                    prev.disabled = currentChapterIndex <= 0;
+                    next.disabled = currentChapterIndex >= allChapters.length - 1;
                 }
             }
 
-            async function buyChapter() {
-                const params = new URLSearchParams();
-                params.append('chapterId', chapterId);
-                params.append('price', currentPrice);
-                const result = await fetchJson("../pay/chapter/purchase", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params
-                });
-                if (result && result.status === 200) {
-                    showToast("解锁成功", "success");
-                    setTimeout(() => location.reload(), 800);
-                } else {
-                    showToast(result ? result.data.msg : "尝试开启失败", "error");
+            function goPrev() {
+                if (currentChapterIndex > 0) {
+                    const prevId = allChapters[currentChapterIndex - 1].id;
+                    location.href = `read.jsp?novelId=\${novelId}&chapterId=\${prevId}`;
                 }
             }
 
-            let isHubExpanded = true;
-            function toggleHub() {
-                const menu = document.querySelector('.hub-menu');
-                const btn = document.getElementById('hubToggleBtn');
-                isHubExpanded = !isHubExpanded;
-
-                if (isHubExpanded) {
-                    menu.classList.remove('scale-0', 'opacity-0', 'pointer-events-none');
-                    menu.classList.add('scale-100', 'opacity-100');
-                    btn.innerHTML = '<i data-lucide="x" class="w-5 h-5 transition-transform duration-300"></i>';
-                } else {
-                    menu.classList.add('scale-0', 'opacity-0', 'pointer-events-none');
-                    menu.classList.remove('scale-100', 'opacity-100');
-                    btn.innerHTML = '<i data-lucide="menu" class="w-5 h-5 transition-transform duration-300"></i>';
+            function goNext() {
+                if (currentChapterIndex < allChapters.length - 1) {
+                    const nextId = allChapters[currentChapterIndex + 1].id;
+                    location.href = `read.jsp?novelId=\${novelId}&chapterId=\${nextId}`;
                 }
-                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         </script>
     </body>

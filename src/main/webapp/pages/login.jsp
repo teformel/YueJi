@@ -1,116 +1,101 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" trimDirectiveWhitespaces="true" %>
     <!DOCTYPE html>
     <html lang="zh-CN">
 
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>登录执笔 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="../static/css/style.css">
+        <title>登录 - 阅己 YueJi</title>
+        <link rel="stylesheet" href="../static/css/style.css?v=3">
         <script src="../static/js/script.js"></script>
     </head>
 
-    <body class="bg-glow min-h-screen flex flex-col">
-        <%@ include file="header.jsp" %>
+    <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
 
-            <main class="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
-                <!-- Abstract Background Orbs -->
-                <div class="absolute top-1/4 -left-20 w-80 h-80 bg-primary/10 blur-[120px] rounded-full animate-float">
+        <!-- Card -->
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+
+            <!-- Header -->
+            <div class="bg-blue-600 p-8 text-center text-white">
+                <div
+                    class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                    <i data-lucide="zap" class="w-6 h-6 text-white"></i>
                 </div>
-                <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-accent/10 blur-[130px] rounded-full animate-float"
-                    style="animation-delay: 2s;"></div>
+                <h2 class="text-2xl font-black mb-1">欢迎回来</h2>
+                <p class="text-blue-100 text-sm">继续您的故事之旅</p>
+            </div>
 
-                <div class="w-full max-w-[480px] reveal">
-                    <div class="luminous-panel rounded-[3rem] p-12 lg:p-16 relative">
-                        <div class="text-center mb-12">
-                            <div
-                                class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/20 text-primary mb-6 shadow-xl shadow-primary/10">
-                                <i data-lucide="key-round" class="w-8 h-8"></i>
-                            </div>
-                            <h2 class="text-4xl font-black text-white tracking-tighter mb-3">欢迎归访</h2>
-                            <p class="text-text-dim text-sm tracking-widest uppercase font-bold">阅见不一样的自己</p>
-                        </div>
-
-                        <div class="space-y-8">
-                            <div class="space-y-3">
-                                <label
-                                    class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">身份账号</label>
-                                <div class="relative group/input">
-                                    <i data-lucide="user"
-                                        class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim group-focus-within/input:text-primary transition-colors"></i>
-                                    <input type="text" id="username"
-                                        class="w-full bg-surface-elevated border border-border-highlight rounded-[1.25rem] pl-14 pr-6 py-5 outline-none focus:border-primary transition-all text-white font-bold"
-                                        placeholder="您的通行证账号">
-                                </div>
-                            </div>
-
-                            <div class="space-y-3">
-                                <label
-                                    class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">进入密码</label>
-                                <div class="relative group/input">
-                                    <i data-lucide="shield-ellipsis"
-                                        class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim group-focus-within/input:text-accent transition-colors"></i>
-                                    <input type="password" id="password"
-                                        class="w-full bg-surface-elevated border border-border-highlight rounded-[1.25rem] pl-14 pr-6 py-5 outline-none focus:border-accent transition-all text-white font-bold"
-                                        placeholder="••••••••">
-                                </div>
-                            </div>
-
-                            <button onclick="login()" class="btn-ultimate w-full py-5 text-lg shadow-2xl mt-4">
-                                立即登入
-                            </button>
-
-                            <div class="text-center mt-10">
-                                <p class="text-sm text-text-dim font-bold">
-                                    尚未解锁账号?
-                                    <a href="register.jsp"
-                                        class="text-primary hover:text-white transition-colors underline underline-offset-8 ml-2">即刻开启旅程</a>
-                                </p>
-                            </div>
+            <!-- Form -->
+            <div class="p-8 space-y-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">账号</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                            <input type="text" id="username" class="form-input pl-10" placeholder="请输入用户名">
                         </div>
                     </div>
-
-                    <p
-                        class="text-center text-[10px] text-text-dim mt-8 uppercase tracking-[0.3em] font-medium opacity-50">
-                        本站安全由阅己云技术构建与加密保护
-                    </p>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">密码</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                            <input type="password" id="password" class="form-input pl-10" placeholder="••••••••">
+                        </div>
+                    </div>
                 </div>
-            </main>
 
-            <%@ include file="footer.jsp" %>
+                <button onclick="login()" class="w-full btn-primary py-3 text-base shadow-lg shadow-blue-500/20">
+                    立即登录
+                </button>
 
-                <script>
-                    async function login() {
-                        const user = document.getElementById('username').value.trim();
-                        const pass = document.getElementById('password').value.trim();
+                <div class="text-center text-sm text-slate-500">
+                    还没有账号？
+                    <a href="register.jsp" class="font-bold text-blue-600 hover:text-blue-700">去注册</a>
+                </div>
+            </div>
+        </div>
 
-                        if (!user || !pass) return showToast("账号信息不完整", "error");
+        <!-- Toast Container -->
+        <div id="toast" class="invisible translate-y-4"></div>
 
-                        const params = new URLSearchParams();
-                        params.append('username', user);
-                        params.append('password', pass);
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                lucide.createIcons();
+            });
 
-                        try {
-                            const res = await fetchJson(`../auth/login`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                body: params
-                            });
+            async function login() {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
 
-                            if (res && res.status === 200) {
-                                showToast("验证通过，正在同步空间...", "success");
-                                setTimeout(() => location.href = 'index.jsp', 1200);
-                            } else {
-                                showToast(res ? res.data.msg : "验证链路异常", "error");
-                            }
-                        } catch (e) {
-                            showToast("接入核心失败", "error");
-                        }
+                if (!username || !password) {
+                    showToast('请完整填写信息', 'error');
+                    return;
+                }
+
+                try {
+                    const formData = new URLSearchParams();
+                    formData.append('username', username);
+                    formData.append('password', password);
+
+                    const response = await fetch('../auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData
+                    });
+                    const result = await response.json();
+
+                    if (result.code === 200) {
+                        showToast('登录成功', 'success');
+                        setTimeout(() => location.href = "index.jsp", 1000);
+                    } else {
+                        showToast(result.msg || '登录失败', 'error');
                     }
-
-                    document.addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
-                    lucide.createIcons();
-                </script>
+                } catch (e) {
+                    console.error(e);
+                    showToast('网络错误，请重试', 'error');
+                }
+            }
+        </script>
     </body>
 
     </html>

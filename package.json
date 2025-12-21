@@ -1,0 +1,16 @@
+{
+    "name": "yueji",
+    "version": "1.0.0",
+    "description": "YueJi Web Application",
+    "main": "index.js",
+    "scripts": {
+        "build-css": "tailwindcss -i ./src/main/webapp/static/css/tailwind-source.css -o ./src/main/webapp/static/css/style.css --minify",
+        "watch-css": "tailwindcss -i ./src/main/webapp/static/css/tailwind-source.css -o ./src/main/webapp/static/css/style.css --watch"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "tailwindcss": "^3.4.1"
+    }
+}

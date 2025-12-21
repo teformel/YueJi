@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" trimDirectiveWhitespaces="true" %>
     <!DOCTYPE html>
     <html lang="zh-CN">
 
@@ -6,264 +6,165 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>作品详情 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="../static/css/style.css?v=2">
+        <link rel="stylesheet" href="../static/css/style.css?v=3">
         <script src="../static/js/script.js"></script>
     </head>
 
-    <body class="bg-glow">
+    <body class="bg-gray-50 min-h-screen flex flex-col">
         <%@ include file="header.jsp" %>
 
-            <main class="container py-12 reveal">
-                <!-- Novel Detail Hero -->
-                <div id="novelHero" class="mb-16">
-                    <div class="py-20 text-center opacity-30">正在同步书卷档案...</div>
-                </div>
+            <main class="flex-1 py-12">
+                <div class="container max-w-5xl">
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    <!-- Left: Chapter List -->
-                    <div class="lg:col-span-8">
-                        <div class="flex items-center justify-between mb-8">
-                            <h3 class="text-2xl font-black flex items-center gap-3">
-                                <i data-lucide="layers" class="w-6 h-6 text-primary"></i>
-                                目录正文
-                                <span id="chapterCount"
-                                    class="text-xs font-bold text-text-dim px-2 py-0.5 rounded-full bg-white/5 mx-2">0
-                                    章</span>
-                            </h3>
-                        </div>
-                        <div id="chapterList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Chapters injected here -->
+                    <!-- Book Header Info -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-8 shadow-sm mb-10">
+                        <div class="flex flex-col md:flex-row gap-10">
+                            <!-- Cover -->
+                            <div class="w-full md:w-56 flex-shrink-0">
+                                <div class="aspect-[3/4] rounded-lg overflow-hidden shadow-lg border border-gray-100">
+                                    <img id="coverImg" src="../static/images/cover_placeholder.jpg"
+                                        class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Info -->
+                            <div class="flex-1 flex flex-col justify-center">
+                                <div class="mb-6">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span id="categoryBadge"
+                                            class="px-3 py-1 bg-gray-100 text-slate-600 rounded-full text-xs font-bold uppercase tracking-wide">未分类</span>
+                                        <span id="statusBadge"
+                                            class="text-xs font-bold text-green-600 flex items-center gap-1">
+                                            <i data-lucide="check-circle-2" class="w-3 h-3"></i> 连载中
+                                        </span>
+                                    </div>
+                                    <h1 id="novelTitle" class="text-4xl font-black text-slate-900 mb-2">加载中...</h1>
+                                    <p id="authorName" class="text-lg text-slate-500 font-medium">佚名 · 著</p>
+                                </div>
+
+                                <div class="flex items-center gap-4 mb-8">
+                                    <button onclick="startReading()"
+                                        class="btn-primary px-8 py-3 text-lg shadow-lg shadow-blue-500/20 active:scale-95 transition-transform">
+                                        <i data-lucide="book-open" class="w-5 h-5"></i> 立即阅读
+                                    </button>
+                                    <button
+                                        class="px-6 py-3 bg-white border border-gray-200 text-slate-700 font-bold rounded-lg hover:bg-gray-50 transition-colors">
+                                        加入书架
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-6 border-t border-gray-100 pt-6">
+                                    <div>
+                                        <div class="text-2xl font-black text-slate-900">4.8</div>
+                                        <div class="text-xs text-slate-400 font-bold uppercase">评分</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-2xl font-black text-slate-900">128</div>
+                                        <div class="text-xs text-slate-400 font-bold uppercase">章回</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-2xl font-black text-slate-900">1.2w</div>
+                                        <div class="text-xs text-slate-400 font-bold uppercase">人气</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Right: Interaction & Info -->
-                    <div class="lg:col-span-4 space-y-10">
-                        <section class="luminous-panel rounded-[2rem] p-8">
-                            <h3 class="text-xl font-black mb-6 flex items-center gap-3">
-                                <i data-lucide="message-circle" class="w-5 h-5 text-accent"></i>
-                                共鸣讨论区
-                            </h3>
-                            <div class="space-y-6 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
-                                id="commentList">
-                                <!-- Comments injected here -->
-                            </div>
+                    <!-- Description & Chapters -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-                            <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-                                <c:choose>
-                                    <c:when test="${not empty sessionScope.user}">
-                                        <div class="space-y-4">
-                                            <textarea id="commentInput"
-                                                class="v2-admin-input h-24 resize-none pt-4 text-sm"
-                                                placeholder="发表你的共鸣..."></textarea>
-                                            <button onclick="postComment()"
-                                                class="btn-ultimate w-full py-3 text-sm">发表评论</button>
-                                        </div>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="p-6 rounded-2xl bg-white/5 border border-white/5 text-center">
-                                            <p class="text-xs text-text-dim mb-4">登录后即可参与讨论</p>
-                                            <button onclick="location.href='login.jsp'"
-                                                class="text-xs font-black text-primary hover:underline">去登录</button>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-                        </section>
+                        <!-- Left: Synopsis -->
+                        <div class="lg:col-span-2 space-y-10">
+                            <section>
+                                <h3 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                    <i data-lucide="info" class="w-5 h-5 text-blue-600"></i> 作品简介
+                                </h3>
+                                <div id="description"
+                                    class="prose prose-slate max-w-none text-slate-600 leading-relaxed">
+                                    <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                    <div class="h-4 bg-gray-200 rounded w-1/2 mt-2 animate-pulse"></div>
+                                </div>
+                            </section>
+
+                            <section>
+                                <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                    <i data-lucide="list" class="w-5 h-5 text-blue-600"></i> 目录正文
+                                    <span id="chapterCount"
+                                        class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">0
+                                        章</span>
+                                </h3>
+                                <div id="chapterList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <!-- Injected -->
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- Right: Side Panel -->
+                        <aside class="space-y-6">
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                <h4 class="font-bold text-slate-900 mb-4">共鸣讨论区</h4>
+                                <div class="text-center py-10">
+                                    <i data-lucide="message-square" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
+                                    <p class="text-sm text-slate-400">登录后即可参与讨论</p>
+                                </div>
+                            </div>
+                        </aside>
                     </div>
                 </div>
             </main>
 
             <%@ include file="footer.jsp" %>
-
                 <script>
-                    const novelId = getQueryParam('id');
-                    let isCollected = false;
-
                     document.addEventListener('DOMContentLoaded', () => {
-                        if (!novelId) {
-                            showToast("非法访问：未找到作品索引", "error");
-                            setTimeout(() => location.href = 'index.jsp', 2000);
-                            return;
-                        }
-                        loadNovelDetail();
-                        loadComments();
-                        if (typeof lucide !== 'undefined') lucide.createIcons();
+                        loadDetail();
+                        lucide.createIcons();
                     });
 
-                    async function loadNovelDetail() {
+                    const novelId = getQueryParam('id');
+                    let currentChapters = [];
+
+                    async function loadDetail() {
+                        if (!novelId) return;
                         try {
-                            const res = await fetchJson("../novel/detail?id=" + novelId);
-                            if (res && res.status === 200 && res.data.code === 200) {
-                                const data = res.data.data;
-                                console.log("Novel Data:", data);
-                                isCollected = data.isCollected;
-                                renderHero(data.novel);
-                                updateCollectionBtn();
-                                renderChapters(data.chapters, data.novel.isFree);
-                            } else {
-                                console.error("API Error:", res);
-                                showToast("核心档案调档失败", "error");
+                            const res = await fetchJson(`../novel/detail?id=\${novelId}`);
+                            if (res.code === 200) {
+                                const data = res.data;
+                                document.getElementById('novelTitle').innerText = data.title;
+                                document.getElementById('authorName').innerText = `\${data.authorName || '佚名'} · 著`;
+                                document.getElementById('description').innerText = data.description || '暂无简介...';
+                                document.getElementById('categoryBadge').innerText = data.category || '综合';
+                                document.getElementById('coverImg').src = data.coverUrl || '../static/images/cover_placeholder.jpg';
+                                document.title = `\${data.title} - 阅己`;
+
+                                if (data.chapters) {
+                                    currentChapters = data.chapters;
+                                    renderChapters(data.chapters);
+                                }
                             }
                         } catch (e) {
-                            console.error("Critical error in loadNovelDetail:", e);
-                            showToast("调档过程中出现异常: " + e.message, "error");
+                            console.error(e);
                         }
                     }
 
-                    function renderHero(novel) {
-                        const container = document.getElementById('novelHero');
-                        container.innerHTML = `
-                <div class="luminous-panel rounded-[3rem] p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row gap-10 items-center">
-                    <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
-                    
-                    <div class="w-48 h-64 md:w-64 md:h-80 shrink-0 rounded-2xl overflow-hidden shadow-2xl relative group">
-                        <img src="\${novel.coverUrl || '../static/images/cover_placeholder.jpg'}" 
-                             class="w-full h-full object-cover" 
-                             onerror="this.src='../static/images/cover_placeholder.jpg'">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                            <span class="px-2 py-1 rounded bg-accent text-[10px] font-bold text-white uppercase tracking-tighter">\${novel.category}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex-1 space-y-6 text-center md:text-left">
-                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                             <div class="px-3 py-1 rounded-full bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">\${novel.isFree ? '全本免费' : '精英付费'}</div>
-                             <div class="text-text-dim text-xs">• ID: \${novel.id}</div>
-                        </div>
-                        <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-white">\${novel.title}</h1>
-                        <p class="text-primary font-bold tracking-widest uppercase text-xs">BY \${novel.authorName || '佚名'}</p>
-                        
-                        <div class="glass-panel p-6 rounded-2xl relative">
-                            <i data-lucide="quote" class="absolute top-4 right-4 w-10 h-10 opacity-5"></i>
-                            <p class="text-text-muted text-sm leading-relaxed italic line-clamp-3 hover:line-clamp-none transition-all duration-500">
-                                \${novel.intro || '这本小说很神秘，还没有写下任何简介...'}
-                            </p>
-                        </div>
-
-                        <div class="flex flex-wrap gap-4 pt-4 justify-center md:justify-start">
-                            <button onclick="startReading()" class="btn-ultimate px-8 py-4">立即启程</button>
-                            <button id="collectBtn" onclick="toggleCollection()" class="w-14 h-14 rounded-2xl border border-white/5 flex items-center justify-center hover:bg-white/5 text-text-muted hover:text-white transition-all shadow-xl group/like">
-                                <i data-lucide="heart" class="w-6 h-6 transition-all group-hover/like:text-rose-500 group-hover/like:scale-110"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-                        if (typeof lucide !== 'undefined') lucide.createIcons();
-                    }
-
-                    function renderChapters(chapters, isNovelFree) {
+                    function renderChapters(chapters) {
+                        document.getElementById('chapterCount').innerText = `\${chapters.length} 章`;
                         const container = document.getElementById('chapterList');
-                        document.getElementById('chapterCount').textContent = chapters.length + ' 章';
-
-                        if (!chapters.length) {
-                            container.innerHTML = '<div class="col-span-full py-10 text-center opacity-20">档案库尚无章节记录</div>';
-                            return;
-                        }
-
-                        container.innerHTML = chapters.map((ch, idx) => `
-                <a href="read.jsp?chapterId=\${ch.id}" class="manage-list-item group reveal">
-                    <div class="flex items-center gap-4">
-                        <span class="text-xs font-mono text-text-dim group-hover:text-primary transition-colors">\${(idx+1).toString().padStart(2, '0')}</span>
-                        <div class="font-bold text-white">\${ch.title}</div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        \${!isNovelFree && ch.price > 0 ? '<span class="text-[10px] font-black text-amber-500 uppercase flex items-center gap-1"><i data-lucide="gem" class="w-3 h-3"></i>'+ch.price+'</span>' : '<i data-lucide="chevron-right" class="w-4 h-4 text-text-dim group-hover:text-white transition-all"></i>'}
-                    </div>
+                        container.innerHTML = chapters.map((c, i) => `
+                <a href="read.jsp?novelId=\${novelId}&chapterId=\${c.id}" 
+                   class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-300 hover:bg-blue-50 transition-colors group">
+                    <span class="text-slate-300 font-bold text-sm w-6">\${i + 1}</span>
+                    <span class="text-sm font-medium text-slate-700 group-hover:text-blue-700 truncate">\${c.title}</span>
                 </a>
             `).join('');
-                        if (typeof lucide !== 'undefined') lucide.createIcons();
-                    }
-
-                    async function loadComments() {
-                        const list = document.getElementById('commentList');
-                        try {
-                            const res = await fetchJson("../interaction/comment/list?novelId=" + novelId);
-                            if (res && res.status === 200 && res.data.code === 200) {
-                                const comments = res.data.data;
-                                if (!comments || !comments.length) {
-                                    list.innerHTML = '<div class="py-10 text-center text-xs text-text-dim opacity-30">暂时还没有电波共鸣...</div>';
-                                    return;
-                                }
-                                list.innerHTML = comments.map(c => `
-                        <div class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-black text-primary uppercase">\${c.username || '匿名波段'}</span>
-                                <span class="text-[8px] text-text-dim font-mono uppercase font-bold">\${c.createdAt}</span>
-                            </div>
-                            <p class="text-xs text-text-muted leading-relaxed font-bold">\${c.content}</p>
-                        </div>
-                    `).join('');
-                            }
-                        } catch (e) { console.error("Comment load fail", e); }
-                    }
-
-                    async function postComment() {
-                        const content = document.getElementById('commentInput').value.trim();
-                        if (!content) return;
-
-                        const params = new URLSearchParams();
-                        params.append('novelId', novelId);
-                        params.append('content', content);
-
-                        try {
-                            const res = await fetchJson("../interaction/comment/create", {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                body: params
-                            });
-
-                            if (res && res.status === 200 && res.data.code === 200) {
-                                showToast("电波射击成功", "success");
-                                document.getElementById('commentInput').value = '';
-                                loadComments();
-                            } else {
-                                showToast((res.data && res.data.msg) || "发射受抑制", "error");
-                            }
-                        } catch (e) { showToast("波段中断", "error"); }
-                    }
-
-                    async function toggleCollection() {
-                        const params = new URLSearchParams();
-                        params.append('novelId', novelId);
-                        const endpoint = isCollected ? 'remove' : 'add';
-
-                        try {
-                            const res = await fetchJson("../interaction/collection/" + endpoint, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                body: params
-                            });
-                            if (res && res.status === 200 && res.data.code === 200) {
-                                isCollected = !isCollected;
-                                updateCollectionBtn();
-                                showToast(isCollected ? "成功加入书架" : "已移出书架", "success");
-                            } else {
-                                showToast("操作中断", "error");
-                            }
-                        } catch (e) { showToast("连接中断", "error"); }
-                    }
-
-                    function updateCollectionBtn() {
-                        const btn = document.getElementById('collectBtn');
-                        if (!btn) return;
-
-                        // Icon might be <i> (before lucide) or <svg> (after lucide)
-                        const icon = btn.querySelector('i') || btn.querySelector('svg');
-                        if (!icon) return;
-
-                        if (isCollected) {
-                            btn.classList.add('border-rose-500/50', 'bg-rose-500/10');
-                            icon.classList.add('fill-rose-500', 'text-rose-500');
-                        } else {
-                            btn.classList.remove('border-rose-500/50', 'bg-rose-500/10');
-                            icon.classList.remove('fill-rose-500', 'text-rose-500');
-                        }
                     }
 
                     function startReading() {
-                        const first = document.querySelector('#chapterList a');
-                        if (first) first.click();
-                        else showToast("该作品尚无卷宗可读", "info");
+                        if (currentChapters.length > 0) {
+                            location.href = `read.jsp?novelId=\${novelId}&chapterId=\${currentChapters[0].id}`;
+                        } else {
+                            showToast('暂无章节可读', 'info');
+                        }
                     }
                 </script>
     </body>

@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" trimDirectiveWhitespaces="true" %>
     <!DOCTYPE html>
     <html lang="zh-CN">
 
@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>个人中心 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="../static/css/style.css">
+        <link rel="stylesheet" href="../static/css/style.css?v=2">
         <script src="../static/js/script.js"></script>
     </head>
 
@@ -310,7 +310,7 @@
                             list.innerHTML = items.map(item => `
                     <div class="theater-card reveal" onclick="location.href='novel_detail.jsp?id=\${item.novelId}'">
                          <div class="cover-wrapper aspect-[2/3]">
-                             <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300" alt="\${item.title}">
+                             <img src="\${item.coverUrl || '../static/images/default_book_cover.jpg'}" alt="\${item.title}" onerror="this.src='../static/images/default_book_cover.jpg'">
                          </div>
                          <div class="overlay p-4">
                              <h4 class="text-sm font-black text-white truncate">\${item.title}</h4>

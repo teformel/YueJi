@@ -1,125 +1,111 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" trimDirectiveWhitespaces="true" %>
     <!DOCTYPE html>
     <html lang="zh-CN">
 
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>开启旅程 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="../static/css/style.css">
+        <title>注册 - 阅己 YueJi</title>
+        <link rel="stylesheet" href="../static/css/style.css?v=3">
         <script src="../static/js/script.js"></script>
     </head>
 
-    <body class="bg-glow min-h-screen flex flex-col">
-        <%@ include file="header.jsp" %>
+    <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
 
-            <main class="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
-                <!-- Abstract Background Orbs -->
-                <div class="absolute -top-20 -right-20 w-80 h-80 bg-accent/10 blur-[120px] rounded-full animate-float">
+        <!-- Card -->
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+
+            <!-- Header -->
+            <div class="bg-slate-900 p-8 text-center text-white">
+                <div
+                    class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                    <i data-lucide="sparkles" class="w-6 h-6 text-yellow-400"></i>
                 </div>
-                <div class="absolute -bottom-20 -left-20 w-96 h-96 bg-primary/10 blur-[130px] rounded-full animate-float"
-                    style="animation-delay: 1.5s;"></div>
+                <h2 class="text-2xl font-black mb-1">开启旅程</h2>
+                <p class="text-slate-400 text-sm">创建您的阅己账号</p>
+            </div>
 
-                <div class="w-full max-w-[520px] reveal">
-                    <div class="luminous-panel rounded-[3rem] p-12 lg:p-16 relative">
-                        <div class="text-center mb-10">
-                            <div
-                                class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/20 text-accent mb-6 shadow-xl shadow-accent/10">
-                                <i data-lucide="sparkles" class="w-8 h-8"></i>
-                            </div>
-                            <h2 class="text-4xl font-black text-white tracking-tighter mb-3">开启新篇章</h2>
-                            <p class="text-text-dim text-sm tracking-widest uppercase font-bold">注册您的阅己通行证</p>
+            <!-- Form -->
+            <div class="p-8 space-y-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">昵称</label>
+                        <div class="relative">
+                            <i data-lucide="smile" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                            <input type="text" id="nickname" class="form-input pl-10" placeholder="给自己起个名字">
                         </div>
-
-                        <div class="space-y-6">
-                            <div class="space-y-2.5">
-                                <label
-                                    class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">身份账号</label>
-                                <div class="relative group/input">
-                                    <i data-lucide="at-sign"
-                                        class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim group-focus-within/input:text-primary transition-colors"></i>
-                                    <input type="text" id="username"
-                                        class="w-full bg-surface-elevated border border-border-highlight rounded-[1.25rem] pl-14 pr-6 py-4 outline-none focus:border-primary transition-all text-white font-bold"
-                                        placeholder="建议使用字母数字组合">
-                                </div>
-                            </div>
-
-                            <div class="space-y-2.5">
-                                <label
-                                    class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">个人昵称</label>
-                                <div class="relative group/input">
-                                    <i data-lucide="tag"
-                                        class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim group-focus-within/input:text-primary transition-colors"></i>
-                                    <input type="text" id="nickname"
-                                        class="w-full bg-surface-elevated border border-border-highlight rounded-[1.25rem] pl-14 pr-6 py-4 outline-none focus:border-primary transition-all text-white font-bold"
-                                        placeholder="大家如何称呼您?">
-                                </div>
-                            </div>
-
-                            <div class="space-y-2.5">
-                                <label
-                                    class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">进入密码</label>
-                                <div class="relative group/input">
-                                    <i data-lucide="shield-check"
-                                        class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim group-focus-within/input:text-accent transition-colors"></i>
-                                    <input type="password" id="password"
-                                        class="w-full bg-surface-elevated border border-border-highlight rounded-[1.25rem] pl-14 pr-6 py-4 outline-none focus:border-accent transition-all text-white font-bold"
-                                        placeholder="不少于 6 位强力密码">
-                                </div>
-                            </div>
-
-                            <button onclick="register()"
-                                class="btn-ultimate w-full py-5 text-lg shadow-2xl mt-6 bg-accent border-accent/20 hover:border-accent/40 shadow-accent/20">
-                                开启阅读之旅
-                            </button>
-
-                            <div class="text-center mt-10">
-                                <p class="text-sm text-text-dim font-bold">
-                                    早已拥有通行证?
-                                    <a href="login.jsp"
-                                        class="text-accent hover:text-white transition-colors underline underline-offset-8 ml-2">立即登入归队</a>
-                                </p>
-                            </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">账号</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                            <input type="text" id="username" class="form-input pl-10" placeholder="设置登录账号">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">密码</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                            <input type="password" id="password" class="form-input pl-10" placeholder="设置登录密码">
                         </div>
                     </div>
                 </div>
-            </main>
 
-            <%@ include file="footer.jsp" %>
+                <button onclick="register()"
+                    class="w-full btn-primary bg-slate-900 hover:bg-slate-800 py-3 text-base shadow-lg shadow-slate-900/20">
+                    立即注册
+                </button>
 
-                <script>
-                    async function register() {
-                        const user = document.getElementById('username').value.trim();
-                        const nick = document.getElementById('nickname').value.trim();
-                        const pass = document.getElementById('password').value.trim();
+                <div class="text-center text-sm text-slate-500">
+                    已有账号？
+                    <a href="login.jsp" class="font-bold text-blue-600 hover:text-blue-700">直接登录</a>
+                </div>
+            </div>
+        </div>
 
-                        if (!user || !pass) return showToast("请完善必要注册信息", "error");
+        <!-- Toast Container -->
+        <div id="toast" class="invisible translate-y-4"></div>
 
-                        const params = new URLSearchParams();
-                        params.append('username', user);
-                        params.append('nickname', nick);
-                        params.append('password', pass);
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                lucide.createIcons();
+            });
 
-                        try {
-                            const res = await fetchJson(`../auth/register`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                body: params
-                            });
+            async function register() {
+                const nickname = document.getElementById('nickname').value;
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
 
-                            if (res && res.status === 200) {
-                                showToast("欢迎加入！正在为您开启门户...", "success");
-                                setTimeout(() => location.href = 'login.jsp', 1500);
-                            } else {
-                                showToast(res ? res.data.msg : "账号可能已被占用", "error");
-                            }
-                        } catch (e) {
-                            showToast("同步注册信息失败", "error");
-                        }
+                if (!username || !password || !nickname) {
+                    showToast('请完整填写信息', 'error');
+                    return;
+                }
+
+                try {
+                    const formData = new URLSearchParams();
+                    formData.append('nickname', nickname);
+                    formData.append('username', username);
+                    formData.append('password', password);
+
+                    const response = await fetch('../auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData
+                    });
+                    const result = await response.json();
+
+                    if (result.code === 200) {
+                        showToast('注册成功，正在跳转登录...', 'success');
+                        setTimeout(() => location.href = "login.jsp", 1500);
+                    } else {
+                        showToast(result.msg || '注册失败', 'error');
                     }
-
-                    lucide.createIcons();
-                </script>
+                } catch (e) {
+                    console.error(e);
+                    showToast('网络错误，请重试', 'error');
+                }
+            }
+        </script>
     </body>
 
     </html>
