@@ -73,6 +73,13 @@
             document.addEventListener('DOMContentLoaded', () => {
                 lucide.createIcons();
                 loadContent();
+
+                // Auto Save Progress with Debounce
+                window.addEventListener('scroll', debounce(() => {
+                    if (novelId && chapterId) {
+                        MockDB.saveProgress(novelId, chapterId, window.scrollY);
+                    }
+                }, 500));
             });
 
             const novelId = getQueryParam('novelId');
@@ -95,11 +102,21 @@
                         const formatted = ch.content.split('\n').map(p => `<p>\${p}</p>`).join('');
                         document.getElementById('content').innerHTML = formatted;
 
-                        // Allow scroll to top
-                        window.scrollTo(0, 0);
-
                         // Setup Nav
-                        setupNavigation();
+                        await setupNavigation();
+
+                        // RESTORE PROGRESS
+                        // Retrieve saved progress
+                        const saved = MockDB.getProgress(novelId);
+                        if (saved && saved.chapterId === chapterId && saved.scrollY > 0) {
+                            // Small delay to allow layout to settle
+                            setTimeout(() => {
+                                window.scrollTo({ top: saved.scrollY, behavior: 'smooth' });
+                                showToast('已恢复阅读进度', 'success');
+                            }, 300);
+                        } else {
+                            window.scrollTo(0, 0);
+                        }
                     }
                 } catch (e) {
                     console.error(e);
@@ -116,8 +133,10 @@
                     const prev = document.getElementById('prevBtn');
                     const next = document.getElementById('nextBtn');
 
-                    prev.disabled = currentChapterIndex <= 0;
-                    next.disabled = currentChapterIndex >= allChapters.length - 1;
+                    if (currentChapterIndex >= 0) {
+                        prev.disabled = currentChapterIndex <= 0;
+                        next.disabled = currentChapterIndex >= allChapters.length - 1;
+                    }
                 }
             }
 
@@ -133,6 +152,14 @@
                     const nextId = allChapters[currentChapterIndex + 1].id;
                     location.href = `read.jsp?novelId=\${novelId}&chapterId=\${nextId}`;
                 }
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
             }
         </script>
     </body>
