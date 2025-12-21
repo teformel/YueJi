@@ -6,8 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>作品详情 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
-        <script src="${pageContext.request.contextPath}/static/script.js"></script>
+        <link rel="stylesheet" href="../static/css/style.css?v=2">
+        <script src="../static/js/script.js"></script>
     </head>
 
     <body class="bg-glow">
@@ -76,6 +76,7 @@
 
                 <script>
                     const novelId = getQueryParam('id');
+                    let isCollected = false;
 
                     document.addEventListener('DOMContentLoaded', () => {
                         if (!novelId) {
@@ -85,22 +86,26 @@
                         }
                         loadNovelDetail();
                         loadComments();
-                        lucide.createIcons();
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
                     });
 
                     async function loadNovelDetail() {
                         try {
-                            const res = await fetchJson("\${pageContext.request.contextPath}/novel/detail?id=" + novelId);
+                            const res = await fetchJson("../novel/detail?id=" + novelId);
                             if (res && res.status === 200 && res.data.code === 200) {
                                 const data = res.data.data;
+                                console.log("Novel Data:", data);
+                                isCollected = data.isCollected;
                                 renderHero(data.novel);
+                                updateCollectionBtn();
                                 renderChapters(data.chapters, data.novel.isFree);
                             } else {
+                                console.error("API Error:", res);
                                 showToast("核心档案调档失败", "error");
                             }
                         } catch (e) {
-                            console.error(e);
-                            showToast("调档过程中出现异常", "error");
+                            console.error("Critical error in loadNovelDetail:", e);
+                            showToast("调档过程中出现异常: " + e.message, "error");
                         }
                     }
 
@@ -111,9 +116,9 @@
                     <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
                     
                     <div class="w-48 h-64 md:w-64 md:h-80 shrink-0 rounded-2xl overflow-hidden shadow-2xl relative group">
-                        <img src="\${novel.coverUrl || 'https://images.unsplash.com/photo-1543004471-240ce49a2a2f?w=400'}" 
+                        <img src="\${novel.coverUrl || '../static/images/cover_placeholder.jpg'}" 
                              class="w-full h-full object-cover" 
-                             onerror="this.src='https://images.unsplash.com/photo-1543004471-240ce49a2a2f?w=400'">
+                             onerror="this.src='../static/images/cover_placeholder.jpg'">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
                             <span class="px-2 py-1 rounded bg-accent text-[10px] font-bold text-white uppercase tracking-tighter">\${novel.category}</span>
                         </div>
@@ -136,14 +141,14 @@
 
                         <div class="flex flex-wrap gap-4 pt-4 justify-center md:justify-start">
                             <button onclick="startReading()" class="btn-ultimate px-8 py-4">立即启程</button>
-                            <button onclick="toggleCollection()" class="w-14 h-14 rounded-2xl border border-white/5 flex items-center justify-center hover:bg-white/5 text-text-muted hover:text-white transition-all shadow-xl">
-                                <i data-lucide="heart" class="w-6 h-6"></i>
+                            <button id="collectBtn" onclick="toggleCollection()" class="w-14 h-14 rounded-2xl border border-white/5 flex items-center justify-center hover:bg-white/5 text-text-muted hover:text-white transition-all shadow-xl group/like">
+                                <i data-lucide="heart" class="w-6 h-6 transition-all group-hover/like:text-rose-500 group-hover/like:scale-110"></i>
                             </button>
                         </div>
                     </div>
                 </div>
             `;
-                        lucide.createIcons();
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
                     }
 
                     function renderChapters(chapters, isNovelFree) {
@@ -166,13 +171,13 @@
                     </div>
                 </a>
             `).join('');
-                        lucide.createIcons();
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
                     }
 
                     async function loadComments() {
                         const list = document.getElementById('commentList');
                         try {
-                            const res = await fetchJson("\${pageContext.request.contextPath}/interaction/comment/list?novelId=" + novelId);
+                            const res = await fetchJson("../interaction/comment/list?novelId=" + novelId);
                             if (res && res.status === 200 && res.data.code === 200) {
                                 const comments = res.data.data;
                                 if (!comments || !comments.length) {
@@ -201,7 +206,7 @@
                         params.append('content', content);
 
                         try {
-                            const res = await fetchJson("\${pageContext.request.contextPath}/interaction/comment/create", {
+                            const res = await fetchJson("../interaction/comment/create", {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body: params
@@ -220,16 +225,39 @@
                     async function toggleCollection() {
                         const params = new URLSearchParams();
                         params.append('novelId', novelId);
+                        const endpoint = isCollected ? 'remove' : 'add';
+
                         try {
-                            const res = await fetchJson("\${pageContext.request.contextPath}/interaction/collection/add", {
+                            const res = await fetchJson("../interaction/collection/" + endpoint, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body: params
                             });
                             if (res && res.status === 200 && res.data.code === 200) {
-                                showToast("成功建立档案同步", "success");
-                            } else { showToast("同步建立失败", "error"); }
+                                isCollected = !isCollected;
+                                updateCollectionBtn();
+                                showToast(isCollected ? "成功加入书架" : "已移出书架", "success");
+                            } else {
+                                showToast("操作中断", "error");
+                            }
                         } catch (e) { showToast("连接中断", "error"); }
+                    }
+
+                    function updateCollectionBtn() {
+                        const btn = document.getElementById('collectBtn');
+                        if (!btn) return;
+
+                        // Icon might be <i> (before lucide) or <svg> (after lucide)
+                        const icon = btn.querySelector('i') || btn.querySelector('svg');
+                        if (!icon) return;
+
+                        if (isCollected) {
+                            btn.classList.add('border-rose-500/50', 'bg-rose-500/10');
+                            icon.classList.add('fill-rose-500', 'text-rose-500');
+                        } else {
+                            btn.classList.remove('border-rose-500/50', 'bg-rose-500/10');
+                            icon.classList.remove('fill-rose-500', 'text-rose-500');
+                        }
                     }
 
                     function startReading() {

@@ -6,26 +6,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>创作者工作台 - 阅己 YueJi Creator Portal</title>
-        <!-- Tailwind CSS for Utility First Styling -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            canvas: '#020617',
-                            primary: '#8b5cf6',
-                            accent: '#0ea5e9',
-                            'text-muted': '#94a3b8',
-                            'text-dim': '#64748b',
-                            'border-dim': 'rgba(51, 65, 85, 0.4)'
-                        }
-                    }
-                }
-            }
-        </script>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
-        <script src="${pageContext.request.contextPath}/static/script.js"></script>
+
+        <link rel="stylesheet" href="../static/css/style.css">
+        <script src="../static/js/script.js"></script>
         <style>
             /* Override Tailwind Preflight collisions if necessary */
             /* Ensuring hidden works is key first step */
@@ -404,7 +387,7 @@
 
                     async function post(endpoint, params) {
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/creator/" + endpoint, {
+                            const res = await fetch("../creator/" + endpoint, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body: params
@@ -518,7 +501,7 @@
                         document.getElementById('list-tab-' + type).classList.add('bg-primary', 'text-white');
 
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/creator/" + type + "/list");
+                            const res = await fetch("../creator/" + type + "/list");
                             const data = await res.json();
                             if (data.code === 200) {
                                 renderManageList(type, data.data);
@@ -583,7 +566,7 @@
                         list.innerHTML = '<div class="py-10 text-center opacity-20">正在调档...</div>';
 
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/creator/chapter/list?novelId=" + novelId);
+                            const res = await fetch("../creator/chapter/list?novelId=" + novelId);
                             const data = await res.json();
                             if (data.code === 200) {
                                 list.innerHTML = data.data.map(c => `
@@ -610,7 +593,7 @@
                         try {
                             closeChapterModal();
                             showToast("正在同步云端档案...", "info");
-                            const res = await fetch("${pageContext.request.contextPath}/creator/chapter/detail?id=" + id);
+                            const res = await fetch("../creator/chapter/detail?id=" + id);
                             const data = await res.json();
                             if (data.code === 200 && data.data) {
                                 const c = data.data;

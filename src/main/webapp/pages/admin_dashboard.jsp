@@ -6,26 +6,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>上帝模式 - 阅己 YueJi 管理后台</title>
-        <!-- Tailwind CSS for Utility First Styling -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            canvas: '#020617',
-                            primary: '#8b5cf6',
-                            accent: '#0ea5e9',
-                            'text-muted': '#94a3b8',
-                            'text-dim': '#64748b',
-                            'border-dim': 'rgba(51, 65, 85, 0.4)'
-                        }
-                    }
-                }
-            }
-        </script>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
-        <script src="${pageContext.request.contextPath}/static/script.js"></script>
+
+        <link rel="stylesheet" href="../static/css/style.css">
+        <script src="../static/js/script.js"></script>
         <style>
             /* Override Tailwind Preflight collisions if necessary */
             /* Ensuring hidden works is key first step */
@@ -52,16 +35,16 @@
                             class="text-3xl md:text-5xl font-black tracking-tighter text-white uppercase italic flex items-baseline gap-3">
                             <span style="font-family: var(--font-serif);"
                                 class="not-italic font-black text-white/90">上帝模式</span>
-                            <span
-                                class="text-primary text-xl font-mono not-italic tracking-normal opacity-50">v2.1_Commercial</span>
+                            <span class="text-primary text-xl font-mono not-italic tracking-normal opacity-50">v2.1
+                                商业版</span>
                         </h1>
                         <p class="text-text-muted font-bold tracking-[0.3em] text-[10px] mt-1 uppercase opacity-60">
-                            Control every pixel, every word, every world.</p>
+                            掌控每一像素，每一文字，每一世界。</p>
                     </div>
                 </div>
 
                 <div class="flex flex-col lg:flex-row gap-8">
-                    <!-- Global Nav -->
+                    <!-- 全局导航 -->
                     <aside class="w-full lg:w-80 space-y-8 shrink-0">
                         <nav class="luminous-panel rounded-[2.5rem] p-4 space-y-2">
                             <div
@@ -123,29 +106,29 @@
                                 <div class="space-y-4">
                                     <div class="flex justify-between items-center text-xs">
                                         <span class="text-text-dim">核心引擎</span>
-                                        <span class="font-mono text-white">Active</span>
+                                        <span class="font-mono text-white">运行中</span>
                                     </div>
                                     <div class="flex justify-between items-center text-xs">
                                         <span class="text-text-dim">同步延迟</span>
-                                        <span class="font-mono text-primary">0.42ms</span>
+                                        <span class="font-mono text-primary">0.42毫秒</span>
                                     </div>
                                     <div class="flex justify-between items-center text-xs">
                                         <span class="text-text-dim">安全等级</span>
-                                        <span class="font-mono text-accent">L5_SECURE</span>
+                                        <span class="font-mono text-accent">5级防护</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </aside>
 
-                    <!-- Workspace -->
+                    <!-- 工作区 -->
                     <section class="flex-1 min-h-[700px]">
                         <div class="luminous-panel rounded-[3rem] p-6 md:p-14 relative overflow-hidden h-full">
                             <div
                                 class="absolute -top-40 -right-40 w-96 h-96 bg-primary/5 blur-[150px] rounded-full pointer-events-none">
                             </div>
 
-                            <!-- Author Section -->
+                            <!-- 作者板块 -->
                             <div id="sec-author" class="admin-section active space-y-12">
                                 <div class="relative">
                                     <div class="flex items-center gap-4 mb-2">
@@ -215,7 +198,7 @@
                                 </div>
                             </div>
 
-                            <!-- Novel Section -->
+                            <!-- 作品板块 -->
                             <div id="sec-novel" class="admin-section hidden space-y-12">
                                 <div class="relative">
                                     <div class="flex items-center gap-4 mb-2">
@@ -269,9 +252,9 @@
                                         <div class="relative">
                                             <select id="novelCategory"
                                                 class="v2-admin-input bg-black/40 border-white/5 appearance-none cursor-pointer pr-10 focus:bg-black/60 transition-all font-bold">
-                                                <option value="玄幻">玄幻 - Fantasy</option>
-                                                <option value="悬疑">悬疑 - Mystery</option>
-                                                <option value="都市">都市 - Urban</option>
+                                                <option value="玄幻">玄幻</option>
+                                                <option value="悬疑">悬疑</option>
+                                                <option value="都市">都市</option>
                                             </select>
                                             <i data-lucide="chevron-down"
                                                 class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-dim pointer-events-none"></i>
@@ -303,7 +286,7 @@
                                         </label>
                                         <input id="novelCover"
                                             class="v2-admin-input bg-black/40 border-white/5 focus:bg-black/60 transition-all"
-                                            placeholder="HTTPS://IMAGE_RESOURCE_LINK">
+                                            placeholder="HTTPS://图片资源链接">
                                     </div>
 
                                     <div class="space-y-4 md:col-span-2">
@@ -331,7 +314,7 @@
                                 </div>
                             </div>
 
-                            <!-- Chapter Section -->
+                            <!-- 章节板块 -->
                             <div id="sec-chapter" class="admin-section hidden space-y-12">
                                 <div class="relative">
                                     <div class="flex items-center gap-4 mb-2">
@@ -355,7 +338,7 @@
                                             ID</label>
                                         <input id="chapterNovelId"
                                             class="v2-admin-input bg-black/40 border-white/5 focus:bg-black/60 transition-all font-bold"
-                                            placeholder="NOVEL_ID">
+                                            placeholder="作品ID">
                                     </div>
 
                                     <div class="space-y-4">
@@ -487,7 +470,7 @@
 
                     async function loadUsers() {
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/user/list");
+                            const res = await fetch("../admin/user/list");
                             const data = await res.json();
                             if (data.code === 200) {
                                 const select = document.getElementById('authorUserId');
@@ -499,7 +482,7 @@
 
                     async function loadAuthors() {
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/author/list");
+                            const res = await fetch("../admin/author/list");
                             const data = await res.json();
                             if (data.code === 200) {
                                 const select = document.getElementById('novelAuthor');
@@ -511,7 +494,7 @@
 
                     async function post(endpoint, params) {
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/" + endpoint, {
+                            const res = await fetch("../admin/" + endpoint, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body: params
@@ -664,7 +647,7 @@
                         document.getElementById('list-tab-' + type).classList.add('bg-primary', 'text-white');
 
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/" + type + "/list");
+                            const res = await fetch("../admin/" + type + "/list");
                             const data = await res.json();
                             if (data.code === 200) {
                                 renderManageList(type, data.data);
@@ -687,7 +670,7 @@
                                     <div class="p-6 rounded-3xl bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all reveal">
                                         <div class="flex items-center gap-6">
                                             <div class="w-16 h-20 rounded-xl bg-black/40 overflow-hidden shadow-2xl relative">
-                                                <img src="\${item.coverUrl || 'https://images.unsplash.com/photo-1543004471-240ce49a2a2f?w=100'}" class="w-full h-full object-cover">
+                                                <img src="\${item.coverUrl || '../static/images/cover_placeholder.jpg'}" class="w-full h-full object-cover">
                                                 <div class="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-xl"></div>
                                             </div>
                                             <div class="space-y-1">
@@ -751,7 +734,7 @@
                         list.innerHTML = '<div class="py-10 text-center opacity-20">正在调档...</div>';
 
                         try {
-                            const res = await fetch("${pageContext.request.contextPath}/admin/chapter/list?novelId=" + novelId);
+                            const res = await fetch("../admin/chapter/list?novelId=" + novelId);
                             const data = await res.json();
                             if (data.code === 200) {
                                 list.innerHTML = data.data.map(c => `
@@ -778,7 +761,7 @@
                         try {
                             closeChapterModal();
                             showToast("正在同步云端档案...", "info");
-                            const res = await fetch("${pageContext.request.contextPath}/admin/chapter/detail?id=" + id);
+                            const res = await fetch("../admin/chapter/detail?id=" + id);
                             const data = await res.json();
                             if (data.code === 200 && data.data) {
                                 const c = data.data;

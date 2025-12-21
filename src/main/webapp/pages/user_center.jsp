@@ -6,8 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>个人中心 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
-        <script src="${pageContext.request.contextPath}/static/script.js"></script>
+        <link rel="stylesheet" href="../static/css/style.css">
+        <script src="../static/js/script.js"></script>
     </head>
 
     <body class="bg-glow">
@@ -245,7 +245,7 @@
                     }
 
                     async function loadProfile() {
-                        const result = await fetchJson("${pageContext.request.contextPath}/user/info");
+                        const result = await fetchJson("../user/info");
                         if (result && result.status === 200) {
                             const u = result.data.data;
                             document.getElementById('infoUsername').innerText = u.username;
@@ -278,7 +278,7 @@
                         const params = new URLSearchParams();
                         params.append('nickname', nickname);
 
-                        const result = await fetchJson("${pageContext.request.contextPath}/user/update", {
+                        const result = await fetchJson("../user/update", {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: params
@@ -293,7 +293,7 @@
 
                     async function loadCollection() {
                         const list = document.getElementById('collectionList');
-                        const res = await fetchJson("${pageContext.request.contextPath}/interaction/collection/list");
+                        const res = await fetchJson("../interaction/collection/list");
                         if (res && res.status === 200) {
                             const items = res.data.data;
                             if (!items || items.length === 0) {
@@ -343,7 +343,7 @@
                         params.append('amount', gold);
                         params.append('payment', pay);
 
-                        const result = await fetchJson("${pageContext.request.contextPath}/pay/order/create", {
+                        const result = await fetchJson("../pay/order/create", {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: params

@@ -6,8 +6,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>正在阅读 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
-        <script src="${pageContext.request.contextPath}/static/script.js"></script>
+        <link rel="stylesheet" href="../static/css/style.css">
+        <script src="../static/js/lucide.js"></script>
+        <script src="../static/js/script.js"></script>
         <style>
             /* Immersive Themes */
             .theme-paper {
@@ -144,24 +145,27 @@
         </main>
 
         <!-- Controls Hub -->
-        <div class="floating-hub">
-            <button class="hub-btn" onclick="toggleTheme('theme-paper')" title="经典纸感">
-                <i data-lucide="book" class="w-5 h-5"></i>
-            </button>
-            <button class="hub-btn" onclick="toggleTheme('theme-midnight')" title="深夜静读">
-                <i data-lucide="moon" class="w-5 h-5"></i>
-            </button>
-            <button class="hub-btn" onclick="toggleTheme('theme-eye')" title="舒爽护眼">
-                <i data-lucide="leaf" class="w-5 h-5"></i>
-            </button>
-            <button class="hub-btn" onclick="scrollToTop()">
-                <i data-lucide="chevron-up" class="w-5 h-5"></i>
+        <div class="floating-hub" id="floatingHub">
+            <div class="hub-menu flex flex-col gap-4 transition-all duration-300 origin-bottom scale-100 opacity-100">
+                <button class="hub-btn" onclick="toggleTheme('theme-paper')" title="经典纸感">
+                    <i data-lucide="book" class="w-5 h-5"></i>
+                </button>
+                <button class="hub-btn" onclick="toggleTheme('theme-midnight')" title="深夜静读">
+                    <i data-lucide="moon" class="w-5 h-5"></i>
+                </button>
+                <button class="hub-btn" onclick="toggleTheme('theme-eye')" title="舒爽护眼">
+                    <i data-lucide="leaf" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <button class="hub-btn mt-4" onclick="toggleHub()" id="hubToggleBtn">
+                <i data-lucide="x" class="w-5 h-5 transition-transform duration-300"></i>
             </button>
         </div>
 
         <script>
             const chapterId = getQueryParam('id') || getQueryParam('chapterId');
             let currentNovelId = null;
+            let currentPrice = 0;
 
             document.addEventListener('DOMContentLoaded', () => {
                 if (chapterId) {
@@ -171,7 +175,7 @@
             });
 
             async function loadContent() {
-                const result = await fetchJson("${pageContext.request.contextPath}/chapter/content?id=" + chapterId);
+                const result = await fetchJson("../read/content?chapterId=" + chapterId);
                 if (result && result.status === 200) {
                     const ch = result.data.data;
                     currentNovelId = ch.novelId;
@@ -182,10 +186,12 @@
                     if (ch.isLocked) {
                         document.getElementById('paywall').classList.remove('hidden');
                         document.getElementById('chapterPrice').innerText = ch.price;
+                        currentPrice = ch.price;
                     } else {
                         document.getElementById('textContent').innerHTML = ch.content ? ch.content.split('\n').map(p => `<p class="mb-8">\${p}</p>`).join('') : '正文内容暂不翼而飞...';
                     }
-                    lucide.createIcons();
+                    // Icons in content are not dynamic, so no need to call createIcons here again
+                    // to avoid potential duplication or double-rendering issues.
                 } else {
                     showToast("未找到此章节内容", "error");
                 }
@@ -209,13 +215,38 @@
             }
 
             async function buyChapter() {
-                const result = await fetchJson("${pageContext.request.contextPath}/chapter/buy?id=" + chapterId, { method: 'POST' });
+                const params = new URLSearchParams();
+                params.append('chapterId', chapterId);
+                params.append('price', currentPrice);
+                const result = await fetchJson("../pay/chapter/purchase", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
+                });
                 if (result && result.status === 200) {
                     showToast("解锁成功", "success");
                     setTimeout(() => location.reload(), 800);
                 } else {
                     showToast(result ? result.data.msg : "尝试开启失败", "error");
                 }
+            }
+
+            let isHubExpanded = true;
+            function toggleHub() {
+                const menu = document.querySelector('.hub-menu');
+                const btn = document.getElementById('hubToggleBtn');
+                isHubExpanded = !isHubExpanded;
+
+                if (isHubExpanded) {
+                    menu.classList.remove('scale-0', 'opacity-0', 'pointer-events-none');
+                    menu.classList.add('scale-100', 'opacity-100');
+                    btn.innerHTML = '<i data-lucide="x" class="w-5 h-5 transition-transform duration-300"></i>';
+                } else {
+                    menu.classList.add('scale-0', 'opacity-0', 'pointer-events-none');
+                    menu.classList.remove('scale-100', 'opacity-100');
+                    btn.innerHTML = '<i data-lucide="menu" class="w-5 h-5 transition-transform duration-300"></i>';
+                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         </script>
     </body>

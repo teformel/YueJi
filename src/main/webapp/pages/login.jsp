@@ -6,8 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>登录执笔 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
-        <script src="${pageContext.request.contextPath}/static/script.js"></script>
+        <link rel="stylesheet" href="../static/css/style.css">
+        <script src="../static/js/script.js"></script>
     </head>
 
     <body class="bg-glow min-h-screen flex flex-col">
@@ -72,7 +72,7 @@
 
                     <p
                         class="text-center text-[10px] text-text-dim mt-8 uppercase tracking-[0.3em] font-medium opacity-50">
-                        Security encrypted & protected by YueJi Cloud
+                        本站安全由阅己云技术构建与加密保护
                     </p>
                 </div>
             </main>
@@ -91,7 +91,7 @@
                         params.append('password', pass);
 
                         try {
-                            const res = await fetchJson(`${pageContext.request.contextPath}/auth/login`, {
+                            const res = await fetchJson(`../auth/login`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body: params

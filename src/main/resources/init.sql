@@ -120,3 +120,8 @@ INSERT INTO sys_author (name, bio) VALUES
 INSERT INTO sys_novel (title, author_id, category, intro, is_free) VALUES 
 ('Valid Novels', 1, 'Literature', 'A collection of stories.', TRUE),
 ('Laughing in the Wind', 2, 'Wuxia', 'A classic martial arts novel.', FALSE);
+
+INSERT INTO sys_chapter (novel_id, title, content, word_count, price, sort_order) VALUES 
+(1, '第一章：初入江湖', '这是一个测试章节内容。江湖路远，请多保重。', 1000, 0, 1),
+(1, '第二章：风云变幻', '故事还在继续...', 2000, 0, 2),
+(2, '第一回：笑傲江湖', '沧海一声笑...', 3000, 10, 1);

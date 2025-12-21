@@ -6,8 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>阅己 YueJi - 探索无限故事</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/style.css">
-        <script src="${pageContext.request.contextPath}/static/script.js"></script>
+        <link rel="stylesheet" href="../static/css/style.css">
+        <script src="../static/js/script.js"></script>
     </head>
 
     <body class="bg-glow">
@@ -20,7 +20,7 @@
                         <div class="flex flex-col lg:flex-row items-stretch min-h-[560px]">
                             <!-- Spotlight Image -->
                             <div class="lg:w-1/2 relative overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=1200"
+                                <img src="../static/images/hero.jpg"
                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     alt="Feature">
                                 <div
@@ -41,7 +41,8 @@
                                     在这个被光影编织的故事之城，每一页都是通往异世界的门扉。我们精选了本周最受瞩目的文字，邀您共同开启一段波澜壮阔的旅程。
                                 </p>
                                 <div class="flex items-center gap-4">
-                                    <button class="btn-ultimate px-10 py-4 text-lg">开启阅读</button>
+                                    <button class="btn-ultimate px-10 py-4 text-lg"
+                                        onclick="document.getElementById('novelGrid').scrollIntoView({behavior: 'smooth'})">开启阅读</button>
                                     <button
                                         class="w-14 h-14 rounded-full border border-border-dim flex items-center justify-center hover:bg-white/5 transition-all text-text-muted hover:text-white">
                                         <i data-lucide="bookmark-plus" class="w-6 h-6"></i>
@@ -131,7 +132,7 @@
                         const rank = document.getElementById('rankingList');
 
                         try {
-                            const result = await fetchJson("${pageContext.request.contextPath}/novel/list");
+                            const result = await fetchJson("../novel/list");
                             if (result && result.status === 200 && result.data.code === 200) {
                                 const novels = result.data.data;
                                 renderGrid(novels.slice(0, 9));
@@ -140,7 +141,7 @@
                                 grid.innerHTML = '<p class="col-span-full text-center text-text-dim">云端响应异常</p>';
                             }
                         } catch (e) {
-                            console.error("Load novels failed:", e);
+                            console.error("加载小说失败:", e);
                             grid.innerHTML = '<p class="col-span-full text-center text-text-dim">云端连接受阻，请刷新重试</p>';
                         }
                     }
@@ -154,8 +155,8 @@
                         container.innerHTML = novels.map(n => `
                 <div class="theater-card reveal" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
                      <div class="cover-wrapper aspect-[3/4]">
-                         <img src="\${n.coverUrl || 'https://images.unsplash.com/photo-1543004471-240ce49a2a2f?w=400'}" alt="\${n.title}" 
-                               onerror="this.src='https://images.unsplash.com/photo-1543004471-240ce49a2a2f?w=400'">
+                         <img src="\${n.coverUrl || '../static/images/cover_placeholder.jpg'}" alt="\${n.title}" 
+                               onerror="this.src='../static/images/cover_placeholder.jpg'">
                      </div>
                      <div class="overlay p-4">
                          <h4 class="text-sm font-black text-white truncate">\${n.title}</h4>
@@ -182,7 +183,7 @@
                     async function handleSearch() {
                         const q = document.getElementById('searchInput').value.trim();
                         if (!q) return;
-                        location.href = "${pageContext.request.contextPath}/pages/index.jsp?keyword=" + encodeURIComponent(q);
+                        location.href = "index.jsp?keyword=" + encodeURIComponent(q);
                     }
 
                     document.getElementById('searchInput').addEventListener('keypress', (e) => {
