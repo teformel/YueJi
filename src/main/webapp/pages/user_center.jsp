@@ -89,7 +89,7 @@
                     <section class="flex-1 space-y-10 min-h-[700px]">
 
                         <!-- Tab: Profile Info -->
-                        <div id="tab-info" class="tab-pane active space-y-10">
+                        <div id="tab-info" class="tab-pane reveal space-y-10">
                             <div class="luminous-panel rounded-[3rem] p-10 lg:p-14 relative overflow-hidden">
                                 <div
                                     class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none">
