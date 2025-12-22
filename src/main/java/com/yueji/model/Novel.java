@@ -1,38 +1,27 @@
 package com.yueji.model;
 
-import java.sql.Timestamp;
-
 public class Novel {
     private Integer id;
-    private String title;
     private Integer authorId;
-    private String category;
-    private String intro;
-    private String coverUrl;
-    private Boolean isFree;
-    private Timestamp createdAt;
+    private Integer categoryId;
+    private String name;
+    private String cover;
+    private String description;
+    private Integer totalChapters;
+    private Integer status; // 0: Shelved, 1: Serializing, 2: Completed
 
-    // Additional fields for display
+    // Joined fields for display
+    private String categoryName;
     private String authorName;
 
-    public Novel() {
-    }
+    public Novel() {}
 
-    // Getters and Setters
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public Integer getAuthorId() {
@@ -43,44 +32,60 @@ public class Novel {
         this.authorId = authorId;
     }
 
-    public String getCategory() {
-        return category;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public String getIntro() {
-        return intro;
+    public String getName() {
+        return name;
     }
 
-    public void setIntro(String intro) {
-        this.intro = intro;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getCoverUrl() {
-        return coverUrl;
+    public String getCover() {
+        return cover;
     }
 
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
-    public Boolean getIsFree() {
-        return isFree;
+    public String getDescription() {
+        return description;
     }
 
-    public void setIsFree(Boolean free) {
-        isFree = free;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
+    public Integer getTotalChapters() {
+        return totalChapters;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public void setTotalChapters(Integer totalChapters) {
+        this.totalChapters = totalChapters;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public String getAuthorName() {

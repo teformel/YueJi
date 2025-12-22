@@ -1,16 +1,13 @@
 package com.yueji.model;
 
-import java.sql.Timestamp;
-
 public class Author {
     private Integer id;
-    private Integer userId; // Added to link with User account
-    private String name;
-    private String bio;
-    private Timestamp createdAt;
+    private Integer userId; // Optional link to user
+    private String penname;
+    private String introduction;
+    private Integer status; // 0: Disabled, 1: Enabled
 
-    public Author() {
-    }
+    public Author() {}
 
     public Integer getId() {
         return id;
@@ -28,27 +25,27 @@ public class Author {
         this.userId = userId;
     }
 
-    public String getName() {
-        return name;
+    public String getPenname() {
+        return penname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPenname(String penname) {
+        this.penname = penname;
     }
 
-    public String getBio() {
-        return bio;
+    public String getIntroduction() {
+        return introduction;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

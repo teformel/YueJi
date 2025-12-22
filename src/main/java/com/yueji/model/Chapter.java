@@ -1,21 +1,19 @@
 package com.yueji.model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Chapter {
     private Integer id;
     private Integer novelId;
     private String title;
-    private String content; // Text content
-    private Integer wordCount;
-    private Integer price;
-    private Integer sortOrder;
-    private Timestamp createdAt;
+    private String content;
+    private BigDecimal price;
+    private Integer isPaid; // 0: Free, 1: Paid
+    private Timestamp createTime;
 
-    public Chapter() {
-    }
+    public Chapter() {}
 
-    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -48,35 +46,27 @@ public class Chapter {
         this.content = content;
     }
 
-    public Integer getWordCount() {
-        return wordCount;
-    }
-
-    public void setWordCount(Integer wordCount) {
-        this.wordCount = wordCount;
-    }
-
-    public Integer getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public Integer getSortOrder() {
-        return sortOrder;
+    public Integer getIsPaid() {
+        return isPaid;
     }
 
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
+    public void setIsPaid(Integer isPaid) {
+        this.isPaid = isPaid;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
+    public Timestamp getCreateTime() {
+        return createTime;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 }

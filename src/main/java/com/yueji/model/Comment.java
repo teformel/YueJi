@@ -4,17 +4,18 @@ import java.sql.Timestamp;
 
 public class Comment {
     private Integer id;
-    private Integer userId;
     private Integer novelId;
+    private Integer userId;
     private String content;
-    private Timestamp createdAt;
+    private Integer replyToId;
+    private Integer status; // 0: Audit/Del, 1: Normal
+    private Timestamp createdTime;
 
-    // Display fields
+    // Transient fields for display
     private String username;
-    private String avatar;
+    private String avatar; // If user has avatar
 
-    public Comment() {
-    }
+    public Comment() {}
 
     public Integer getId() {
         return id;
@@ -22,14 +23,6 @@ public class Comment {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public Integer getNovelId() {
@@ -40,6 +33,14 @@ public class Comment {
         this.novelId = novelId;
     }
 
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
     public String getContent() {
         return content;
     }
@@ -48,12 +49,28 @@ public class Comment {
         this.content = content;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
+    public Integer getReplyToId() {
+        return replyToId;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public void setReplyToId(Integer replyToId) {
+        this.replyToId = replyToId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
     }
 
     public String getUsername() {

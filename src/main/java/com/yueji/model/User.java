@@ -1,29 +1,21 @@
 package com.yueji.model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class User {
     private Integer id;
     private String username;
     private String password;
-    private String nickname;
-    private String role; // 'user', 'admin'
-    private Integer goldBalance;
-    private String avatar;
-    private Timestamp createdAt;
+    private String realname;
+    private String phone;
+    private BigDecimal coinBalance;
+    private Integer role; // 0: User, 1: Admin
+    private Integer status; // 0: Disabled, 1: Enabled
+    private Timestamp createTime;
 
-    public User() {
-    }
+    public User() {}
 
-    public User(Integer id, String username, String nickname, String role, Integer goldBalance) {
-        this.id = id;
-        this.username = username;
-        this.nickname = nickname;
-        this.role = role;
-        this.goldBalance = goldBalance;
-    }
-
-    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -48,43 +40,51 @@ public class User {
         this.password = password;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getRealname() {
+        return realname;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setRealname(String realname) {
+        this.realname = realname;
     }
 
-    public String getRole() {
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public BigDecimal getCoinBalance() {
+        return coinBalance;
+    }
+
+    public void setCoinBalance(BigDecimal coinBalance) {
+        this.coinBalance = coinBalance;
+    }
+
+    public Integer getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Integer role) {
         this.role = role;
     }
 
-    public Integer getGoldBalance() {
-        return goldBalance;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setGoldBalance(Integer goldBalance) {
-        this.goldBalance = goldBalance;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public Timestamp getCreateTime() {
+        return createTime;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 }
