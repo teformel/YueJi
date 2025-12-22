@@ -1,8 +1,10 @@
 package com.yueji.servlet;
 
+import com.yueji.common.BeanFactory;
 import com.yueji.common.ResponseUtils;
-import com.yueji.dao.UserDao;
+import com.yueji.dao.AuthorDao;
 import com.yueji.model.User;
+import com.yueji.service.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,12 +13,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.sql.SQLException;
 
 @WebServlet("/user/*")
 public class UserServlet extends HttpServlet {
-    private final UserDao userDao = new UserDao();
-    private final com.yueji.dao.AuthorDao authorDao = new com.yueji.dao.AuthorDao();
+    private final UserService userService;
+    private final AuthorDao authorDao;
+
+    public UserServlet() {
+        this.userService = BeanFactory.getBean(UserService.class);
+        this.authorDao = BeanFactory.getBean(AuthorDao.class);
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -48,7 +54,7 @@ public class UserServlet extends HttpServlet {
         }
         User sessionUser = (User) session.getAttribute("user");
         // Refresh from DB
-        User user = userDao.findByUsername(sessionUser.getUsername());
+        User user = userService.getUserById(sessionUser.getId());
         user.setPassword(null); // Don't send password
         
         com.google.gson.JsonObject json = new com.google.gson.Gson().toJsonTree(user).getAsJsonObject();
@@ -66,21 +72,23 @@ public class UserServlet extends HttpServlet {
         }
         User sessionUser = (User) session.getAttribute("user");
 
-        String nickname = req.getParameter("nickname");
-        String avatar = req.getParameter("avatar");
+        String realname = req.getParameter("realname");
+        String phone = req.getParameter("phone");
+        // Avatar removed from t_user in strict schema? 
+        // Checked t_user in init.sql: id, username, password, realname, phone, coin_balance, role, status. 
+        // NO AVATAR.
+        // So I should remove avatar update.
 
         // Refresh and update
-        User user = userDao.findByUsername(sessionUser.getUsername());
-        if (nickname != null)
-            user.setNickname(nickname);
-        if (avatar != null)
-            user.setAvatar(avatar);
+        User user = userService.getUserById(sessionUser.getId());
+        if (realname != null) user.setRealname(realname);
+        if (phone != null) user.setPhone(phone);
 
         try {
-            userDao.update(user);
+            userService.updateProfile(user);
             session.setAttribute("user", user); // Update session
             ResponseUtils.writeJson(resp, 200, "Profile updated", null);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             ResponseUtils.writeJson(resp, 500, "Error updating profile", null);
         }
@@ -97,18 +105,12 @@ public class UserServlet extends HttpServlet {
         String oldPassword = req.getParameter("oldPassword");
         String newPassword = req.getParameter("newPassword");
 
-        User user = userDao.findByUsername(sessionUser.getUsername());
-        if (!user.getPassword().equals(oldPassword)) {
-            ResponseUtils.writeJson(resp, 400, "Incorrect old password", null);
-            return;
-        }
-
         try {
-            userDao.updatePassword(user.getId(), newPassword);
+            userService.updatePassword(sessionUser.getId(), oldPassword, newPassword);
             ResponseUtils.writeJson(resp, 200, "Password updated", null);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtils.writeJson(resp, 500, "Error updating password", null);
+            ResponseUtils.writeJson(resp, 400, e.getMessage(), null); // "Wrong old password" etc
         }
     }
 }

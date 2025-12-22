@@ -1,8 +1,9 @@
 package com.yueji.servlet;
 
+import com.yueji.common.BeanFactory;
 import com.yueji.common.ResponseUtils;
-import com.yueji.dao.UserDao;
 import com.yueji.model.User;
+import com.yueji.service.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +15,11 @@ import java.io.IOException;
 
 @WebServlet("/auth/*")
 public class AuthServlet extends HttpServlet {
-    private final UserDao userDao = new UserDao();
+    private final UserService userService;
+
+    public AuthServlet() {
+        this.userService = BeanFactory.getBean(UserService.class);
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,14 +37,12 @@ public class AuthServlet extends HttpServlet {
 
     private void handleLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String username = req.getParameter("username");
-        // In real app, password should be hashed. Here we compare plain text for
-        // simplicity as per plan.
-        String password = req.getParameter("password");
+        String password = req.getParameter("password"); // Should be hashed in frontend or service. Service expects raw here or hash? Impl compared raw.
 
-        User user = userDao.findByUsername(username);
-        if (user != null && user.getPassword().equals(password)) {
+        User user = userService.login(username, password);
+        if (user != null) {
             HttpSession session = req.getSession();
-            session.setAttribute("user", user); // Store entire user object in session
+            session.setAttribute("user", user);
             ResponseUtils.writeJson(resp, 200, "Login successful", user);
         } else {
             ResponseUtils.writeJson(resp, 401, "Invalid username or password", null);
@@ -49,26 +52,22 @@ public class AuthServlet extends HttpServlet {
     private void handleRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
-        String nickname = req.getParameter("nickname");
-
-        if (userDao.findByUsername(username) != null) {
-            ResponseUtils.writeJson(resp, 400, "Username already exists", null);
-            return;
-        }
+        String realname = req.getParameter("realname"); // Changed from nickname
+        String phone = req.getParameter("phone");
 
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setPassword(password);
-        newUser.setNickname(nickname != null ? nickname : username);
-        newUser.setRole("user");
-        newUser.setGoldBalance(0);
+        newUser.setRealname(realname != null ? realname : username);
+        newUser.setPhone(phone);
+        // Role and Balance set in Service
 
         try {
-            userDao.create(newUser);
+            userService.register(newUser);
             ResponseUtils.writeJson(resp, 200, "Registration successful", null);
         } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtils.writeJson(resp, 500, "Error creating user", null);
+            ResponseUtils.writeJson(resp, 400, e.getMessage(), null); // 400 for business error
         }
     }
 

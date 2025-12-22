@@ -1,12 +1,12 @@
 package com.yueji.servlet;
 
+import com.yueji.common.BeanFactory;
 import com.yueji.common.ResponseUtils;
-import com.yueji.dao.ChapterDao;
-import com.yueji.dao.CollectionDao;
-import com.yueji.dao.NovelDao;
 import com.yueji.model.Chapter;
 import com.yueji.model.Novel;
 import com.yueji.model.User;
+import com.yueji.service.InteractionService;
+import com.yueji.service.NovelService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,9 +20,13 @@ import java.util.Map;
 
 @WebServlet("/novel/*")
 public class NovelServlet extends HttpServlet {
-    private final NovelDao novelDao = new NovelDao();
-    private final ChapterDao chapterDao = new ChapterDao();
-    private final CollectionDao collectionDao = new CollectionDao();
+    private final NovelService novelService;
+    private final InteractionService interactionService;
+
+    public NovelServlet() {
+        this.novelService = BeanFactory.getBean(NovelService.class);
+        this.interactionService = BeanFactory.getBean(InteractionService.class);
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,8 +42,15 @@ public class NovelServlet extends HttpServlet {
 
     private void handleList(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String keyword = req.getParameter("keyword");
-        String category = req.getParameter("category");
-        List<Novel> novels = novelDao.search(keyword, category);
+        String categoryIdStr = req.getParameter("categoryId");
+        Integer categoryId = null;
+        if (categoryIdStr != null && !categoryIdStr.isEmpty()) {
+            try {
+                categoryId = Integer.parseInt(categoryIdStr);
+            } catch (NumberFormatException e) {}
+        }
+
+        List<Novel> novels = novelService.searchNovels(keyword, categoryId);
         ResponseUtils.writeJson(resp, 200, "Success", novels);
     }
 
@@ -50,13 +61,13 @@ public class NovelServlet extends HttpServlet {
             return;
         }
         int id = Integer.parseInt(idStr);
-        Novel novel = novelDao.findById(id);
+        Novel novel = novelService.getNovelDetails(id);
         if (novel == null) {
             ResponseUtils.writeJson(resp, 404, "Novel not found", null);
             return;
         }
 
-        List<Chapter> chapters = chapterDao.findByNovelId(id);
+        List<Chapter> chapters = novelService.getChapterList(id);
 
         Map<String, Object> data = new HashMap<>();
         data.put("novel", novel);
@@ -64,7 +75,8 @@ public class NovelServlet extends HttpServlet {
 
         User user = (User) req.getSession().getAttribute("user");
         if (user != null) {
-            data.put("isCollected", collectionDao.isCollected(user.getId(), id));
+            boolean isCollected = interactionService.isInBookshelf(user.getId(), id);
+            data.put("isCollected", isCollected);
         } else {
             data.put("isCollected", false);
         }

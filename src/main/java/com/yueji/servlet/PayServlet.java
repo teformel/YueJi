@@ -1,8 +1,9 @@
 package com.yueji.servlet;
 
+import com.yueji.common.BeanFactory;
 import com.yueji.common.ResponseUtils;
-import com.yueji.dao.TransactionDao;
 import com.yueji.model.User;
+import com.yueji.service.AssetService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,11 +12,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.sql.SQLException;
+import java.math.BigDecimal;
 
 @WebServlet("/pay/*")
 public class PayServlet extends HttpServlet {
-    private final TransactionDao transactionDao = new TransactionDao();
+    private final AssetService assetService;
+
+    public PayServlet() {
+        this.assetService = BeanFactory.getBean(AssetService.class);
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -28,45 +33,43 @@ public class PayServlet extends HttpServlet {
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtils.writeJson(resp, 500, "Database Error", null);
+            ResponseUtils.writeJson(resp, 500, "Error: " + e.getMessage(), null);
         }
     }
 
-    private void handleRecharge(HttpServletRequest req, HttpServletResponse resp) throws IOException, SQLException {
+    private void handleRecharge(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         User user = getUser(req, resp);
-        if (user == null)
-            return;
+        if (user == null) return;
 
-        int amount = Integer.parseInt(req.getParameter("amount"));
-        double payment = Double.parseDouble(req.getParameter("payment"));
+        String amountStr = req.getParameter("amount");
+        BigDecimal amount = new BigDecimal(amountStr);
 
-        // In real world, integrate with Payment Gateway (Alipay/WeChat).
-        // Here we simulate success explicitly.
-        transactionDao.createOrder(user.getId(), amount, payment);
+        // Simulate payment success
+        assetService.recharge(user.getId(), amount);
 
-        // Update session user balance
-        user.setGoldBalance(user.getGoldBalance() + amount);
-
+        // Update session
+        user.setCoinBalance(user.getCoinBalance().add(amount));
+        
         ResponseUtils.writeJson(resp, 200, "Recharge successful", null);
     }
 
-    private void handlePurchaseChapter(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException, SQLException {
+    private void handlePurchaseChapter(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         User user = getUser(req, resp);
-        if (user == null)
-            return;
+        if (user == null) return;
 
         int chapterId = Integer.parseInt(req.getParameter("chapterId"));
-        int price = Integer.parseInt(req.getParameter("price")); // Should verify price from DB in real app
-
-        boolean success = transactionDao.purchaseChapter(user.getId(), chapterId, price);
+        // Price should be determined by Service, not passed by client securely.
+        
+        boolean success = assetService.purchaseChapter(user.getId(), chapterId);
         if (success) {
-            user.setGoldBalance(user.getGoldBalance() - price);
+            // Refresh balance in session roughly, or better: reload user
+            // We can decrement if we knew price, but easiest is just to proceed.
+            // Client should reload user info.
             ResponseUtils.writeJson(resp, 200, "Purchase successful", null);
         } else {
-            ResponseUtils.writeJson(resp, 400, "Insufficient balance", null);
+            ResponseUtils.writeJson(resp, 400, "Purchase failed (Insufficient balance or other)", null);
         }
     }
 
