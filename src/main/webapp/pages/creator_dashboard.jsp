@@ -168,12 +168,12 @@
                     location.href = 'index.jsp';
                     return;
                 }
-                document.getElementById('welcomeMsg').innerText = `你好，\${currentUser.nickname}`;
+                document.getElementById('welcomeMsg').innerText = `你好，${currentUser.realname}`;
             }
 
             function switchTab(tab) {
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-                document.getElementById(`tab-\${tab}`).classList.remove('hidden');
+                document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
                 // Nav styles
                 document.querySelectorAll('.nav-item').forEach(el => {
@@ -189,7 +189,7 @@
                 const novels = MockDB.getNovels(); // In real app, filter by authorId
                 // Since we don't strict filter in MockDB for author ID yet, let's just show ALL novels for admin/creator demo
                 // Or filter if authorName matches
-                const myNovels = novels.filter(n => n.authorName === currentUser.nickname || n.authorName === currentUser.username || currentUser.role === 'admin');
+                const myNovels = novels.filter(n => n.authorName === currentUser.realname || n.authorName === currentUser.username || currentUser.role === 'admin');
 
                 const container = document.getElementById('novelListContainer');
                 if (myNovels.length === 0) {
@@ -200,16 +200,16 @@
                 } else {
                     container.innerHTML = myNovels.map(n => `
                     <div class="flex items-center gap-6 p-6 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                        <img src="\${n.coverUrl || '../static/images/cover_placeholder.jpg'}" class="w-16 h-20 object-cover rounded shadow-sm bg-gray-200">
+                        <img src="${n.coverUrl || '../static/images/cover_placeholder.jpg'}" class="w-16 h-20 object-cover rounded shadow-sm bg-gray-200">
                         <div class="flex-1">
-                            <h4 class="font-bold text-slate-900 text-lg">\${n.title}</h4>
+                            <h4 class="font-bold text-slate-900 text-lg">${n.title}</h4>
                             <div class="text-sm text-slate-500 mt-1">
-                                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mr-2">\${n.category}</span>
-                                \${n.chapters ? n.chapters.length : 0} 章 · \${n.status}
+                                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mr-2">${n.category}</span>
+                                ${n.chapters ? n.chapters.length : 0} 章 · ${n.status}
                             </div>
                         </div>
                         <div class="flex gap-3">
-                             <button onclick="openEditor('\${n.id}', '\${n.title}')" class="btn-primary px-4 py-2 text-sm">更新章节</button>
+                             <button onclick="openEditor('${n.id}', '${n.title}')" class="btn-primary px-4 py-2 text-sm">更新章节</button>
                              <button class="px-4 py-2 border border-gray-200 rounded text-slate-600 hover:text-red-500 hover:border-red-200 text-sm">管理</button>
                         </div>
                     </div>
@@ -235,7 +235,7 @@
                     category,
                     description: desc,
                     coverUrl: cover || '../static/images/default_book_cover.jpg',
-                    authorName: currentUser.nickname || currentUser.username,
+                    authorName: currentUser.realname || currentUser.username,
                     status: '连载中',
                     chapters: []
                 };
@@ -247,7 +247,7 @@
 
             function openEditor(id, title) {
                 document.getElementById('editorNovelId').value = id;
-                document.getElementById('editorNovelTitle').innerText = `《\${title}》`;
+                document.getElementById('editorNovelTitle').innerText = `《${title}》`;
                 // Clear inputs
                 document.getElementById('chapterTitle').value = '';
                 document.getElementById('chapterContent').value = '';

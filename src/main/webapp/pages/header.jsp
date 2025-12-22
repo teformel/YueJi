@@ -56,7 +56,7 @@
                         document.getElementById('authLinks').classList.add('hidden');
                         document.getElementById('userMenu').classList.remove('hidden');
                         document.getElementById('userMenu').classList.add('flex');
-                        document.getElementById('headerUsername').innerText = u.nickname || u.username;
+                        document.getElementById('headerUsername').innerText = u.realname || u.username;
 
                         if (u.role === 'creator') document.getElementById('creatorLink').classList.remove('hidden');
                         if (u.role === 'admin') {

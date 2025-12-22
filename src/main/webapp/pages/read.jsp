@@ -77,9 +77,12 @@
                 // Auto Save Progress with Debounce
                 window.addEventListener('scroll', debounce(() => {
                     if (novelId && chapterId) {
-                        MockDB.saveProgress(novelId, chapterId, window.scrollY);
+                        // Call Backend API
+                        API.syncProgress(novelId, chapterId, window.scrollY).then(res => {
+                            console.log('Progress preserved');
+                        });
                     }
-                }, 500));
+                }, 1000));
             });
 
             const novelId = getQueryParam('novelId');
@@ -90,33 +93,41 @@
             async function loadContent() {
                 if (!novelId || !chapterId) return;
 
-                // Load Chapter Detail
+                // Load Chapter Detail (Real Backend)
                 try {
-                    const res = await fetchJson(`../novel/chapter?novelId=\${novelId}&chapterId=\${chapterId}`);
+                    const res = await fetchJson(`../read/content?chapterId=\${chapterId}`);
                     if (res.code === 200) {
                         const ch = res.data;
                         document.title = `\${ch.title} - 阅读`;
                         document.getElementById('chapterTitle').innerText = ch.title;
                         document.getElementById('chapterTitleHeader').innerText = ch.title;
-                        // Format content: convert newlines to paragraphs
-                        const formatted = ch.content.split('\n').map(p => `<p>\${p}</p>`).join('');
+                        // Format content
+                        const content = ch.content || '内容为空';
+                        const formatted = content.split('\n').map(p => `<p>\${p}</p>`).join('');
                         document.getElementById('content').innerHTML = formatted;
 
                         // Setup Nav
                         await setupNavigation();
 
                         // RESTORE PROGRESS
-                        // Retrieve saved progress
-                        const saved = MockDB.getProgress(novelId);
-                        if (saved && saved.chapterId === chapterId && saved.scrollY > 0) {
-                            // Small delay to allow layout to settle
-                            setTimeout(() => {
-                                window.scrollTo({ top: saved.scrollY, behavior: 'smooth' });
-                                showToast('已恢复阅读进度', 'success');
-                            }, 300);
-                        } else {
-                            window.scrollTo(0, 0);
+                        const pRes = await API.getProgress(novelId);
+                        if (pRes.code === 200 && pRes.data) {
+                            const saved = pRes.data;
+                            if (saved.chapterId == chapterId && saved.scrollPosition > 0) {
+                                setTimeout(() => {
+                                    window.scrollTo({ top: saved.scrollPosition, behavior: 'smooth' });
+                                    showToast('已恢复阅读进度', 'success');
+                                }, 300);
+                            }
                         }
+                    } else if (res.code === 402) {
+                        document.getElementById('content').innerHTML = `
+                        <div class="text-center py-20">
+                            <h3 class="font-bold text-xl text-slate-900 mb-4">本章为付费章节</h3>
+                            <p class="text-slate-500 mb-6">需要购买后才能继续阅读</p>
+                            <button class="btn-primary" onclick="alert('支付功能待实现')">立即购买</button>
+                        </div>
+                     `;
                     }
                 } catch (e) {
                     console.error(e);
@@ -124,10 +135,11 @@
             }
 
             async function setupNavigation() {
-                // We need full list to know prev/next
+                // Need novel detail to get chapter list for nav
                 const res = await fetchJson(`../novel/detail?id=\${novelId}`);
                 if (res.code === 200) {
                     allChapters = res.data.chapters;
+                    // Chapters from backend might be object list
                     currentChapterIndex = allChapters.findIndex(c => c.id == chapterId);
 
                     const prev = document.getElementById('prevBtn');

@@ -29,10 +29,10 @@
             <div class="p-8 space-y-6">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">昵称</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">姓名</label>
                         <div class="relative">
                             <i data-lucide="smile" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
-                            <input type="text" id="nickname" class="form-input pl-10" placeholder="给自己起个名字">
+                            <input type="text" id="realname" class="form-input pl-10" placeholder="给自己起个名字">
                         </div>
                     </div>
                     <div>
@@ -72,18 +72,18 @@
             });
 
             async function register() {
-                const nickname = document.getElementById('nickname').value;
+                const realname = document.getElementById('realname').value;
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
 
-                if (!username || !password || !nickname) {
+                if (!username || !password || !realname) {
                     showToast('请完整填写信息', 'error');
                     return;
                 }
 
                 try {
                     const formData = new URLSearchParams();
-                    formData.append('nickname', nickname);
+                    formData.append('realname', realname);
                     formData.append('username', username);
                     formData.append('password', password);
 

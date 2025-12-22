@@ -145,7 +145,7 @@
 
             function switchTab(tab) {
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-                document.getElementById(`tab-\${tab}`).classList.remove('hidden');
+                document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
                 // Re-render if switching to users
                 if (tab === 'users') renderUserTable();
@@ -157,27 +157,27 @@
 
                 tbody.innerHTML = users.map(u => `
                 <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 font-mono text-slate-400">\${u.id}</td>
+                    <td class="px-6 py-4 font-mono text-slate-400">${u.id}</td>
                     <td class="px-6 py-4">
-                        <div class="font-bold text-slate-900">\${u.nickname}</div>
-                        <div class="text-xs text-slate-400">@\${u.username}</div>
+                        <div class="font-bold text-slate-900">${u.realname}</div>
+                        <div class="text-xs text-slate-400">@${u.username}</div>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold \${getRoleBadge(u.role)}">
-                            \${u.role}
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold ${getRoleBadge(u.role)}">
+                            ${u.role}
                         </span>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="inline-block w-2 h-2 rounded-full \${u.status === 'banned' ? 'bg-red-500' : 'bg-green-500'} mr-2"></span>
-                        \${u.status === 'banned' ? '已封禁' : '正常'}
+                        <span class="inline-block w-2 h-2 rounded-full ${u.status === 'banned' ? 'bg-red-500' : 'bg-green-500'} mr-2"></span>
+                        ${u.status === 'banned' ? '已封禁' : '正常'}
                     </td>
                     <td class="px-6 py-4 text-right flex justify-end gap-2">
-                         \${u.role !== 'admin' ? `
-                    < button onclick = "toggleBan('\${u.id}')" class= "text-xs font-bold \${u.status === 'banned' ? 'text-green-600' : 'text-red-500'} hover:underline" >
-                    \${ u.status === 'banned' ? '解封' : '封禁' }
+                         ${u.role !== 'admin' ? `
+                    < button onclick = "toggleBan('${u.id}')" class= "text-xs font-bold ${u.status === 'banned' ? 'text-green-600' : 'text-red-500'} hover:underline" >
+                    ${u.status === 'banned' ? '解封' : '封禁'}
                             </button >
-                    <button onclick="toggleRole('\${u.id}')" class="text-xs font-bold text-blue-600 hover:underline">
-                        \${u.role === 'creator' ? '降为读者' : '升为作者'}
+                    <button onclick="toggleRole('${u.id}')" class="text-xs font-bold text-blue-600 hover:underline">
+                        ${u.role === 'creator' ? '降为读者' : '升为作者'}
                     </button>
                          ` : '<span class="text-slate-300 text-xs">不可操作</span>'}
                     </td>
@@ -197,7 +197,7 @@
                 if (u) {
                     const newStatus = u.status === 'banned' ? 'active' : 'banned';
                     MockDB.updateUserProfile({ id: uid, status: newStatus });
-                    showToast(`用户 \${u.username} 已\${newStatus === 'banned' ? '封禁' : '解封'}`, 'success');
+                    showToast(`用户 ${u.username} 已${newStatus === 'banned' ? '封禁' : '解封'}`, 'success');
                     renderUserTable();
                 }
             }
@@ -208,7 +208,7 @@
                 if (u) {
                     const newRole = u.role === 'creator' ? 'user' : 'creator';
                     MockDB.updateUserProfile({ id: uid, role: newRole });
-                    showToast(`用户角色已变更为 \${newRole}`, 'success');
+                    showToast(`用户角色已变更为 ${newRole}`, 'success');
                     renderUserTable();
                 }
             }
