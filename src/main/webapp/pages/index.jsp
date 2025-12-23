@@ -117,8 +117,8 @@
                         const grid = document.getElementById('novelGrid');
                         try {
                             const result = await fetchJson("../novel/list");
-                            if (result && result.status === 200 && result.data.code === 200) {
-                                const novels = result.data.data;
+                            if (result && result.code === 200) {
+                                const novels = result.data;
                                 renderGrid(novels.slice(0, 9));
                                 renderRankings(novels.slice(0, 5));
                             } else {
@@ -139,12 +139,12 @@
                         container.innerHTML = novels.map(n => `
                 <div class="standard-card group cursor-pointer" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
                     <div class="aspect-[2/3] overflow-hidden bg-gray-100 relative">
-                        <img src="\${n.coverUrl || '../static/images/cover_placeholder.jpg'}" 
+                        <img src="\${n.cover || '../static/images/cover_placeholder.jpg'}" 
                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                              onerror="this.src='../static/images/cover_placeholder.jpg'">
                     </div>
                     <div class="p-4">
-                        <h4 class="font-bold text-slate-900 truncate mb-1 group-hover:text-blue-600 transition-colors">\${n.title}</h4>
+                        <h4 class="font-bold text-slate-900 truncate mb-1 group-hover:text-blue-600 transition-colors">\${n.name}</h4>
                         <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">\${n.authorName || '佚名'}</p>
                     </div>
                 </div>
@@ -158,8 +158,8 @@
                 <div class="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
                     <span class="text-lg font-black w-6 text-center \${i < 3 ? 'text-orange-500' : 'text-slate-300'}">\${i + 1}</span>
                     <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold text-slate-700 truncate hover:text-blue-600 transition-colors">\${n.title}</div>
-                        <div class="text-xs text-slate-400">\${n.category || '综合'}</div>
+                        <div class="text-sm font-bold text-slate-700 truncate hover:text-blue-600 transition-colors">\${n.name}</div>
+                        <div class="text-xs text-slate-400">\${n.categoryName || '综合'}</div>
                     </div>
                 </div>
             `).join('');

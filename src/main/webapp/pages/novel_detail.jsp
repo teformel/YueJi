@@ -131,16 +131,27 @@
                             const res = await fetchJson(`../novel/detail?id=\${novelId}`);
                             if (res.code === 200) {
                                 const data = res.data;
-                                document.getElementById('novelTitle').innerText = data.title;
-                                document.getElementById('authorName').innerText = `\${data.authorName || '佚名'} · 著`;
-                                document.getElementById('description').innerText = data.description || '暂无简介...';
-                                document.getElementById('categoryBadge').innerText = data.category || '综合';
-                                document.getElementById('coverImg').src = data.coverUrl || '../static/images/cover_placeholder.jpg';
-                                document.title = `\${data.title} - 阅己`;
+                                const novel = data.novel;
+                                const chapters = data.chapters;
 
-                                if (data.chapters) {
-                                    currentChapters = data.chapters;
-                                    renderChapters(data.chapters);
+                                document.getElementById('novelTitle').innerText = novel.name;
+                                document.getElementById('authorName').innerText = `\${novel.authorName || '佚名'} · 著`;
+                                document.getElementById('description').innerText = novel.description || '暂无简介...';
+                                document.getElementById('categoryBadge').innerText = novel.categoryName || '综合';
+                                document.getElementById('coverImg').src = novel.cover || '../static/images/cover_placeholder.jpg';
+                                document.title = `\${novel.name} - 阅己`;
+
+                                // Status
+                                const statusHtml = novel.status === 2
+                                    ? '<i data-lucide="check-circle-2" class="w-3 h-3"></i> 已完结'
+                                    : '<i data-lucide="zap" class="w-3 h-3"></i> 连载中';
+                                document.getElementById('statusBadge').innerHTML = statusHtml;
+                                document.getElementById('statusBadge').className = `text-xs font-bold flex items-center gap-1 \${novel.status === 2 ? 'text-green-600' : 'text-blue-600'}`;
+                                lucide.createIcons();
+
+                                if (chapters) {
+                                    currentChapters = chapters;
+                                    renderChapters(chapters);
                                 }
                             }
                         } catch (e) {
