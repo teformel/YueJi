@@ -27,12 +27,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User login(String username, String password) {
         User user = userDao.findByUsername(username);
-        // Password check (Plain vs MD5). 
-        // In this demo, we assume the DB has MD5 and we should hash input to check.
-        // For simplicity, let's assume raw string check or implement MD5 helper later.
-        // The requirements say MD5 storage.
-        // TODO: Add MD5 Utility usage. user.getPassword().equals(MD5(password))
-        if (user != null && user.getPassword().equals(password)) {
+        // Password check (MD5). 
+        // Use AuthUtils.md5(password) to compare with stored hash.
+        String hashedInput = com.yueji.common.AuthUtils.md5(password);
+        if (user != null && user.getPassword().equalsIgnoreCase(hashedInput)) {
             if (user.getStatus() == 0) return null; // Disabled
             return user;
         }
@@ -48,6 +46,10 @@ public class UserServiceImpl implements UserService {
         user.setCoinBalance(BigDecimal.ZERO);
         user.setRole(0); // User
         user.setStatus(1); // Active
+        
+        // Hash password before saving
+        user.setPassword(com.yueji.common.AuthUtils.md5(user.getPassword()));
+        
         userDao.create(user);
     }
 
@@ -59,8 +61,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(int userId, String oldPwd, String newPwd) throws Exception {
         User user = userDao.findById(userId);
-        if (user != null && user.getPassword().equals(oldPwd)) {
-            userDao.updatePassword(userId, newPwd);
+        String hashedOld = com.yueji.common.AuthUtils.md5(oldPwd);
+        if (user != null && user.getPassword().equalsIgnoreCase(hashedOld)) {
+            userDao.updatePassword(userId, com.yueji.common.AuthUtils.md5(newPwd));
         } else {
             throw new Exception("Wrong old password");
         }
