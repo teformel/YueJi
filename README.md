@@ -13,9 +13,10 @@
 
 ## 技术栈 (Tech Stack)
 - **后端**: Java 17, Servlet, JSP, JSTL
+- **运行环境**: Tomcat 9 (via Cargo)
 - **数据库**: PostgreSQL 15
-- **构建工具**: Maven
-- **前端**: JSP, CSS3, Vanilla JavaScript
+- **构建工具**: Maven, npm (for CSS)
+- **前端**: JSP, Tailwind CSS, Vanilla JavaScript (ES6+)
 - **开发环境**: Docker, VS Code DevContainers
 
 ## 环境构建指南 (Build Setup)
@@ -27,7 +28,7 @@
 ### 快速开始 (DevContainer)
 1. 使用 VS Code 打开本项目文件夹。
 2. 弹出 "Reopen in Container" 提示时点击确认，或按 `F1` 输入 `Dev Containers: Reopen in Container`。
-3. 等待容器构建完成，环境将自动配置好 Java 17, Maven 和 PostgreSQL。
+3. 等待容器构建完成，环境将自动配置好 Java 17, Maven, Node.js 和 PostgreSQL。
 
 ### 数据库配置
 PostgreSQL 数据库在 DevContainer 中自动启动。
@@ -37,10 +38,20 @@ PostgreSQL 数据库在 DevContainer 中自动启动。
 - **Username**: `yueji_user`
 - **Password**: `yueji_password`
 
+### 数据库初始化 (Database Init)
+如果首次启动报错数据库表不存在，请运行利用内置工具初始化：
+```bash
+mvn compile exec:java -Dexec.mainClass="com.yueji.tool.DbInit"
+```
+
 ### 运行项目
 在容器终端中运行：
 ```bash
-mvn tomcat7:run
+# 首次运行或 CSS 变更时需执行：
+npm run build-css
+
+# 启动服务器 (Tomcat 9)
+mvn clean package cargo:run
 ```
 访问地址: `http://localhost:8080`
 

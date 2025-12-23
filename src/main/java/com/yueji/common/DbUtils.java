@@ -6,10 +6,11 @@ import java.sql.SQLException;
 
 public class DbUtils {
     // In a real app, these should be in config files or env vars.
-    // For DevContainer, we use the service name 'db' as hostname.
     private static final String URL = "jdbc:postgresql://db:5432/yueji_db";
     private static final String USER = "yueji_user";
     private static final String PASS = "yueji_password";
+
+    private static final ThreadLocal<Connection> threadLocalConn = new ThreadLocal<>();
 
     static {
         try {
@@ -20,12 +21,55 @@ public class DbUtils {
     }
 
     public static Connection getConnection() throws SQLException {
+        Connection conn = threadLocalConn.get();
+        if (conn != null) {
+            return conn;
+        }
         return DriverManager.getConnection(URL, USER, PASS);
+    }
+    
+    public static void beginTransaction() throws SQLException {
+        Connection conn = threadLocalConn.get();
+        if (conn != null) {
+            throw new SQLException("Transaction already active");
+        }
+        conn = DriverManager.getConnection(URL, USER, PASS);
+        conn.setAutoCommit(false);
+        threadLocalConn.set(conn);
+    }
+    
+    public static void commitTransaction() throws SQLException {
+        Connection conn = threadLocalConn.get();
+        if (conn == null) {
+            throw new SQLException("No active transaction");
+        }
+        conn.commit();
+        conn.close();
+        threadLocalConn.remove();
+    }
+    
+    public static void rollbackTransaction() {
+        Connection conn = threadLocalConn.get();
+        if (conn != null) {
+            try {
+                conn.rollback();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                threadLocalConn.remove();
+            }
+        }
     }
     
     public static void closeQuietly(AutoCloseable... closeables) {
         for (AutoCloseable c : closeables) {
             if (c != null) {
+                // If the closeable is the connection from ThreadLocal, DO NOT close it here!
+                // It should be closed by commit/rollback.
+                if (c instanceof Connection && c == threadLocalConn.get()) {
+                    continue;
+                }
                 try {
                     c.close();
                 } catch (Exception ignored) {}
