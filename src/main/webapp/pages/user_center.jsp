@@ -157,26 +157,39 @@
                         loadBookshelf();
                     });
 
-                    function initUser() {
-                        currentUser = MockDB.getCurrentUser();
-                        if (!currentUser) {
-                            location.href = 'login.jsp';
-                            return;
+                    async function initUser() {
+                        // 1. Try LocalStorage first for speed
+                        const stored = localStorage.getItem('user');
+                        if (stored) {
+                            currentUser = JSON.parse(stored);
+                            renderUserInfo(currentUser);
                         }
-                        document.getElementById('userNameDisplay').innerText = currentUser.nickname || currentUser.username;
-                        document.getElementById('userRoleDisplay').innerText = currentUser.role === 'admin' ? '系统管理员' : (currentUser.role === 'creator' ? '签约作家' : '普通读者');
-                        document.getElementById('balanceDisplay').innerText = currentUser.balance;
+
+                        // 2. Refresh from Backend
+                        const res = await API.getUserInfo();
+                        if (res.code === 200) {
+                            currentUser = res.data;
+                            localStorage.setItem('user', JSON.stringify(currentUser));
+                            renderUserInfo(currentUser);
+                        } else if (res.code === 401) {
+                            localStorage.removeItem('user');
+                            location.href = 'login.jsp';
+                        }
+                    }
+
+                    function renderUserInfo(user) {
+                        document.getElementById('userNameDisplay').innerText = user.realname || user.username;
+                        document.getElementById('userRoleDisplay').innerText = user.role === 1 ? '系统管理员' : '普通用户';
+                        document.getElementById('balanceDisplay').innerText = user.coinBalance || 0;
 
                         // Prefill edit form
-                        document.getElementById('editNickname').value = currentUser.nickname || '';
+                        document.getElementById('editNickname').value = user.realname || '';
                     }
 
                     function switchTab(tabName) {
-                        // Hide all
                         document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
                         document.getElementById(`tab-\${tabName}`).classList.remove('hidden');
 
-                        // Highlight nav
                         document.querySelectorAll('.nav-item').forEach(el => {
                             el.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-600');
                             el.classList.add('border-transparent');
@@ -185,61 +198,83 @@
                         event.currentTarget.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-600');
                     }
 
-                    function saveProfile() {
-                        const nick = document.getElementById('editNickname').value;
+                    async function saveProfile() {
+                        const realname = document.getElementById('editNickname').value;
                         const pass = document.getElementById('editPassword').value;
 
-                        const updates = { nickname: nick };
-                        if (pass) updates.password = pass;
+                        try {
+                            // Update Profile
+                            const formData = new URLSearchParams();
+                            formData.append('realname', realname);
+                            await fetchJson('../user/update', { method: 'POST', body: formData });
 
-                        MockDB.updateUserProfile(updates);
-                        showToast('资料保存成功', 'success');
-                        setTimeout(() => location.reload(), 1000); // Reload to update UI
+                            // Update Password if needed
+                            if (pass) {
+                                showToast('修改密码需提供原密码(当前UI不支持)', 'info');
+                            }
+
+                            showToast('资料保存成功', 'success');
+                            initUser(); // Refresh
+                        } catch (e) {
+                            showToast('保存失败', 'error');
+                        }
                     }
 
-                    function recharge(amount) {
-                        const newBalance = (currentUser.balance || 0) + amount;
-                        MockDB.updateUserProfile({ balance: newBalance });
-                        showToast(`充值成功！获得 \${amount} 书币`, 'success');
-                        document.getElementById('balanceDisplay').innerText = newBalance;
+                    async function recharge(amount) {
+                        try {
+                            const res = await fetchJson(`../pay/order/create?amount=\${amount}`, { method: 'POST' });
+                            if (res.code === 200) {
+                                showToast(`充值成功！获得 \${amount} 书币`, 'success');
+                                initUser(); // Refresh balance
+                            } else {
+                                showToast(res.msg, 'error');
+                            }
+                        } catch (e) {
+                            showToast('充值请求失败', 'error');
+                        }
                     }
 
-                    function doLogout() {
-                        MockDB.logout();
+                    async function doLogout() {
+                        await API.logout();
+                        localStorage.removeItem('user');
                         location.href = 'index.jsp';
                     }
 
-                    function loadBookshelf() {
-                        // Read progress for user
-                        // Since we don't have a backend "Bookshelf", we simulate it by valid reading progress
-                        // In a real app, this should be a user table join
-                        // Here we just scan all progress in localStorage and show those novels
-                        const allProgress = JSON.parse(localStorage.getItem(MockDB.KEYS.PROGRESS) || '{}');
-                        const novelIds = Object.keys(allProgress);
-
-                        if (novelIds.length === 0) return;
-
+                    async function loadBookshelf() {
                         const container = document.getElementById('progressList');
-                        container.innerHTML = novelIds.map(nid => {
-                            const novel = MockDB.getNovelById(nid);
-                            if (!novel) return '';
-                            const p = allProgress[nid];
-                            const chapter = MockDB.getChapter(nid, p.chapterId);
-                            const chapterTitle = chapter ? chapter.title : '未知章节';
-                            const timeStr = new Date(p.timestamp).toLocaleDateString();
-
-                            return `
-                    <div class="flex gap-4 p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-                        <img src="\${novel.coverUrl}" class="w-16 h-20 object-cover rounded bg-gray-200">
-                        <div class="flex-1 min-w-0">
-                            <h4 class="font-bold text-slate-900 truncate">\${novel.title}</h4>
-                            <p class="text-xs text-slate-500 mt-1">读至: \${chapterTitle}</p>
-                            <p class="text-xs text-slate-400 mt-2">\${timeStr}</p>
-                        </div>
-                        <a href="read.jsp?novelId=\${nid}&chapterId=\${p.chapterId}" class="self-center btn-primary px-4 py-2 text-xs">续读</a>
-                    </div>
-                `;
-                        }).join('');
+                        try {
+                            const res = await fetchJson('../progress/list'); // Needs /progress/list endpoint
+                            if (res.code === 200 && res.data && res.data.length > 0) {
+                                container.innerHTML = res.data.map(item => `
+                                    <a href="read.jsp?novelId=\${item.novelId}&chapterId=1" class="flex gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow group">
+                                        <div class="w-16 h-20 bg-gray-200 rounded overflow-hidden flex-shrink-0">
+                                            <img src="\${item.cover || '../static/images/cover_placeholder.jpg'}" class="w-full h-full object-cover">
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-bold text-slate-900 truncate group-hover:text-blue-600">\${item.novelName || '未知书名'}</h4>
+                                            <p class="text-xs text-slate-500 mt-1">
+                                                加入时间: \${item.createTime ? new Date(item.createTime).toLocaleDateString() : '未知'}
+                                            </p>
+                                            <div class="mt-3 text-xs text-blue-600 font-bold bg-blue-50 inline-block px-2 py-1 rounded">
+                                                继续阅读
+                                            </div>
+                                        </div>
+                                    </a>
+                                `).join('');
+                            } else {
+                                container.innerHTML = `
+                                    <div class="p-8 text-center text-slate-400 bg-gray-50 rounded-lg col-span-full">
+                                        <i data-lucide="book-open" class="w-12 h-12 mx-auto mb-2 opacity-30"></i>
+                                        <p>书架空空如也，快去阅读吧</p>
+                                        <a href="index.jsp" class="inline-block mt-4 text-sm text-blue-600 font-bold hover:underline">去书城看看 -></a>
+                                    </div>
+                                `;
+                            }
+                            lucide.createIcons();
+                        } catch (e) {
+                            console.error(e);
+                            container.innerHTML = `<div class="p-4 text-center text-red-400">加载失败</div>`;
+                        }
                     }
                 </script>
     </body>

@@ -86,6 +86,8 @@
                     const result = await response.json();
 
                     if (result.code === 200) {
+                        // Persist user for UI
+                        localStorage.setItem('user', JSON.stringify(result.data));
                         showToast('登录成功', 'success');
                         setTimeout(() => location.href = "index.jsp", 1000);
                     } else {

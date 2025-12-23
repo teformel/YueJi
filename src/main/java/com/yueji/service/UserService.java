@@ -10,5 +10,6 @@ public interface UserService {
     void updatePassword(int userId, String oldPwd, String newPwd) throws Exception;
     User getUserById(int id);
     java.util.List<User> getAllUsers();
-
+    void updateUserStatus(int userId, int status) throws Exception;
+    void updateUserRole(int userId, int role) throws Exception;
 }

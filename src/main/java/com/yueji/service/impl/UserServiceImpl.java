@@ -78,4 +78,22 @@ public class UserServiceImpl implements UserService {
     public java.util.List<User> getAllUsers() {
         return userDao.findAll();
     }
+
+    @Override
+    public void updateUserStatus(int userId, int status) throws Exception {
+        User user = userDao.findById(userId);
+        if (user != null) {
+            user.setStatus(status);
+            userDao.update(user);
+        }
+    }
+
+    @Override
+    public void updateUserRole(int userId, int role) throws Exception {
+        User user = userDao.findById(userId);
+        if (user != null) {
+            user.setRole(role);
+            userDao.update(user);
+        }
+    }
 }

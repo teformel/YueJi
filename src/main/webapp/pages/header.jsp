@@ -49,20 +49,23 @@
         </div>
         <script>
             // Simple Auth Check for Header
+            // Simple Auth Check for Header
             document.addEventListener('DOMContentLoaded', () => {
-                if (typeof MockDB !== 'undefined') {
-                    const u = MockDB.getCurrentUser();
-                    if (u) {
+                const userJson = localStorage.getItem('user');
+                if (userJson) {
+                    try {
+                        const u = JSON.parse(userJson);
                         document.getElementById('authLinks').classList.add('hidden');
                         document.getElementById('userMenu').classList.remove('hidden');
                         document.getElementById('userMenu').classList.add('flex');
                         document.getElementById('headerUsername').innerText = u.realname || u.username;
 
-                        if (u.role === 'creator') document.getElementById('creatorLink').classList.remove('hidden');
-                        if (u.role === 'admin') {
-                            document.getElementById('creatorLink').classList.remove('hidden'); // Admin can also see creator dash usually
+                        if (u.role === 1 || u.role === 'admin') { // Backend role is int 1 for admin
+                            document.getElementById('creatorLink').classList.remove('hidden');
                             document.getElementById('adminLink').classList.remove('hidden');
                         }
+                    } catch (e) {
+                        localStorage.removeItem('user');
                     }
                 }
             });

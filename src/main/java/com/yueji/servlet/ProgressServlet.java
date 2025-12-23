@@ -26,6 +26,8 @@ public class ProgressServlet extends HttpServlet {
         String path = req.getPathInfo();
         if ("/get".equals(path)) {
             handleGet(req, resp);
+        } else if ("/list".equals(path)) {
+             handleList(req, resp);
         } else {
             resp.sendError(404);
         }
@@ -56,6 +58,21 @@ public class ProgressServlet extends HttpServlet {
 
         Object rp = interactionService.getReadingProgress(user.getId(), Integer.parseInt(nidStr));
         ResponseUtils.writeJson(resp, 200, "Success", rp);
+    }
+
+    private void handleList(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User user = getUser(req);
+        if (user == null) {
+            ResponseUtils.writeJson(resp, 401, "Not logged in", null);
+            return;
+        }
+        try {
+            java.util.List<com.yueji.model.Collection> list = interactionService.getUserBookshelf(user.getId());
+            ResponseUtils.writeJson(resp, 200, "Bookshelf", list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ResponseUtils.writeJson(resp, 500, "Error", null);
+        }
     }
 
     private void handleSync(HttpServletRequest req, HttpServletResponse resp) throws IOException {

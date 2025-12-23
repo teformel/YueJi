@@ -131,7 +131,7 @@
                                             placeholder="开始您的创作..."></textarea>
                                     </div>
                                     <div class="flex justify-between items-center pt-4">
-                                        <div class="text-sm text-slate-400">系统将自动保存草稿 (Mock)</div>
+                                        <div class="text-sm text-slate-400">请保持创作热情</div>
                                         <button onclick="publishChapter()" class="btn-primary px-8 py-3">发布章节</button>
                                     </div>
                                 </div>
@@ -157,69 +157,77 @@
             document.addEventListener('DOMContentLoaded', () => {
                 checkAuth();
                 lucide.createIcons();
-                loadMyNovels();
             });
 
             let currentUser = null;
 
-            function checkAuth() {
-                currentUser = MockDB.getCurrentUser();
-                if (!currentUser || (currentUser.role !== 'creator' && currentUser.role !== 'admin')) {
-                    alert('您不是签约作家，请联系管理员申请成为创作者');
-                    location.href = 'index.jsp';
-                    return;
+            async function checkAuth() {
+                // 1. LocalStorage
+                const stored = localStorage.getItem('user');
+                if (stored) {
+                    currentUser = JSON.parse(stored);
                 }
-                document.getElementById('welcomeMsg').innerText = `你好，${currentUser.realname}`;
+
+                if (!currentUser || (currentUser.role !== 2 && currentUser.role !== 1)) {
+                    // location.href = 'index.jsp';
+                }
+                if (currentUser) {
+                    document.getElementById('welcomeMsg').innerText = `你好，\${currentUser.realname || currentUser.username}`;
+                    loadMyNovels();
+                }
             }
 
             function switchTab(tab) {
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-                document.getElementById(`tab-${tab}`).classList.remove('hidden');
+                document.getElementById(`tab-\${tab}`).classList.remove('hidden');
 
-                // Nav styles
                 document.querySelectorAll('.nav-item').forEach(el => {
                     el.classList.remove('border-blue-600');
                     el.classList.add('border-transparent');
                 });
-                // Find the nav item
-                // Simplified for this demo
+
                 if (tab === 'novels') loadMyNovels();
             }
 
-            function loadMyNovels() {
-                const novels = MockDB.getNovels(); // In real app, filter by authorId
-                // Since we don't strict filter in MockDB for author ID yet, let's just show ALL novels for admin/creator demo
-                // Or filter if authorName matches
-                const myNovels = novels.filter(n => n.authorName === currentUser.realname || n.authorName === currentUser.username || currentUser.role === 'admin');
+            async function loadMyNovels() {
+                try {
+                    const res = await fetchJson('../creator/novel/list');
+                    let myNovels = [];
+                    if (res.code === 200) {
+                        myNovels = res.data;
+                    }
 
-                const container = document.getElementById('novelListContainer');
-                if (myNovels.length === 0) {
-                    container.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-20 text-slate-400">
-                                <i data-lucide="file-x" class="w-12 h-12 mb-4 opacity-50"></i>
-                                <p>暂无作品，开始创作吧</p>
-                             </div>`;
-                } else {
-                    container.innerHTML = myNovels.map(n => `
-                    <div class="flex items-center gap-6 p-6 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                        <img src="${n.coverUrl || '../static/images/cover_placeholder.jpg'}" class="w-16 h-20 object-cover rounded shadow-sm bg-gray-200">
-                        <div class="flex-1">
-                            <h4 class="font-bold text-slate-900 text-lg">${n.title}</h4>
-                            <div class="text-sm text-slate-500 mt-1">
-                                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mr-2">${n.category}</span>
-                                ${n.chapters ? n.chapters.length : 0} 章 · ${n.status}
+                    const container = document.getElementById('novelListContainer');
+                    if (!myNovels || myNovels.length === 0) {
+                        container.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-20 text-slate-400">
+                                    <i data-lucide="file-x" class="w-12 h-12 mb-4 opacity-50"></i>
+                                    <p>暂无作品，开始创作吧</p>
+                                 </div>`;
+                    } else {
+                        container.innerHTML = myNovels.map(n => `
+                        <div class="flex items-center gap-6 p-6 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                            <img src="\${n.cover || '../static/images/cover_placeholder.jpg'}" class="w-16 h-20 object-cover rounded shadow-sm bg-gray-200">
+                            <div class="flex-1">
+                                <h4 class="font-bold text-slate-900 text-lg">\${n.name || n.title}</h4>
+                                <div class="text-sm text-slate-500 mt-1">
+                                    <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mr-2">\${n.categoryName || '默认'}</span>
+                                    \${n.totalChapters || 0} 章 · \${n.status === 1 ? '连载中' : '已完结'}
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                 <button onclick="openEditor('\${n.id}', '\${n.name || n.title}')" class="btn-primary px-4 py-2 text-sm">更新章节</button>
+                                 <button class="px-4 py-2 border border-gray-200 rounded text-slate-600 hover:text-red-500 hover:border-red-200 text-sm">管理</button>
                             </div>
                         </div>
-                        <div class="flex gap-3">
-                             <button onclick="openEditor('${n.id}', '${n.title}')" class="btn-primary px-4 py-2 text-sm">更新章节</button>
-                             <button class="px-4 py-2 border border-gray-200 rounded text-slate-600 hover:text-red-500 hover:border-red-200 text-sm">管理</button>
-                        </div>
-                    </div>
-                `).join('');
-                    lucide.createIcons();
+                    `).join('');
+                        lucide.createIcons();
+                    }
+                } catch (e) {
+                    console.error(e);
                 }
             }
 
-            function createNovel() {
+            async function createNovel() {
                 const title = document.getElementById('newTitle').value;
                 const category = document.getElementById('newCategory').value;
                 const desc = document.getElementById('newDesc').value;
@@ -230,33 +238,37 @@
                     return;
                 }
 
-                const newNovel = {
-                    id: Date.now().toString(),
-                    title,
-                    category,
-                    description: desc,
-                    coverUrl: cover || '../static/images/default_book_cover.jpg',
-                    authorName: currentUser.realname || currentUser.username,
-                    status: '连载中',
-                    chapters: []
-                };
+                const catMap = { '玄幻': 1, '都市': 2, '仙侠': 3, '科幻': 4, '历史': 5, '悬疑': 6 };
+                const catId = catMap[category] || 1;
 
-                MockDB.saveNovel(newNovel);
-                showToast('新书创建成功！', 'success');
-                setTimeout(() => switchTab('novels'), 1000);
+                const formData = new URLSearchParams();
+                formData.append('title', title);
+                formData.append('categoryId', catId);
+                formData.append('intro', desc);
+                formData.append('coverUrl', cover);
+
+                try {
+                    const res = await fetchJson('../creator/novel/create', { method: 'POST', body: formData });
+                    if (res.code === 200) {
+                        showToast('新书创建成功', 'success');
+                        setTimeout(() => switchTab('novels'), 1000);
+                    } else {
+                        showToast(res.msg, 'error');
+                    }
+                } catch (e) {
+                    showToast('创建失败', 'error');
+                }
             }
 
             function openEditor(id, title) {
                 document.getElementById('editorNovelId').value = id;
-                document.getElementById('editorNovelTitle').innerText = `《${title}》`;
-                // Clear inputs
+                document.getElementById('editorNovelTitle').innerText = `《\${title}》`;
                 document.getElementById('chapterTitle').value = '';
                 document.getElementById('chapterContent').value = '';
-
                 switchTab('editor');
             }
 
-            function publishChapter() {
+            async function publishChapter() {
                 const novelId = document.getElementById('editorNovelId').value;
                 const title = document.getElementById('chapterTitle').value;
                 const content = document.getElementById('chapterContent').value;
@@ -266,9 +278,23 @@
                     return;
                 }
 
-                MockDB.addChapter(novelId, { title, content });
-                showToast('章节发布成功！', 'success');
-                setTimeout(() => switchTab('novels'), 1000);
+                const formData = new URLSearchParams();
+                formData.append('novelId', novelId);
+                formData.append('title', title);
+                formData.append('content', content);
+                formData.append('price', '0');
+
+                try {
+                    const res = await fetchJson('../creator/chapter/create', { method: 'POST', body: formData });
+                    if (res.code === 200) {
+                        showToast('章节发布成功', 'success');
+                        setTimeout(() => switchTab('novels'), 1000);
+                    } else {
+                        showToast(res.msg, 'error');
+                    }
+                } catch (e) {
+                    showToast('发布失败', 'error');
+                }
             }
         </script>
     </body>

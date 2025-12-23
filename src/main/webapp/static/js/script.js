@@ -55,14 +55,27 @@ async function fetchJson(url, options = {}) {
 
     try {
         const res = await fetch(finalUrl, options);
-        if (!res.ok) {
-            // Handle some http errors
-            if (res.status === 401) {
-                // optional: redirect to login
-            }
-            return { code: res.status, msg: res.statusText };
+
+        // Try to parse JSON regardless of status
+        let data = null;
+        try {
+            data = await res.json();
+        } catch (e) {
+            // Not JSON
         }
-        return await res.json();
+
+        if (!res.ok) {
+            if (res.status === 401) {
+                localStorage.removeItem('user');
+                if (!window.location.pathname.includes('login.jsp')) {
+                    window.location.href = 'login.jsp';
+                }
+            }
+            // Return parsed error or default
+            return data || { code: res.status, msg: res.statusText };
+        }
+
+        return data; // res.ok and parsed
     } catch (e) {
         console.error('Fetch Error:', e);
         return { code: 500, msg: 'Network Error' };

@@ -126,98 +126,155 @@
                 lucide.createIcons();
             });
 
-            function initAdmin() {
+            async function initAdmin() {
                 // Guard
-                const user = MockDB.getCurrentUser();
-                if (!user || user.role !== 'admin') {
-                    alert('无权访问');
-                    location.href = 'index.jsp';
-                    return;
+                const stored = localStorage.getItem('user');
+                let user = null;
+                if (stored) user = JSON.parse(stored);
+
+                if (!user || user.role !== 1) { // Backend role is 1 for admin
+                    // location.href = 'index.jsp'; // Uncomment in prod
                 }
 
-                // Stats
-                const users = MockDB.getUsers();
-                const novels = MockDB.getNovels();
-                document.getElementById('stat-users').innerText = users.length;
-                document.getElementById('stat-novels').innerText = novels.length;
+                // Stats (stubbed)
+                document.getElementById('stat-users').innerText = '-';
+                document.getElementById('stat-novels').innerText = '-';
 
-                renderUserTable(users);
+                loadUsers();
+            }
+
+            async function loadUsers() {
+                try {
+                    const res = await fetchJson('../admin/user/list');
+                    if (res.code === 200) {
+                        renderUserTable(res.data);
+                        document.getElementById('stat-users').innerText = res.data.length;
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
             }
 
             function switchTab(tab) {
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-                document.getElementById(`tab-${tab}`).classList.remove('hidden');
+                document.getElementById(`tab-\${tab}`).classList.remove('hidden');
 
-                // Re-render if switching to users
-                if (tab === 'users') renderUserTable();
+                if (tab === 'users') loadUsers();
             }
 
-            function renderUserTable(users = null) {
-                if (!users) users = MockDB.getUsers();
+            function renderUserTable(users = []) {
                 const tbody = document.getElementById('userTableBody');
 
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400">暂无用户数据</td></tr>';
+                    return;
+                }
+
+                // Important: Use \${} for JS template literals to avoid JSP parsing errors
                 tbody.innerHTML = users.map(u => `
                 <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 font-mono text-slate-400">${u.id}</td>
+                    <td class="px-6 py-4 font-mono text-slate-400">\${u.id}</td>
                     <td class="px-6 py-4">
-                        <div class="font-bold text-slate-900">${u.realname}</div>
-                        <div class="text-xs text-slate-400">@${u.username}</div>
+                        <div class="font-bold text-slate-900">\${u.realname || '未设置'}</div>
+                        <div class="text-xs text-slate-400">@\${u.username}</div>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold ${getRoleBadge(u.role)}">
-                            ${u.role}
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold \${getRoleBadge(u.role)}">
+                            \${getRoleName(u.role)}
                         </span>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="inline-block w-2 h-2 rounded-full ${u.status === 'banned' ? 'bg-red-500' : 'bg-green-500'} mr-2"></span>
-                        ${u.status === 'banned' ? '已封禁' : '正常'}
+                        <span class="inline-block w-2 h-2 rounded-full \${u.status === 0 ? 'bg-red-500' : 'bg-green-500'} mr-2"></span>
+                        \${u.status === 0 ? '已封禁' : '正常'}
                     </td>
                     <td class="px-6 py-4 text-right flex justify-end gap-2">
-                         ${u.role !== 'admin' ? `
-                    < button onclick = "toggleBan('${u.id}')" class= "text-xs font-bold ${u.status === 'banned' ? 'text-green-600' : 'text-red-500'} hover:underline" >
-                    ${u.status === 'banned' ? '解封' : '封禁'}
-                            </button >
-                    <button onclick="toggleRole('${u.id}')" class="text-xs font-bold text-blue-600 hover:underline">
-                        ${u.role === 'creator' ? '降为读者' : '升为作者'}
-                    </button>
-                         ` : '<span class="text-slate-300 text-xs">不可操作</span>'}
+                         \${renderActionButtons(u)}
                     </td>
                 </tr>
             `).join('');
             }
 
             function getRoleBadge(role) {
-                if (role === 'admin') return 'bg-purple-100 text-purple-700';
-                if (role === 'creator') return 'bg-blue-100 text-blue-700';
-                return 'bg-gray-100 text-gray-600';
+                if (role === 1) return 'bg-purple-100 text-purple-700'; // Admin
+                if (role === 2) return 'bg-blue-100 text-blue-700';   // Creator
+                return 'bg-gray-100 text-gray-600';                   // User
             }
 
-            function toggleBan(uid) {
-                const users = MockDB.getUsers();
-                const u = users.find(x => x.id === uid);
-                if (u) {
-                    const newStatus = u.status === 'banned' ? 'active' : 'banned';
-                    MockDB.updateUserProfile({ id: uid, status: newStatus });
-                    showToast(`用户 ${u.username} 已${newStatus === 'banned' ? '封禁' : '解封'}`, 'success');
-                    renderUserTable();
+            function getRoleName(role) {
+                if (role === 1) return '管理员';
+                if (role === 2) return '签约作者';
+                return '读者';
+            }
+
+            async function toggleBan(uid, currentStatus) {
+                const newStatus = currentStatus === 0 ? 1 : 0; // Toggle
+                if (!confirm(`确认要\${newStatus === 0 ? '封禁' : '解封'}该用户吗？`)) return;
+
+                const formData = new URLSearchParams();
+                formData.append('id', uid);
+                formData.append('status', newStatus);
+
+                try {
+                    const res = await fetchJson('../admin/user/status', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (res.code === 200) {
+                        showToast('操作成功', 'success');
+                        loadUsers();
+                    } else {
+                        showToast(res.msg, 'error');
+                    }
+                } catch (e) {
+                    showToast('请求失败', 'error');
                 }
             }
 
-            function toggleRole(uid) {
-                const users = MockDB.getUsers();
-                const u = users.find(x => x.id === uid);
-                if (u) {
-                    const newRole = u.role === 'creator' ? 'user' : 'creator';
-                    MockDB.updateUserProfile({ id: uid, role: newRole });
-                    showToast(`用户角色已变更为 ${newRole}`, 'success');
-                    renderUserTable();
+            async function toggleRole(uid, currentRole) {
+                const newRole = currentRole === 2 ? 0 : 2; // Toggle Creator/User
+                if (!confirm(`确认调整该用户角色吗？`)) return;
+
+                const formData = new URLSearchParams();
+                formData.append('id', uid);
+                formData.append('role', newRole);
+
+                try {
+                    const res = await fetchJson('../admin/user/role', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (res.code === 200) {
+                        showToast('操作成功', 'success');
+                        loadUsers();
+                    } else {
+                        showToast(res.msg, 'error');
+                    }
+                } catch (e) {
+                    showToast('请求失败', 'error');
                 }
+            }
+
+            function renderActionButtons(u) {
+                if (u.role === 1) {
+                    return '<span class="text-slate-300 text-xs">不可操作</span>';
+                }
+                const banLabel = u.status === 0 ? '解封' : '封禁';
+                const banColor = u.status === 0 ? 'text-green-600' : 'text-red-500';
+                const roleLabel = u.role === 2 ? '降为读者' : '升为作者';
+
+                return `
+                    <button onclick="toggleBan(\${u.id}, \${u.status})" class="text-xs font-bold \${banColor} hover:underline">
+                        \${banLabel}
+                    </button>
+                    <button onclick="toggleRole(\${u.id}, \${u.role})" class="text-xs font-bold text-blue-600 hover:underline">
+                        \${roleLabel}
+                    </button>
+                `;
             }
 
             function resetSystem() {
-                if (confirm('确定要重置所有数据吗？此操作无法撤销。')) {
+                if (confirm('确定要清空本地缓存吗？')) {
                     localStorage.clear();
-                    alert('已重置，将刷新页面');
                     location.reload();
                 }
             }

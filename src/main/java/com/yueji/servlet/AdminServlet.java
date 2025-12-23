@@ -93,6 +93,10 @@ public class AdminServlet extends HttpServlet {
                 handleUpdateChapter(req, resp);
             } else if ("/chapter/delete".equals(path)) {
                 handleDeleteChapter(req, resp);
+            } else if ("/user/status".equals(path)) {
+                handleUpdateUserStatus(req, resp);
+            } else if ("/user/role".equals(path)) {
+                handleUpdateUserRole(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -191,5 +195,19 @@ public class AdminServlet extends HttpServlet {
         int id = Integer.parseInt(req.getParameter("id"));
         novelService.deleteChapter(id);
         ResponseUtils.writeJson(resp, 200, "Chapter deleted", null);
+    }
+
+    private void handleUpdateUserStatus(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        int id = Integer.parseInt(req.getParameter("id"));
+        int status = Integer.parseInt(req.getParameter("status")); 
+        userService.updateUserStatus(id, status);
+        ResponseUtils.writeJson(resp, 200, "User status updated", null);
+    }
+
+    private void handleUpdateUserRole(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        int id = Integer.parseInt(req.getParameter("id"));
+        int role = Integer.parseInt(req.getParameter("role")); 
+        userService.updateUserRole(id, role);
+        ResponseUtils.writeJson(resp, 200, "User role updated", null);
     }
 }

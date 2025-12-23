@@ -164,13 +164,10 @@
                     const formData = new URLSearchParams();
                     formData.append('chapterId', cId);
 
-                    const res = await fetch('../pay/chapter/purchase', {
+                    const res = await fetchJson('../pay/chapter/purchase', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: formData.toString()
-                    }).then(r => r.json());
+                        body: formData
+                    });
 
                     if (res.code === 200) {
                         showToast('购买成功！', 'success');
