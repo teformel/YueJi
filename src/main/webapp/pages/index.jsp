@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>阅己 YueJi - 探索无限故事</title>
         <link rel="stylesheet" href="../static/css/style.css?v=3">
+        <script src="../static/js/lucide.js"></script>
         <script src="../static/js/script.js"></script>
     </head>
 
