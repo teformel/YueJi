@@ -23,7 +23,21 @@ public class DbUtils {
     public static Connection getConnection() throws SQLException {
         Connection conn = threadLocalConn.get();
         if (conn != null) {
-            return conn;
+            // Return a proxy that ignores close()
+            return (Connection) java.lang.reflect.Proxy.newProxyInstance(
+                DbUtils.class.getClassLoader(),
+                new Class<?>[]{Connection.class},
+                (proxy, method, args) -> {
+                    if ("close".equals(method.getName())) {
+                        return null; // Ignore close
+                    }
+                    try {
+                        return method.invoke(conn, args);
+                    } catch (java.lang.reflect.InvocationTargetException e) {
+                        throw e.getCause();
+                    }
+                }
+            );
         }
         return DriverManager.getConnection(URL, USER, PASS);
     }
