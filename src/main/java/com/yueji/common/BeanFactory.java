@@ -24,6 +24,7 @@ public class BeanFactory {
         beans.put(ChapterPurchaseDao.class, new ChapterPurchaseDaoImpl());
         beans.put(ReadingProgressDao.class, new ReadingProgressDaoImpl());
         beans.put(AnnouncementDao.class, new AnnouncementDaoImpl());
+        beans.put(FollowDao.class, new FollowDaoImpl());
 
         // Initialize Services (Inject DAOs)
         beans.put(UserService.class, new UserServiceImpl());

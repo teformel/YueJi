@@ -37,6 +37,23 @@ public class CreatorServlet extends HttpServlet {
         }
         User user = (User) session.getAttribute("user");
         Author author = authorService.getAuthorByUserId(user.getId());
+        
+        // [FIX] Auto-sync admin as author if record missing
+        if (author == null && (user.getRole() == 1 || "admin".equals(user.getUsername()))) {
+            author = new Author();
+            author.setUserId(user.getId());
+            author.setPenname(user.getRealname() != null ? user.getRealname() : user.getUsername());
+            author.setIntroduction("系统管理员 (自动授权)");
+            author.setStatus(1); // Approved
+            try {
+                authorService.createAuthor(author);
+                // Re-fetch to get generated ID and full data
+                author = authorService.getAuthorByUserId(user.getId());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         if (author == null) {
             ResponseUtils.writeJson(resp, 403, "您尚未开通作者权限，请联系管理员", null);
             return;

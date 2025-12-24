@@ -79,8 +79,13 @@ async function loadAuthorComments() {
                 `;
             }).join('');
             lucide.createIcons();
+        } else {
+            container.innerHTML = `<div class="text-center py-20 bg-white rounded-xl border border-gray-100"><p class="text-slate-400">${res.msg || '加载评价失败'}</p></div>`;
         }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<div class="text-center py-20 bg-white rounded-xl border border-gray-100"><p class="text-red-400">网络连接异常</p></div>';
+    }
 }
 
 async function deleteCommentAuthor(id) {
@@ -99,39 +104,49 @@ async function deleteCommentAuthor(id) {
 async function loadMyNovels() {
     try {
         const res = await fetchJson('../creator/novel/list');
-        let myNovels = [];
-        if (res.code === 200) {
-            myNovels = res.data;
-        }
-
         const container = document.getElementById('novelListContainer');
-        if (!myNovels || myNovels.length === 0) {
-            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-20 text-slate-400">
-                        <i data-lucide="file-x" class="w-12 h-12 mb-4 opacity-50"></i>
-                        <p>暂无作品，开始创作吧</p>
-                     </div>`;
-        } else {
-            container.innerHTML = myNovels.map(n => `
-            <div class="flex items-center gap-6 p-6 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                <img src="${n.cover || '../static/images/cover_placeholder.jpg'}" class="w-16 h-20 object-cover rounded shadow-sm bg-gray-200">
-                <div class="flex-1">
-                    <h4 class="font-bold text-slate-900 text-lg">${n.name || n.title}</h4>
-                    <div class="text-sm text-slate-500 mt-1">
-                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mr-2">${n.categoryName || '默认'}</span>
-                        ${n.totalChapters || 0} 章 · ${n.viewCount > 10000 ? (n.viewCount / 10000).toFixed(1) + 'w' : (n.viewCount || 0)} 热度 · ${n.status === 1 ? '连载中' : (n.status === 2 ? '已完结' : '已下架')}
+        if (!container) return;
+
+        if (res.code === 200) {
+            const myNovels = res.data || [];
+            if (myNovels.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-20 text-slate-400">
+                            <i data-lucide="file-x" class="w-12 h-12 mb-4 opacity-50"></i>
+                            <p>暂无作品，开始创作吧</p>
+                         </div>`;
+            } else {
+                container.innerHTML = myNovels.map(n => `
+                    <div class="flex items-center gap-6 p-6 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                        <img src="${n.cover || '../static/images/cover_placeholder.jpg'}" class="w-16 h-20 object-cover rounded shadow-sm bg-gray-200">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-900 text-lg">${n.name || n.title}</h4>
+                            <div class="text-sm text-slate-500 mt-1">
+                                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mr-2">${n.categoryName || '默认'}</span>
+                                ${n.totalChapters || 0} 章 · ${n.viewCount > 10000 ? (n.viewCount / 10000).toFixed(1) + 'w' : (n.viewCount || 0)} 热度 · ${n.status === 1 ? '连载中' : (n.status === 2 ? '已完结' : '已下架')}
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                             <button onclick="manageChapters('${n.id}', '${n.name || n.title}')" class="btn-primary px-3 py-1.5 text-xs">章节管理</button>
+                             <button onclick="openEditNovel('${n.id}')" class="px-3 py-1.5 border border-gray-200 rounded text-slate-600 hover:text-blue-600 hover:border-blue-200 text-xs transition-colors">作品设置</button>
+                             <button onclick="deleteNovel('${n.id}')" class="px-3 py-1.5 border border-gray-200 rounded text-slate-600 hover:text-red-600 hover:border-red-200 text-xs transition-colors">删除</button>
+                        </div>
                     </div>
-                </div>
-                <div class="flex gap-3">
-                     <button onclick="manageChapters('${n.id}', '${n.name || n.title}')" class="btn-primary px-3 py-1.5 text-xs">章节管理</button>
-                     <button onclick="openEditNovel('${n.id}')" class="px-3 py-1.5 border border-gray-200 rounded text-slate-600 hover:text-blue-600 hover:border-blue-200 text-xs transition-colors">作品设置</button>
-                     <button onclick="deleteNovel('${n.id}')" class="px-3 py-1.5 border border-gray-200 rounded text-slate-600 hover:text-red-600 hover:border-red-200 text-xs transition-colors">删除</button>
-                </div>
-            </div>
-        `).join('');
+                `).join('');
+            }
+            lucide.createIcons();
+        } else {
+            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-20 text-slate-400">
+                        <i data-lucide="alert-circle" class="w-12 h-12 mb-4 opacity-50"></i>
+                        <p>${res.msg || '加载失败'}</p>
+                     </div>`;
             lucide.createIcons();
         }
     } catch (e) {
         console.error(e);
+        const container = document.getElementById('novelListContainer');
+        if (container) {
+            container.innerHTML = '<div class="text-center py-20 text-red-400">网络请求失败</div>';
+        }
     }
 }
 
