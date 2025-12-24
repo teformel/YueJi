@@ -45,6 +45,22 @@
                             class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all border-l-4 border-transparent">
                             <i data-lucide="banknote" class="w-5 h-5"></i> 稿费收入
                         </button>
+                        <button onclick="switchTab('comments')"
+                            class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all border-l-4 border-transparent">
+                            <i data-lucide="message-square" class="w-5 h-5"></i> 读者评价
+                        </button>
+                        <div id="activeNovelMenu" class="hidden pt-4 mt-4 border-t border-gray-100">
+                            <div class="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">当前作品操作
+                            </div>
+                            <button onclick="switchTab('chapters')"
+                                class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all border-l-4 border-transparent">
+                                <i data-lucide="list" class="w-5 h-5"></i> 章节列表
+                            </button>
+                            <button onclick="switchTab('editor')"
+                                class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all border-l-4 border-transparent">
+                                <i data-lucide="plus-circle" class="w-5 h-5"></i> 发布章节
+                            </button>
+                        </div>
                     </aside>
 
                     <!-- Content -->
@@ -131,9 +147,24 @@
                                             class="form-input h-96 font-serif text-lg leading-relaxed"
                                             placeholder="开始您的创作..."></textarea>
                                     </div>
+                                    <div class="grid grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-bold text-slate-700 mb-2">计费模式</label>
+                                            <select id="chapterIsPaid" class="form-input" onchange="togglePriceInput()">
+                                                <option value="0">免费章节</option>
+                                                <option value="1">付费章节</option>
+                                            </select>
+                                        </div>
+                                        <div id="priceInputWrapper" class="hidden">
+                                            <label class="block text-sm font-bold text-slate-700 mb-2">章节价格 (书币)</label>
+                                            <input type="number" id="chapterPrice" class="form-input" value="10"
+                                                min="1">
+                                        </div>
+                                    </div>
                                     <div class="flex justify-between items-center pt-4">
                                         <div class="text-sm text-slate-400">请保持创作热情</div>
-                                        <button onclick="publishChapter()" class="btn-primary px-8 py-3">发布章节</button>
+                                        <button id="publishChapterBtn" onclick="publishChapter()"
+                                            class="btn-primary px-8 py-3">发布章节</button>
                                     </div>
                                 </div>
                             </div>
@@ -143,8 +174,40 @@
                         <div id="tab-income" class="tab-content hidden animate-fade-in">
                             <h2 class="text-2xl font-bold text-slate-900 mb-6">稿费收入</h2>
                             <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm text-center py-20">
-                                <div class="text-4xl font-black text-slate-900 mb-2">¥ 0.00</div>
-                                <p class="text-slate-400">暂无收益，请继续努力创作</p>
+                                <div id="totalIncomeDisplay" class="text-4xl font-black text-slate-900 mb-2">¥ 0.00
+                                </div>
+                                <p class="text-slate-400">所有作品累计稿费收益</p>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Comments -->
+                        <div id="tab-comments" class="tab-content hidden animate-fade-in">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-6">读者评价</h2>
+                            <div id="authorCommentList" class="space-y-4">
+                                <!-- Injected -->
+                                <div class="text-center py-20 bg-white rounded-xl border border-gray-200">
+                                    <p class="text-slate-400">正在加载评价...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Chapters List -->
+                        <div id="tab-chapters" class="tab-content hidden animate-fade-in">
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center gap-4">
+                                    <button onclick="switchTab('novels')" class="text-slate-500 hover:text-slate-900"><i
+                                            data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                                    <h2 class="text-2xl font-bold text-slate-900">章节管理: <span id="chapterListNovelTitle"
+                                            class="text-base text-slate-500 font-normal ml-2"></span></h2>
+                                </div>
+                                <button onclick="switchTab('editor')"
+                                    class="btn-primary px-4 py-2 text-sm flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4"></i> 新增章节
+                                </button>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                                id="chapterListContainer">
+                                <!-- Injected -->
                             </div>
                         </div>
 
@@ -178,6 +241,14 @@
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">作品简介</label>
                                         <textarea id="editDesc" class="form-input h-32"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">作品状态</label>
+                                        <select id="editStatus" class="form-input">
+                                            <option value="1">连载中</option>
+                                            <option value="2">已完结</option>
+                                            <option value="0">已下架</option>
+                                        </select>
                                     </div>
                                     <div class="pt-4 border-t border-gray-100 flex justify-end gap-4">
                                         <button onclick="switchTab('novels')" class="btn-secondary">取消</button>
