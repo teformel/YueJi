@@ -30,6 +30,7 @@ public class BeanFactory {
         beans.put(InteractionService.class, new InteractionServiceImpl());
         beans.put(AssetService.class, new AssetServiceImpl());
         beans.put(AuthorService.class, new AuthorServiceImpl());
+        beans.put(CommentService.class, new CommentServiceImpl());
     }
 
 
