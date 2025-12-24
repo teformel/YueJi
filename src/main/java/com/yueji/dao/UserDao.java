@@ -11,4 +11,5 @@ public interface UserDao {
     void update(User user) throws SQLException;
     void updatePassword(int userId, String newPassword) throws SQLException;
     List<User> findAll();
+    long count();
 }

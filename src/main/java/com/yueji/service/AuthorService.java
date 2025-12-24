@@ -10,4 +10,10 @@ public interface AuthorService {
     void createAuthor(Author author) throws Exception;
     void updateAuthor(Author author) throws Exception;
     void deleteAuthor(int id) throws Exception;
+    
+    // Application Flow
+    List<Author> getPendingAuthors();
+    void applyAuthor(int userId, String penname, String intro) throws Exception;
+    void approveAuthor(int authorId) throws Exception;
+    void rejectAuthor(int authorId) throws Exception;
 }

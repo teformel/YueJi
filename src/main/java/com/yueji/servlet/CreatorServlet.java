@@ -86,6 +86,8 @@ public class CreatorServlet extends HttpServlet {
                 handleCreateNovel(req, resp, author.getId());
             } else if ("/novel/update".equals(path)) {
                 handleUpdateNovel(req, resp, author.getId());
+            } else if ("/novel/delete".equals(path)) {
+                handleDeleteNovel(req, resp, author.getId());
             } else if ("/chapter/create".equals(path)) {
                 handleCreateChapter(req, resp, author.getId());
             } else if ("/chapter/update".equals(path)) {
@@ -128,6 +130,16 @@ public class CreatorServlet extends HttpServlet {
         novel.setCover(req.getParameter("coverUrl"));
         novelService.updateNovel(novel);
         ResponseUtils.writeJson(resp, 200, "作品已更新", null);
+    }
+
+    private void handleDeleteNovel(HttpServletRequest req, HttpServletResponse resp, int authorId) throws Exception {
+        int id = Integer.parseInt(req.getParameter("id"));
+        if (!checkNovelOwnership(id, authorId)) {
+            ResponseUtils.writeJson(resp, 403, "非法操作", null);
+            return;
+        }
+        novelService.deleteNovel(id);
+        ResponseUtils.writeJson(resp, 200, "作品已下架", null);
     }
 
     private void handleCreateChapter(HttpServletRequest req, HttpServletResponse resp, int authorId) throws Exception {

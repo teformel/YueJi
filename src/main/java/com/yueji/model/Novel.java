@@ -9,6 +9,7 @@ public class Novel {
     private String description;
     private Integer totalChapters;
     private Integer status; // 0: Shelved, 1: Serializing, 2: Completed
+    private Integer viewCount;
 
     // Joined fields for display
     private String categoryName;
@@ -94,5 +95,13 @@ public class Novel {
 
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
     }
 }

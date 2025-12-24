@@ -11,6 +11,21 @@ import java.util.List;
 public class UserDaoImpl implements UserDao {
 
     @Override
+    public long count() {
+        String sql = "SELECT COUNT(*) FROM t_user";
+        try (Connection conn = DbUtils.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
     public User findByUsername(String username) {
         String sql = "SELECT * FROM t_user WHERE username = ?";
         try (Connection conn = DbUtils.getConnection();

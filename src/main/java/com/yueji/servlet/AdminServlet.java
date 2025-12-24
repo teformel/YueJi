@@ -55,6 +55,13 @@ public class AdminServlet extends HttpServlet {
             ResponseUtils.writeJson(resp, 200, "Authors", authorService.getAllAuthors());
         } else if ("/user/list".equals(path)) {
             ResponseUtils.writeJson(resp, 200, "Users", userService.getAllUsers());
+        } else if ("/author/pending".equals(path)) {
+            ResponseUtils.writeJson(resp, 200, "Pending Authors", authorService.getPendingAuthors());
+        } else if ("/stats".equals(path)) {
+            java.util.Map<String, Long> stats = new java.util.HashMap<>();
+            stats.put("users", userService.getUserCount());
+            stats.put("novels", novelService.getNovelCount());
+            ResponseUtils.writeJson(resp, 200, "Stats", stats);
         } else if ("/chapter/list".equals(path)) {
             int novelId = Integer.parseInt(req.getParameter("novelId"));
             ResponseUtils.writeJson(resp, 200, "Chapters", novelService.getChapterList(novelId));
@@ -97,6 +104,10 @@ public class AdminServlet extends HttpServlet {
                 handleUpdateUserStatus(req, resp);
             } else if ("/user/role".equals(path)) {
                 handleUpdateUserRole(req, resp);
+            } else if ("/author/approve".equals(path)) {
+                handleApproveAuthor(req, resp);
+            } else if ("/author/reject".equals(path)) {
+                handleRejectAuthor(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -104,6 +115,18 @@ public class AdminServlet extends HttpServlet {
             e.printStackTrace();
             ResponseUtils.writeJson(resp, 500, "Error: " + e.getMessage(), null);
         }
+    }
+
+    private void handleApproveAuthor(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        int id = Integer.parseInt(req.getParameter("id"));
+        authorService.approveAuthor(id);
+        ResponseUtils.writeJson(resp, 200, "Author approved", null);
+    }
+
+    private void handleRejectAuthor(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        int id = Integer.parseInt(req.getParameter("id"));
+        authorService.rejectAuthor(id);
+        ResponseUtils.writeJson(resp, 200, "Author rejected", null);
     }
 
     private void handleCreateNovel(HttpServletRequest req, HttpServletResponse resp) throws Exception {

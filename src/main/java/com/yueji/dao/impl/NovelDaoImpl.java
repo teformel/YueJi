@@ -11,6 +11,21 @@ import java.util.List;
 public class NovelDaoImpl implements NovelDao {
 
     @Override
+    public long count() {
+        String sql = "SELECT COUNT(*) FROM t_novel";
+        try (Connection conn = DbUtils.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
     public List<Novel> findAll() {
         return search(null, null);
     }
@@ -137,6 +152,16 @@ public class NovelDaoImpl implements NovelDao {
         }
     }
 
+    @Override
+    public void incrementViewCount(int id) throws SQLException {
+        String sql = "UPDATE t_novel SET view_count = view_count + 1 WHERE id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
     private Novel mapRow(ResultSet rs) throws SQLException {
         Novel n = new Novel();
         n.setId(rs.getInt("id"));
@@ -146,7 +171,13 @@ public class NovelDaoImpl implements NovelDao {
         n.setDescription(rs.getString("description"));
         n.setCover(rs.getString("cover"));
         n.setStatus(rs.getInt("status"));
+        n.setStatus(rs.getInt("status"));
         n.setTotalChapters(rs.getInt("total_chapters"));
+        if(hasColumn(rs, "view_count")) {
+            n.setViewCount(rs.getInt("view_count"));
+        } else {
+            n.setViewCount(0);
+        }
         
         if (hasColumn(rs, "author_name")) {
             n.setAuthorName(rs.getString("author_name"));

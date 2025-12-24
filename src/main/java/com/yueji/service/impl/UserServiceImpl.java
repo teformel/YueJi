@@ -96,4 +96,9 @@ public class UserServiceImpl implements UserService {
             userDao.update(user);
         }
     }
+
+    @Override
+    public long getUserCount() {
+        return userDao.count();
+    }
 }

@@ -12,4 +12,6 @@ public interface NovelDao {
     void create(Novel novel) throws SQLException;
     void update(Novel novel) throws SQLException;
     void delete(int id) throws SQLException;
+    long count();
+    void incrementViewCount(int id) throws SQLException;
 }

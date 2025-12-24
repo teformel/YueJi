@@ -77,6 +77,10 @@ public class NovelServlet extends HttpServlet {
         if (user != null) {
             boolean isCollected = interactionService.isInBookshelf(user.getId(), id);
             data.put("isCollected", isCollected);
+            com.yueji.model.ReadingProgress progress = interactionService.getReadingProgress(user.getId(), id);
+            if (progress != null) {
+                data.put("lastReadChapterId", progress.getChapterId());
+            }
         } else {
             data.put("isCollected", false);
         }

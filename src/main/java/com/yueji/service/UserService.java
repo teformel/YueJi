@@ -12,4 +12,5 @@ public interface UserService {
     java.util.List<User> getAllUsers();
     void updateUserStatus(int userId, int status) throws Exception;
     void updateUserRole(int userId, int role) throws Exception;
+    long getUserCount();
 }

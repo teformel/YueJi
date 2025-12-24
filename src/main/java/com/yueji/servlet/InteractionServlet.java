@@ -47,6 +47,8 @@ public class InteractionServlet extends HttpServlet {
                 handleAddCollection(req, resp);
             } else if ("/collection/remove".equals(path)) {
                 handleRemoveCollection(req, resp);
+            } else if ("/progress/sync".equals(path)) {
+                handleSyncProgress(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -104,6 +106,22 @@ public class InteractionServlet extends HttpServlet {
         int novelId = Integer.parseInt(req.getParameter("novelId"));
         interactionService.removeFromBookshelf(user.getId(), novelId);
         ResponseUtils.writeJson(resp, 200, "Removed from collection", null);
+    }
+
+    private void handleSyncProgress(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        User user = getUser(req, resp);
+        if (user == null) return;
+        
+        int novelId = Integer.parseInt(req.getParameter("novelId"));
+        int chapterId = Integer.parseInt(req.getParameter("chapterId"));
+        // Assuming percentage/scroll is passed but Service updateReadingProgress takes raw 'details' (int pos?)
+        // Interface: updateReadingProgress(int userId, int novelId, int chapterId, int scrollPos);
+        // Let's assume frontend sends 'percentage' or 'scroll'
+        int scroll = 0;
+        try { scroll = Integer.parseInt(req.getParameter("scroll")); } catch (Exception e) {}
+        
+        interactionService.updateReadingProgress(user.getId(), novelId, chapterId, scroll);
+        ResponseUtils.writeJson(resp, 200, "Progress saved", null);
     }
 
     private User getUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {

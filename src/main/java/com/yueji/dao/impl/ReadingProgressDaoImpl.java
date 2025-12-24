@@ -4,9 +4,27 @@ import com.yueji.common.DbUtils;
 import com.yueji.dao.ReadingProgressDao;
 import com.yueji.model.ReadingProgress;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ReadingProgressDaoImpl implements ReadingProgressDao {
+
+    @Override
+    public void upsert(int userId, int novelId, int chapterId, int scrollY) throws SQLException {
+        // Upsert logic (PostgreSQL 9.5+ uses ON CONFLICT)
+        String sql = "INSERT INTO t_reading_progress (user_id, novel_id, chapter_id, scroll_y, update_time) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP) " +
+                     "ON CONFLICT (user_id, novel_id) DO UPDATE SET chapter_id = EXCLUDED.chapter_id, scroll_y = EXCLUDED.scroll_y, update_time = CURRENT_TIMESTAMP";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, novelId);
+            stmt.setInt(3, chapterId);
+            stmt.setInt(4, scrollY);
+            stmt.executeUpdate();
+        }
+    }
 
     @Override
     public ReadingProgress findByUserAndNovel(int userId, int novelId) {
@@ -31,23 +49,5 @@ public class ReadingProgressDaoImpl implements ReadingProgressDao {
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public void upsert(int userId, int novelId, int chapterId, int scrollY) throws SQLException {
-        // Postgres UPSERT: INSERT ... ON CONFLICT ... DO UPDATE
-        String sql = "INSERT INTO t_reading_progress (user_id, novel_id, chapter_id, scroll_y, update_time) " +
-                     "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP) " +
-                     "ON CONFLICT (user_id, novel_id) DO UPDATE SET " +
-                     "chapter_id = EXCLUDED.chapter_id, scroll_y = EXCLUDED.scroll_y, update_time = CURRENT_TIMESTAMP";
-        
-        try (Connection conn = DbUtils.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-            stmt.setInt(2, novelId);
-            stmt.setInt(3, chapterId);
-            stmt.setInt(4, scrollY);
-            stmt.executeUpdate();
-        }
     }
 }

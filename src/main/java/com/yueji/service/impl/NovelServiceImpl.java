@@ -100,4 +100,14 @@ public class NovelServiceImpl implements NovelService {
     public Chapter getChapterById(int id) {
         return chapterDao.findById(id);
     }
+
+    @Override
+    public long getNovelCount() {
+        return novelDao.count();
+    }
+
+    @Override
+    public void incrementViewCount(int novelId) throws java.sql.SQLException {
+        novelDao.incrementViewCount(novelId);
+    }
 }

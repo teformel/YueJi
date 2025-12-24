@@ -60,14 +60,33 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public void create(Author author) throws SQLException {
-        String sql = "INSERT INTO t_author (user_id, penname, introduction, status) VALUES (?, ?, ?, 1)";
+        String sql = "INSERT INTO t_author (user_id, penname, introduction, status) VALUES (?, ?, ?, ?)";
         try (Connection conn = DbUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             if (author.getUserId() != null) stmt.setInt(1, author.getUserId()); else stmt.setNull(1, Types.INTEGER);
             stmt.setString(2, author.getPenname());
             stmt.setString(3, author.getIntroduction());
+            stmt.setInt(4, author.getStatus() != null ? author.getStatus() : 0);
             stmt.executeUpdate();
         }
+    }
+
+    @Override
+    public List<Author> findByStatus(int status) {
+        List<Author> list = new ArrayList<>();
+        String sql = "SELECT * FROM t_author WHERE status = ? ORDER BY id DESC";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, status);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     @Override

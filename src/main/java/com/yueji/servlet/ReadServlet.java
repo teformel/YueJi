@@ -4,6 +4,7 @@ import com.yueji.common.BeanFactory;
 import com.yueji.common.ResponseUtils;
 import com.yueji.model.Chapter;
 import com.yueji.model.User;
+import com.yueji.service.InteractionService;
 import com.yueji.service.NovelService;
 
 import javax.servlet.ServletException;
@@ -17,9 +18,11 @@ import java.io.IOException;
 @WebServlet("/read/*")
 public class ReadServlet extends HttpServlet {
     private final NovelService novelService;
+    private final InteractionService interactionService;
 
     public ReadServlet() {
         this.novelService = BeanFactory.getBean(NovelService.class);
+        this.interactionService = BeanFactory.getBean(InteractionService.class);
     }
 
     @Override
@@ -48,6 +51,18 @@ public class ReadServlet extends HttpServlet {
         if (chapter == null) {
             ResponseUtils.writeJson(resp, 404, "Chapter not found", null);
             return;
+        }
+
+        try {
+            // Update View Count
+            novelService.incrementViewCount(chapter.getNovelId());
+
+            // Update Reading Progress
+            if (user != null) {
+                interactionService.updateReadingProgress(user.getId(), chapter.getNovelId(), chapter.getId(), 0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Log but don't fail request
         }
 
         // Logic handled in Service: content is set to special message if not paid

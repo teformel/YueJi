@@ -11,4 +11,5 @@ public interface AuthorDao {
     void create(Author author) throws SQLException;
     void update(Author author) throws SQLException;
     void delete(int id) throws SQLException;
+    List<Author> findByStatus(int status);
 }

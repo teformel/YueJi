@@ -23,4 +23,6 @@ public interface NovelService {
     void deleteChapter(int id) throws Exception;
     
     Chapter getChapterById(int id); // For admin detail/update
+    long getNovelCount();
+    void incrementViewCount(int novelId) throws java.sql.SQLException;
 }
