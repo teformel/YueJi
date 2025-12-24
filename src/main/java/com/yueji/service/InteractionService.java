@@ -20,4 +20,10 @@ public interface InteractionService {
     void updateReadingProgress(int userId, int novelId, int chapterId, int scrollY) throws Exception;
     void syncReadingTime(int userId, int novelId, int seconds) throws Exception;
     com.yueji.model.ReadingProgress getReadingProgress(int userId, int novelId);
+
+    // Follow System (FR-C-003)
+    void followAuthor(int userId, int authorId) throws Exception;
+    void unfollowAuthor(int userId, int authorId) throws Exception;
+    boolean isFollowingAuthor(int userId, int authorId);
+    List<com.yueji.model.Follow> getUserFollowList(int userId);
 }

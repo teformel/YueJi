@@ -7,7 +7,10 @@ import com.yueji.model.Collection;
 import com.yueji.model.Comment;
 import com.yueji.service.InteractionService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InteractionServiceImpl implements InteractionService {
 
@@ -26,15 +29,40 @@ public class InteractionServiceImpl implements InteractionService {
 
     @Override
     public List<Comment> getNovelComments(int novelId) {
-        List<Comment> list = commentDao.findByNovelId(novelId);
-        // Link reading duration to comments
-        for (Comment c : list) {
+        // 1. Fetch all active comments for this novel
+        List<Comment> all = commentDao.findByNovelId(novelId);
+        if (all == null || all.isEmpty()) return new ArrayList<>();
+
+        Map<Integer, Comment> map = new HashMap<>();
+        List<Comment> roots = new ArrayList<>();
+
+        // 2. Pre-process: Map everything and enrich with reading metadata
+        for (Comment c : all) {
+            map.put(c.getId(), c);
             com.yueji.model.ReadingProgress rp = readingProgressDao.findByUserAndNovel(c.getUserId(), c.getNovelId());
             if (rp != null) {
                 c.setReadingDuration(rp.getTotalReadingTime());
             }
         }
-        return list;
+
+        // 3. Assemble tree: Separate roots from replies
+        for (Comment c : all) {
+            Integer pId = c.getReplyToId();
+            if (pId == null || pId == 0) {
+                // This is a top-level book review
+                roots.add(c);
+            } else {
+                // This is a reply to another comment
+                Comment parent = map.get(pId);
+                if (parent != null) {
+                    parent.getReplies().add(c);
+                } else {
+                    // ORPHAN: The parent comment might be deleted or from another novel
+                    // WE DO NOT ADD TO ROOTS. This prevents "flattening" of replies.
+                }
+            }
+        }
+        return roots;
     }
 
     @Override
@@ -87,5 +115,27 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public com.yueji.model.ReadingProgress getReadingProgress(int userId, int novelId) {
         return readingProgressDao.findByUserAndNovel(userId, novelId);
+    }
+
+    private final com.yueji.dao.FollowDao followDao = BeanFactory.getBean(com.yueji.dao.FollowDao.class);
+
+    @Override
+    public void followAuthor(int userId, int authorId) throws Exception {
+        followDao.follow(userId, authorId);
+    }
+
+    @Override
+    public void unfollowAuthor(int userId, int authorId) throws Exception {
+        followDao.unfollow(userId, authorId);
+    }
+
+    @Override
+    public boolean isFollowingAuthor(int userId, int authorId) {
+        return followDao.isFollowing(userId, authorId);
+    }
+
+    @Override
+    public List<com.yueji.model.Follow> getUserFollowList(int userId) {
+        return followDao.getFollowedAuthorsByUserId(userId);
     }
 }

@@ -27,6 +27,7 @@ public class CommentDaoImpl implements CommentDao {
                     c.setCreatedTime(rs.getTimestamp("created_time"));
                     c.setStatus(rs.getInt("status"));
                     c.setScore(rs.getInt("score"));
+                    c.setReadingDuration(rs.getInt("reading_duration"));
                     return c;
                 }
             }
@@ -57,6 +58,7 @@ public class CommentDaoImpl implements CommentDao {
                     c.setStatus(rs.getInt("status"));
                     c.setUsername(rs.getString("username"));
                     c.setScore(rs.getInt("score"));
+                    c.setReadingDuration(rs.getInt("reading_duration"));
                     // Avatar not in t_user anymore based on requirement, removed.
                     list.add(c);
                 }
@@ -89,6 +91,7 @@ public class CommentDaoImpl implements CommentDao {
                     c.setStatus(rs.getInt("status"));
                     c.setUsername(rs.getString("username"));
                     c.setScore(rs.getInt("score"));
+                    c.setReadingDuration(rs.getInt("reading_duration"));
                     list.add(c);
                 }
             }
@@ -100,7 +103,7 @@ public class CommentDaoImpl implements CommentDao {
 
     @Override
     public void create(Comment comment) throws SQLException {
-        String sql = "INSERT INTO t_comment (user_id, novel_id, content, reply_to_id, status, created_time, score) VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP, ?)";
+        String sql = "INSERT INTO t_comment (user_id, novel_id, content, reply_to_id, status, created_time, score, reading_duration) VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP, ?, ?)";
         try (Connection conn = DbUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, comment.getUserId());
@@ -108,6 +111,7 @@ public class CommentDaoImpl implements CommentDao {
             stmt.setString(3, comment.getContent());
             if (comment.getReplyToId() != null) stmt.setInt(4, comment.getReplyToId()); else stmt.setNull(4, Types.INTEGER);
             if (comment.getScore() != null) stmt.setInt(5, comment.getScore()); else stmt.setInt(5, 5);
+            stmt.setInt(6, comment.getReadingDuration() != null ? comment.getReadingDuration() : 0);
             stmt.executeUpdate();
         }
     }

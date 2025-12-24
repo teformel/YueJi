@@ -24,12 +24,14 @@ public class AdminServlet extends HttpServlet {
     private final AuthorService authorService;
     private final UserService userService;
     private final com.yueji.service.AnnouncementService announcementService;
+    private final com.yueji.dao.CategoryDao categoryDao;
 
     public AdminServlet() {
         this.novelService = BeanFactory.getBean(NovelService.class);
         this.authorService = BeanFactory.getBean(AuthorService.class);
         this.userService = BeanFactory.getBean(UserService.class);
         this.announcementService = BeanFactory.getBean(com.yueji.service.AnnouncementService.class);
+        this.categoryDao = BeanFactory.getBean(com.yueji.dao.CategoryDao.class);
     }
 
     @Override
@@ -63,6 +65,8 @@ public class AdminServlet extends HttpServlet {
             ResponseUtils.writeJson(resp, 200, "Pending Authors", authorService.getPendingAuthors());
         } else if ("/announcement/list".equals(path)) {
             ResponseUtils.writeJson(resp, 200, "Announcements", announcementService.getAllAnnouncements());
+        } else if ("/category/list".equals(path)) {
+            ResponseUtils.writeJson(resp, 200, "Categories", categoryDao.findAll());
         } else if ("/stats".equals(path)) {
             java.util.Map<String, Long> stats = new java.util.HashMap<>();
             stats.put("users", userService.getUserCount());
@@ -121,6 +125,12 @@ public class AdminServlet extends HttpServlet {
                 handleUpdateAnnouncement(req, resp);
             } else if ("/announcement/delete".equals(path)) {
                 handleDeleteAnnouncement(req, resp);
+            } else if ("/category/create".equals(path)) {
+                handleCreateCategory(req, resp);
+            } else if ("/category/update".equals(path)) {
+                handleUpdateCategory(req, resp);
+            } else if ("/category/delete".equals(path)) {
+                handleDeleteCategory(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -244,7 +254,24 @@ public class AdminServlet extends HttpServlet {
         int id = Integer.parseInt(req.getParameter("id"));
         int role = Integer.parseInt(req.getParameter("role")); 
         userService.updateUserRole(id, role);
-        ResponseUtils.writeJson(resp, 200, "User role updated", null);
+        
+        // [FIX] Sync author status: If demoted from author (role 2 is creator)
+        if (role != 2) {
+            Author author = authorService.getAuthorByUserId(id);
+            if (author != null && author.getStatus() == 1) { // If was approved author
+                author.setStatus(2); // Set to rejected/inactive
+                authorService.updateAuthor(author);
+            }
+        } else {
+            // If promoted to author by admin directly, should also ensure author record status is 1
+            Author author = authorService.getAuthorByUserId(id);
+            if (author != null && author.getStatus() != 1) {
+                author.setStatus(1);
+                authorService.updateAuthor(author);
+            }
+        }
+        
+        ResponseUtils.writeJson(resp, 200, "User role updated and author status synced", null);
     }
 
     private void handleCreateAnnouncement(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -271,5 +298,26 @@ public class AdminServlet extends HttpServlet {
         int id = Integer.parseInt(req.getParameter("id"));
         announcementService.deleteAnnouncement(id);
         ResponseUtils.writeJson(resp, 200, "Announcement deleted", null);
+    }
+
+    private void handleCreateCategory(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        com.yueji.model.Category c = new com.yueji.model.Category();
+        c.setName(req.getParameter("name"));
+        categoryDao.create(c);
+        ResponseUtils.writeJson(resp, 200, "Category created", null);
+    }
+
+    private void handleUpdateCategory(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        com.yueji.model.Category c = new com.yueji.model.Category();
+        c.setId(Integer.parseInt(req.getParameter("id")));
+        c.setName(req.getParameter("name"));
+        categoryDao.update(c);
+        ResponseUtils.writeJson(resp, 200, "Category updated", null);
+    }
+
+    private void handleDeleteCategory(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        int id = Integer.parseInt(req.getParameter("id"));
+        categoryDao.delete(id);
+        ResponseUtils.writeJson(resp, 200, "Category deleted", null);
     }
 }

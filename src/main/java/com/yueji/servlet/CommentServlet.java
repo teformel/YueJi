@@ -78,6 +78,11 @@ public class CommentServlet extends HttpServlet {
             comment.setScore(Integer.parseInt(scoreStr));
         }
 
+        String replyToIdStr = req.getParameter("replyToId");
+        if (replyToIdStr != null && !replyToIdStr.isEmpty()) {
+            comment.setReplyToId(Integer.parseInt(replyToIdStr));
+        }
+
         commentService.addComment(comment);
 
         ResponseUtils.writeJson(resp, 200, "Comment added", null);

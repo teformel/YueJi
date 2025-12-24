@@ -1,6 +1,8 @@
 package com.yueji.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Comment {
     private Integer id;
@@ -17,6 +19,7 @@ public class Comment {
     private String avatar; // If user has avatar
     private String novelName; // For author dashboard
     private Integer readingDuration; // Reading time in seconds
+    private List<Comment> replies = new ArrayList<>();
 
     public Comment() {}
 
@@ -114,5 +117,13 @@ public class Comment {
 
     public void setNovelName(String novelName) {
         this.novelName = novelName;
+    }
+
+    public List<Comment> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<Comment> replies) {
+        this.replies = replies;
     }
 }

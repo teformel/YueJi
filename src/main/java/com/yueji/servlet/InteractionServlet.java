@@ -30,6 +30,10 @@ public class InteractionServlet extends HttpServlet {
             handleListComments(req, resp);
         } else if ("/collection/list".equals(path)) {
             handleListCollection(req, resp);
+        } else if ("/follow/list".equals(path)) {
+            handleListFollows(req, resp);
+        } else if ("/follow/check".equals(path)) {
+            handleCheckFollow(req, resp);
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -51,6 +55,10 @@ public class InteractionServlet extends HttpServlet {
                 handleSyncProgress(req, resp);
             } else if ("/progress/time/sync".equals(path)) {
                 handleSyncReadingTime(req, resp);
+            } else if ("/follow/add".equals(path)) {
+                handleFollow(req, resp);
+            } else if ("/follow/remove".equals(path)) {
+                handleUnfollow(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -74,6 +82,12 @@ public class InteractionServlet extends HttpServlet {
         c.setUserId(user.getId());
         c.setNovelId(Integer.parseInt(req.getParameter("novelId")));
         c.setContent(req.getParameter("content"));
+        
+        String replyToIdStr = req.getParameter("replyToId");
+        if (replyToIdStr != null && !replyToIdStr.isEmpty()) {
+            c.setReplyToId(Integer.parseInt(replyToIdStr));
+        }
+
         String scoreStr = req.getParameter("score");
         if (scoreStr != null) {
             c.setScore(Integer.parseInt(scoreStr));
@@ -138,6 +152,36 @@ public class InteractionServlet extends HttpServlet {
         
         interactionService.updateReadingProgress(user.getId(), novelId, chapterId, scroll);
         ResponseUtils.writeJson(resp, 200, "Progress saved", null);
+    }
+
+    private void handleFollow(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        User user = getUser(req, resp);
+        if (user == null) return;
+        int authorId = Integer.parseInt(req.getParameter("authorId"));
+        interactionService.followAuthor(user.getId(), authorId);
+        ResponseUtils.writeJson(resp, 200, "Followed", null);
+    }
+
+    private void handleUnfollow(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        User user = getUser(req, resp);
+        if (user == null) return;
+        int authorId = Integer.parseInt(req.getParameter("authorId"));
+        interactionService.unfollowAuthor(user.getId(), authorId);
+        ResponseUtils.writeJson(resp, 200, "Unfollowed", null);
+    }
+
+    private void handleCheckFollow(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User user = getUser(req, resp);
+        if (user == null) return;
+        int authorId = Integer.parseInt(req.getParameter("authorId"));
+        boolean following = interactionService.isFollowingAuthor(user.getId(), authorId);
+        ResponseUtils.writeJson(resp, 200, "Success", following);
+    }
+
+    private void handleListFollows(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User user = getUser(req, resp);
+        if (user == null) return;
+        ResponseUtils.writeJson(resp, 200, "Success", interactionService.getUserFollowList(user.getId()));
     }
 
     private User getUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
