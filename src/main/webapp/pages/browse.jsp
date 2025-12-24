@@ -21,35 +21,12 @@
                     <!-- Filter Bar -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8 space-y-6">
                         <!-- Categories -->
-                        <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-3" id="categoryFilter">
                             <span class="text-sm font-bold text-slate-400 uppercase tracking-wide mr-2">分类</span>
                             <button
                                 class="filter-btn active px-3 py-1 bg-slate-100 text-slate-900 rounded-md text-sm font-bold hover:bg-slate-200 transition-colors"
                                 data-type="category" data-val="all">全部</button>
-                            <button
-                                class="filter-btn px-3 py-1 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
-                                data-type="category" data-val="玄幻">玄幻</button>
-                            <button
-                                class="filter-btn px-3 py-1 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
-                                data-type="category" data-val="都市">都市</button>
-                            <button
-                                class="filter-btn px-3 py-1 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
-                                data-type="category" data-val="仙侠">仙侠</button>
-                            <button
-                                class="filter-btn px-3 py-1 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
-                                data-type="category" data-val="科幻">科幻</button>
-                            <button
-                                class="filter-btn px-3 py-1 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
-                                data-type="category" data-val="历史">历史</button>
-                            <button
-                                class="filter-btn px-3 py-1 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
-                                data-type="category" data-val="游戏">游戏</button>
-                            <button
-                                class="filter-btn px-3 py-1 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
-                                data-type="category" data-val="奇幻">奇幻</button>
-                            <button
-                                class="filter-btn px-3 py-1 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
-                                data-type="category" data-val="悬疑">悬疑</button>
+                            <!-- Dynamic -->
                         </div>
 
                         <!-- Status -->

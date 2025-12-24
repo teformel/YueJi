@@ -42,6 +42,37 @@ public class CategoryDaoImpl implements CategoryDao {
         return null;
     }
 
+    @Override
+    public void create(Category category) throws SQLException {
+        String sql = "INSERT INTO t_category (name, created_time) VALUES (?, CURRENT_TIMESTAMP)";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, category.getName());
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public void update(Category category) throws SQLException {
+        String sql = "UPDATE t_category SET name = ? WHERE id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, category.getName());
+            stmt.setInt(2, category.getId());
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public void delete(int id) throws SQLException {
+        String sql = "DELETE FROM t_category WHERE id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
     private Category mapRow(ResultSet rs) throws SQLException {
         Category c = new Category();
         c.setId(rs.getInt("id"));

@@ -6,16 +6,43 @@ let currentFilters = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    initFilters();
+    loadCategories();
     loadBooks();
     lucide.createIcons();
 
-    // Check URL param for initial category
-    const catParam = getQueryParam('category');
-    if (catParam) {
-        setFilter('category', catParam);
+    // Check URL param for initial category (ID or Name)
+    const catId = getQueryParam('categoryId');
+    if (catId) {
+        currentFilters.category = catId;
     }
 });
+
+async function loadCategories() {
+    const container = document.getElementById('categoryFilter');
+    if (!container) return;
+
+    try {
+        const res = await fetchJson('../novel/categories');
+        if (res.code === 200) {
+            const categories = res.data || [];
+            const catId = getQueryParam('categoryId');
+
+            let html = `
+                <span class="text-sm font-bold text-slate-400 uppercase tracking-wide mr-2">分类</span>
+                <button class="filter-btn ${(!catId || catId === 'all') ? 'active bg-slate-100 text-slate-900' : 'text-slate-600'} px-3 py-1 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
+                    data-type="category" data-val="all">全部</button>
+            `;
+
+            html += categories.map(c => `
+                <button class="filter-btn ${catId == c.id ? 'active bg-slate-100 text-slate-900' : 'text-slate-600'} px-3 py-1 rounded-md text-sm font-bold hover:bg-slate-100 transition-colors"
+                    data-type="category" data-val="${c.id}">${c.name}</button>
+            `).join('');
+
+            container.innerHTML = html;
+            initFilters();
+        }
+    } catch (e) { console.error(e); }
+}
 
 function initFilters() {
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -59,19 +86,12 @@ async function loadBooks() {
         const allNovels = result.data;
 
         let filtered = allNovels.filter(n => {
-            // Backend returns category_id, frontend uses names. 
-            // Mapping might be needed if n.category is ID. 
-            // NovelDao maps category name to n.categoryName.
-            // browse.jsp uses 'category' name matching.
+            const statusVal = n.status === 2 ? '已完结' : '连载中';
 
-            // Check data structure from NovelDaoImpl:
-            // n.setCategoryName(rs.getString("category_name"));
-            // Frontend expects n.category (from old MockDB).
-            // We need to normalize this.
-            const catName = n.categoryName || n.category || '其他';
-            const statusVal = n.status === 2 ? '已完结' : '连载中'; // 1: Serial, 2: Finished (Assuming)
-
-            if (currentFilters.category !== 'all' && catName !== currentFilters.category) return false;
+            if (currentFilters.category !== 'all') {
+                // n.categoryId is what backend returns
+                if (String(n.categoryId) !== String(currentFilters.category)) return false;
+            }
             if (currentFilters.status !== 'all' && statusVal !== currentFilters.status) return false;
             return true;
         });

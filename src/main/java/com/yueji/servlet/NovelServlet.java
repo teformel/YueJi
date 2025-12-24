@@ -37,6 +37,8 @@ public class NovelServlet extends HttpServlet {
             handleDetail(req, resp);
         } else if ("/announcements".equals(path)) {
             handleAnnouncements(req, resp);
+        } else if ("/categories".equals(path)) {
+            handleCategories(req, resp);
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -112,5 +114,10 @@ public class NovelServlet extends HttpServlet {
         com.yueji.service.AnnouncementService announcementService = BeanFactory.getBean(com.yueji.service.AnnouncementService.class);
         List<com.yueji.model.Announcement> list = announcementService.getActiveAnnouncements();
         ResponseUtils.writeJson(resp, 200, "Success", list);
+    }
+
+    private void handleCategories(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        com.yueji.dao.CategoryDao categoryDao = BeanFactory.getBean(com.yueji.dao.CategoryDao.class);
+        ResponseUtils.writeJson(resp, 200, "Success", categoryDao.findAll());
     }
 }
