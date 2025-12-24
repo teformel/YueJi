@@ -153,6 +153,8 @@
                                     currentChapters = chapters;
                                     renderChapters(chapters);
                                 }
+
+                                loadComments();
                             }
                         } catch (e) {
                             console.error(e);
@@ -173,10 +175,91 @@
                                         </div>
                                         <span class="text-sm font-bold text-slate-700">\${user.realname || user.username}</span>
                                     </div>
-                                    <textarea class="form-input w-full h-24 text-sm" placeholder="发表你的看法..."></textarea>
-                                    <button class="btn-primary w-full mt-2 py-2 text-sm">发表评论</button>
+                                    <textarea id="commentContent" class="form-input w-full h-24 text-sm" placeholder="发表你的看法..."></textarea>
+                                    <button onclick="postComment()" class="btn-primary w-full mt-2 py-2 text-sm">发表评论</button>
                                 </div>
                             `;
+                        }
+                    }
+
+                    async function loadComments() {
+                        const container = document.getElementById('discussionArea');
+                        // Keep the input area if logged in, just append list below, or handling list separately.
+                        // Actually the design has input area replacing the "Login" placeholder.
+                        // We need a separate container for the list.
+                        // Let's create a list container dynamically if not exists.
+
+                        let listContainer = document.getElementById('commentList');
+                        if (!listContainer) {
+                            listContainer = document.createElement('div');
+                            listContainer.id = 'commentList';
+                            listContainer.className = 'mt-8 text-left space-y-4';
+                            document.getElementById('discussionArea').parentNode.appendChild(listContainer);
+                        }
+
+                        try {
+                            const res = await fetchJson(`../comment/list?novelId=\${novelId}`);
+                            if (res.code === 200) {
+                                const userStr = localStorage.getItem('user');
+                                const currentUser = userStr ? JSON.parse(userStr) : null;
+
+                                listContainer.innerHTML = res.data.map(c => {
+                                    let deleteBtn = '';
+                                    if (currentUser && (currentUser.role === 1 || currentUser.id === c.userId)) {
+                                        deleteBtn = `<button onclick="deleteComment(\${c.id})" class="text-xs text-red-400 hover:text-red-600">删除</button>`;
+                                    }
+                                    return `
+                                      <div class="border-b border-gray-100 pb-4">
+                                          <div class="flex justify-between items-start">
+                                              <div class="flex items-center gap-2 mb-2">
+                                                  <span class="font-bold text-sm text-slate-700">\${c.username}</span>
+                                                  <span class="text-xs text-slate-400">\${new Date(c.createdTime).toLocaleString()}</span>
+                                              </div>
+                                              \${deleteBtn}
+                                          </div>
+                                          <p class="text-sm text-slate-600">\${c.content}</p>
+                                      </div>
+                                  `;
+                                }).join('');
+                            }
+                        } catch (e) { console.error(e); }
+                    }
+
+                    async function postComment() {
+                        const content = document.getElementById('commentContent').value;
+                        if (!content) return showToast('请输入内容', 'warning');
+
+                        try {
+                            const formData = new URLSearchParams();
+                            formData.append('novelId', novelId);
+                            formData.append('content', content);
+                            const res = await fetchJson('../comment/add', { method: 'POST', body: formData });
+                            if (res.code === 200) {
+                                showToast('评论成功', 'success');
+                                document.getElementById('commentContent').value = '';
+                                loadComments();
+                            } else {
+                                showToast(res.msg, 'error');
+                            }
+                        } catch (e) {
+                            showToast('评论失败', 'error');
+                        }
+                    }
+
+                    async function deleteComment(id) {
+                        if (!confirm('确定删除该评论吗？')) return;
+                        try {
+                            const formData = new URLSearchParams();
+                            formData.append('id', id);
+                            const res = await fetchJson('../comment/delete', { method: 'POST', body: formData });
+                            if (res.code === 200) {
+                                showToast('删除成功', 'success');
+                                loadComments();
+                            } else {
+                                showToast(res.msg, 'error');
+                            }
+                        } catch (e) {
+                            showToast('操作失败', 'error');
                         }
                     }
 
