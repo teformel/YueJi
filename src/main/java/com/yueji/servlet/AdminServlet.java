@@ -23,11 +23,13 @@ public class AdminServlet extends HttpServlet {
     private final NovelService novelService;
     private final AuthorService authorService;
     private final UserService userService;
+    private final com.yueji.service.AnnouncementService announcementService;
 
     public AdminServlet() {
         this.novelService = BeanFactory.getBean(NovelService.class);
         this.authorService = BeanFactory.getBean(AuthorService.class);
         this.userService = BeanFactory.getBean(UserService.class);
+        this.announcementService = BeanFactory.getBean(com.yueji.service.AnnouncementService.class);
     }
 
     @Override
@@ -59,10 +61,13 @@ public class AdminServlet extends HttpServlet {
             ResponseUtils.writeJson(resp, 200, "Authors", authorService.getAllAuthors());
         } else if ("/author/pending".equals(path)) {
             ResponseUtils.writeJson(resp, 200, "Pending Authors", authorService.getPendingAuthors());
+        } else if ("/announcement/list".equals(path)) {
+            ResponseUtils.writeJson(resp, 200, "Announcements", announcementService.getAllAnnouncements());
         } else if ("/stats".equals(path)) {
             java.util.Map<String, Long> stats = new java.util.HashMap<>();
             stats.put("users", userService.getUserCount());
             stats.put("novels", novelService.getNovelCount());
+            stats.put("activeToday", userService.getActiveUserCountToday());
             ResponseUtils.writeJson(resp, 200, "Stats", stats);
         } else if ("/chapter/list".equals(path)) {
             int novelId = Integer.parseInt(req.getParameter("novelId"));
@@ -110,6 +115,12 @@ public class AdminServlet extends HttpServlet {
                 handleApproveAuthor(req, resp);
             } else if ("/author/reject".equals(path)) {
                 handleRejectAuthor(req, resp);
+            } else if ("/announcement/create".equals(path)) {
+                handleCreateAnnouncement(req, resp);
+            } else if ("/announcement/update".equals(path)) {
+                handleUpdateAnnouncement(req, resp);
+            } else if ("/announcement/delete".equals(path)) {
+                handleDeleteAnnouncement(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -234,5 +245,31 @@ public class AdminServlet extends HttpServlet {
         int role = Integer.parseInt(req.getParameter("role")); 
         userService.updateUserRole(id, role);
         ResponseUtils.writeJson(resp, 200, "User role updated", null);
+    }
+
+    private void handleCreateAnnouncement(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        com.yueji.model.Announcement a = new com.yueji.model.Announcement();
+        a.setTitle(req.getParameter("title"));
+        a.setContent(req.getParameter("content"));
+        String active = req.getParameter("isActive");
+        a.setIsActive(active != null ? Integer.parseInt(active) : 1);
+        announcementService.addAnnouncement(a);
+        ResponseUtils.writeJson(resp, 200, "Announcement created", null);
+    }
+
+    private void handleUpdateAnnouncement(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        com.yueji.model.Announcement a = new com.yueji.model.Announcement();
+        a.setId(Integer.parseInt(req.getParameter("id")));
+        a.setTitle(req.getParameter("title"));
+        a.setContent(req.getParameter("content"));
+        a.setIsActive(Integer.parseInt(req.getParameter("isActive")));
+        announcementService.updateAnnouncement(a);
+        ResponseUtils.writeJson(resp, 200, "Announcement updated", null);
+    }
+
+    private void handleDeleteAnnouncement(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        int id = Integer.parseInt(req.getParameter("id"));
+        announcementService.deleteAnnouncement(id);
+        ResponseUtils.writeJson(resp, 200, "Announcement deleted", null);
     }
 }
