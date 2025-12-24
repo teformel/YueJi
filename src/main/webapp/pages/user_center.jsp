@@ -141,36 +141,34 @@
                                         * 这是一个演示系统，并不会真的扣款。
                                     </p>
                                 </div>
-                                </p>
                             </div>
-                        </div>
 
-                        <!-- Tab: History -->
-                        <div id="tab-history" class="tab-content hidden">
-                            <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
-                                <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                    <i data-lucide="history" class="w-5 h-5 text-gray-500"></i> 消费记录
-                                </h3>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-left text-sm text-slate-600 table-fixed">
-                                        <thead class="bg-gray-50 text-slate-900 font-bold border-b border-gray-200">
-                                            <tr>
-                                                <th class="px-4 py-3 w-1/4">时间</th>
-                                                <th class="px-4 py-3 w-20">类型</th>
-                                                <th class="px-4 py-3 w-1/2">详情</th>
-                                                <th class="px-4 py-3 w-24 text-right">金额</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="historyList" class="divide-y divide-gray-100">
-                                            <!-- Injected -->
-                                        </tbody>
-                                    </table>
+                            <!-- Tab: History -->
+                            <div id="tab-history" class="tab-content hidden">
+                                <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+                                    <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                        <i data-lucide="history" class="w-5 h-5 text-gray-500"></i> 消费记录
+                                    </h3>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left text-sm text-slate-600 table-fixed">
+                                            <thead class="bg-gray-50 text-slate-900 font-bold border-b border-gray-200">
+                                                <tr>
+                                                    <th class="px-4 py-3 w-1/4">时间</th>
+                                                    <th class="px-4 py-3 w-20">类型</th>
+                                                    <th class="px-4 py-3 w-1/2">详情</th>
+                                                    <th class="px-4 py-3 w-24 text-right">金额</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="historyList" class="divide-y divide-gray-100">
+                                                <!-- Injected -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
-                </div>
                 </div>
             </main>
 
