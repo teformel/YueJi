@@ -10,4 +10,5 @@ public interface ChapterDao {
     void create(Chapter chapter) throws SQLException;
     void update(Chapter chapter) throws SQLException;
     void delete(int id) throws SQLException;
+    int countByNovelId(int novelId) throws SQLException;
 }

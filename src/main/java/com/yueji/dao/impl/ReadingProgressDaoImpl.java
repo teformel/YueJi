@@ -42,6 +42,7 @@ public class ReadingProgressDaoImpl implements ReadingProgressDao {
                     rp.setChapterId(rs.getInt("chapter_id"));
                     rp.setScrollY(rs.getInt("scroll_y"));
                     rp.setUpdateTime(rs.getTimestamp("update_time"));
+                    rp.setTotalReadingTime(rs.getInt("total_reading_time"));
                     return rp;
                 }
             }
@@ -49,5 +50,20 @@ public class ReadingProgressDaoImpl implements ReadingProgressDao {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void addReadingTime(int userId, int novelId, int seconds) throws SQLException {
+        // Upsert style: increase if exists, or insert new
+        String sql = "INSERT INTO t_reading_progress (user_id, novel_id, chapter_id, scroll_y, total_reading_time, update_time) VALUES (?, ?, 0, 0, ?, CURRENT_TIMESTAMP) " +
+                     "ON CONFLICT (user_id, novel_id) DO UPDATE SET total_reading_time = t_reading_progress.total_reading_time + ?, update_time = CURRENT_TIMESTAMP";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, novelId);
+            stmt.setInt(3, seconds);
+            stmt.setInt(4, seconds);
+            stmt.executeUpdate();
+        }
     }
 }

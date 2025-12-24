@@ -162,6 +162,26 @@ public class NovelDaoImpl implements NovelDao {
         }
     }
 
+    @Override
+    public void incrementTotalChapters(int id) throws SQLException {
+        String sql = "UPDATE t_novel SET total_chapters = total_chapters + 1 WHERE id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public void decrementTotalChapters(int id) throws SQLException {
+        String sql = "UPDATE t_novel SET total_chapters = GREATEST(0, total_chapters - 1) WHERE id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
     private Novel mapRow(ResultSet rs) throws SQLException {
         Novel n = new Novel();
         n.setId(rs.getInt("id"));

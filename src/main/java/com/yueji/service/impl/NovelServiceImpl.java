@@ -87,6 +87,13 @@ public class NovelServiceImpl implements NovelService {
     public void addChapter(Chapter chapter) throws Exception {
         if (chapter.getIsPaid() == null) chapter.setIsPaid(0); // Default to Free
         chapterDao.create(chapter);
+        // Sync count
+        int count = chapterDao.countByNovelId(chapter.getNovelId());
+        Novel novel = novelDao.findById(chapter.getNovelId());
+        if (novel != null) {
+            novel.setTotalChapters(count);
+            novelDao.update(novel);
+        }
     }
 
     @Override
@@ -96,7 +103,17 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     public void deleteChapter(int id) throws Exception {
-        chapterDao.delete(id);
+        Chapter chapter = chapterDao.findById(id);
+        if (chapter != null) {
+            chapterDao.delete(id);
+            // Sync count
+            int count = chapterDao.countByNovelId(chapter.getNovelId());
+            Novel novel = novelDao.findById(chapter.getNovelId());
+            if (novel != null) {
+                novel.setTotalChapters(count);
+                novelDao.update(novel);
+            }
+        }
     }
 
     @Override

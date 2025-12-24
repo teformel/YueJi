@@ -9,6 +9,7 @@ public class ReadingProgress {
     private Integer chapterId;
     private Integer scrollY;
     private Date updateTime;
+    private Integer totalReadingTime; // in seconds
 
     public ReadingProgress() {}
 
@@ -58,5 +59,13 @@ public class ReadingProgress {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getTotalReadingTime() {
+        return totalReadingTime;
+    }
+
+    public void setTotalReadingTime(Integer totalReadingTime) {
+        this.totalReadingTime = totalReadingTime;
     }
 }

@@ -26,7 +26,30 @@ public class InteractionServiceImpl implements InteractionService {
 
     @Override
     public List<Comment> getNovelComments(int novelId) {
-        return commentDao.findByNovelId(novelId);
+        List<Comment> list = commentDao.findByNovelId(novelId);
+        // Link reading duration to comments
+        for (Comment c : list) {
+            com.yueji.model.ReadingProgress rp = readingProgressDao.findByUserAndNovel(c.getUserId(), c.getNovelId());
+            if (rp != null) {
+                c.setReadingDuration(rp.getTotalReadingTime());
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public List<Comment> getAuthorReceivedComments(int authorId) {
+        return commentDao.findByAuthorId(authorId);
+    }
+
+    @Override
+    public double getNovelAverageScore(int novelId) {
+        return commentDao.getAverageScore(novelId);
+    }
+
+    @Override
+    public void deleteComment(int id) throws Exception {
+        commentDao.delete(id);
     }
 
     @Override
@@ -54,6 +77,11 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public void updateReadingProgress(int userId, int novelId, int chapterId, int scrollY) throws Exception {
         readingProgressDao.upsert(userId, novelId, chapterId, scrollY);
+    }
+
+    @Override
+    public void syncReadingTime(int userId, int novelId, int seconds) throws Exception {
+        readingProgressDao.addReadingTime(userId, novelId, seconds);
     }
 
     @Override

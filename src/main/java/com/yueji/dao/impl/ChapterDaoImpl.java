@@ -83,6 +83,19 @@ public class ChapterDaoImpl implements ChapterDao {
         }
     }
 
+    @Override
+    public int countByNovelId(int novelId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM t_chapter WHERE novel_id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, novelId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
     private Chapter mapRow(ResultSet rs, boolean includeContent) throws SQLException {
         Chapter c = new Chapter();
         c.setId(rs.getInt("id"));

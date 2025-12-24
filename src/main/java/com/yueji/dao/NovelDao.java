@@ -14,4 +14,6 @@ public interface NovelDao {
     void delete(int id) throws SQLException;
     long count();
     void incrementViewCount(int id) throws SQLException;
+    void incrementTotalChapters(int id) throws SQLException;
+    void decrementTotalChapters(int id) throws SQLException;
 }

@@ -104,4 +104,8 @@ public class Novel {
     public void setViewCount(Integer viewCount) {
         this.viewCount = viewCount;
     }
+
+    private java.math.BigDecimal score;
+    public java.math.BigDecimal getScore() { return score; }
+    public void setScore(java.math.BigDecimal score) { this.score = score; }
 }
