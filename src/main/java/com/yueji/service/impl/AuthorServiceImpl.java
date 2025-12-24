@@ -92,5 +92,14 @@ public class AuthorServiceImpl implements AuthorService {
         
         author.setStatus(2);
         authorDao.update(author);
+
+        // Undo: Demote back to Reader (0) if they were Creator (2)
+        com.yueji.service.UserService userService = BeanFactory.getBean(com.yueji.service.UserService.class);
+        if (author.getUserId() != null) {
+            com.yueji.model.User u = userService.getUserById(author.getUserId());
+            if (u != null && u.getRole() == 2) {
+                userService.updateUserRole(author.getUserId(), 0);
+            }
+        }
     }
 }

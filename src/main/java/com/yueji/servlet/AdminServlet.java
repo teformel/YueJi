@@ -55,6 +55,8 @@ public class AdminServlet extends HttpServlet {
             ResponseUtils.writeJson(resp, 200, "Authors", authorService.getAllAuthors());
         } else if ("/user/list".equals(path)) {
             ResponseUtils.writeJson(resp, 200, "Users", userService.getAllUsers());
+        } else if ("/author/list".equals(path)) {
+            ResponseUtils.writeJson(resp, 200, "Authors", authorService.getAllAuthors());
         } else if ("/author/pending".equals(path)) {
             ResponseUtils.writeJson(resp, 200, "Pending Authors", authorService.getPendingAuthors());
         } else if ("/stats".equals(path)) {

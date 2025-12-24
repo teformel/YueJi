@@ -77,14 +77,15 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void update(User user) throws SQLException {
-        String sql = "UPDATE t_user SET realname = ?, phone = ?, coin_balance = ?, status = ? WHERE id = ?";
+        String sql = "UPDATE t_user SET realname = ?, phone = ?, coin_balance = ?, role = ?, status = ? WHERE id = ?";
         try (Connection conn = DbUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getRealname());
             stmt.setString(2, user.getPhone());
             stmt.setBigDecimal(3, user.getCoinBalance());
-            stmt.setInt(4, user.getStatus());
-            stmt.setInt(5, user.getId());
+            stmt.setInt(4, user.getRole());
+            stmt.setInt(5, user.getStatus());
+            stmt.setInt(6, user.getId());
             stmt.executeUpdate();
         }
     }
