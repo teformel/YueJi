@@ -10,10 +10,13 @@ public class Comment {
     private Integer replyToId;
     private Integer status; // 0: Audit/Del, 1: Normal
     private Timestamp createdTime;
+    private Integer score; // 1-5 stars
 
     // Transient fields for display
     private String username;
     private String avatar; // If user has avatar
+    private String novelName; // For author dashboard
+    private Integer readingDuration; // Reading time in seconds
 
     public Comment() {}
 
@@ -87,5 +90,29 @@ public class Comment {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public Integer getReadingDuration() {
+        return readingDuration;
+    }
+
+    public void setReadingDuration(Integer readingDuration) {
+        this.readingDuration = readingDuration;
+    }
+
+    public String getNovelName() {
+        return novelName;
+    }
+
+    public void setNovelName(String novelName) {
+        this.novelName = novelName;
     }
 }
