@@ -65,6 +65,12 @@
                                     class="w-full flex items-center gap-3 px-6 py-4 text-left font-bold text-red-500 hover:bg-red-50 border-l-4 border-transparent transition-all">
                                     <i data-lucide="log-out" class="w-5 h-5"></i> 退出登录
                                 </button>
+
+                                <!-- Author Apply Button (Hidden by default) -->
+                                <button id="btnApplyAuthor" onclick="openApplyModal()"
+                                    class="hidden w-full flex items-center gap-3 px-6 py-4 text-left font-bold text-purple-600 hover:bg-purple-50 border-l-4 border-transparent transition-all">
+                                    <i data-lucide="pen-tool" class="w-5 h-5"></i> 申请成为作者
+                                </button>
                             </nav>
                         </aside>
 
@@ -174,6 +180,53 @@
 
             <div id="toast"></div>
 
+            <!-- Apply Modal -->
+            <div id="applyModal"
+                class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center backdrop-blur-sm">
+                <div class="bg-white rounded-xl shadow-2xl p-8 max-w-lg w-full mx-4 animate-fade-in relative">
+                    <button onclick="document.getElementById('applyModal').classList.add('hidden')"
+                        class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6">申请成为签约作者</h2>
+
+                    <div id="stepAgreement">
+                        <div
+                            class="h-64 overflow-y-auto bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm text-slate-600 leading-relaxed mb-6">
+                            <h4 class="font-bold mb-2">阅己小说网作者注册协议</h4>
+                            <p class="mb-2">1. 特别提示</p>
+                            <p class="mb-2">
+                                在此特别提醒您（用户）在注册成为阅己小说网作者之前，请认真阅读本《阅己小说网作者注册协议》（以下简称“协议”），确保您充分理解本协议中各条款。请您审慎阅读并选择接受或不接受本协议。
+                            </p>
+                            <p class="mb-2">2. 协议内容</p>
+                            <p class="mb-2">本协议内容包括协议正文及所有阅己小说网已经发布或将来可能发布的各类规则。所有规则为本协议不可分割的组成部分，与协议正文具有同等法律效力。</p>
+                            <p class="mb-2">3. 作者义务</p>
+                            <p>作者应保证其在阅己小说网发布的作品为原创作品，不侵犯任何第三方的合法权益。</p>
+                        </div>
+                        <div class="flex items-center gap-2 mb-6">
+                            <input type="checkbox" id="agreeCheck"
+                                class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="agreeCheck"
+                                class="text-sm font-bold text-slate-700 select-none cursor-pointer">我已阅读并同意上述协议</label>
+                        </div>
+                        <button onclick="nextStep()" class="btn-primary w-full py-3">下一步</button>
+                    </div>
+
+                    <div id="stepForm" class="hidden space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">笔名</label>
+                            <input type="text" id="applyPenname" class="form-input" placeholder="请输入您的笔名">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">个人简介</label>
+                            <textarea id="applyIntro" class="form-input h-24" placeholder="向读者介绍一下自己..."></textarea>
+                        </div>
+                        <button onclick="submitApply()" class="btn-primary w-full py-3">提交申请</button>
+                    </div>
+                </div>
+            </div>
+
             <%@ include file="footer.jsp" %>
 
                 <script>
@@ -213,6 +266,50 @@
 
                         // Prefill edit form
                         document.getElementById('editNickname').value = user.realname || '';
+
+                        // Show Apply Button if Role is 0 (Reader)
+                        if (user.role === 0) {
+                            document.getElementById('btnApplyAuthor').classList.remove('hidden');
+                        }
+                    }
+
+                    function openApplyModal() {
+                        document.getElementById('applyModal').classList.remove('hidden');
+                        document.getElementById('stepAgreement').classList.remove('hidden');
+                        document.getElementById('stepForm').classList.add('hidden');
+                        document.getElementById('agreeCheck').checked = false;
+                    }
+
+                    function nextStep() {
+                        if (!document.getElementById('agreeCheck').checked) {
+                            showToast('请先阅读并同意协议', 'warning');
+                            return;
+                        }
+                        document.getElementById('stepAgreement').classList.add('hidden');
+                        document.getElementById('stepForm').classList.remove('hidden');
+                    }
+
+                    async function submitApply() {
+                        const penname = document.getElementById('applyPenname').value;
+                        const intro = document.getElementById('applyIntro').value;
+
+                        if (!penname || !intro) return showToast('请填写完整信息', 'warning');
+
+                        try {
+                            const formData = new URLSearchParams();
+                            formData.append('penname', penname);
+                            formData.append('intro', intro);
+
+                            const res = await fetchJson('../author/apply', { method: 'POST', body: formData });
+                            if (res.code === 200) {
+                                showToast('申请提交成功，请等待审核', 'success');
+                                document.getElementById('applyModal').classList.add('hidden');
+                            } else {
+                                showToast(res.msg, 'error');
+                            }
+                        } catch (e) {
+                            showToast('请求失败', 'error');
+                        }
                     }
 
                     function switchTab(tabName) {

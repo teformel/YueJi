@@ -44,11 +44,11 @@
                                 </div>
 
                                 <div class="flex items-center gap-4 mb-8">
-                                    <button onclick="startReading()"
+                                    <button onclick="startReading()" id="btnStartRead"
                                         class="btn-primary px-8 py-3 text-lg shadow-lg shadow-blue-500/20 active:scale-95 transition-transform">
                                         <i data-lucide="book-open" class="w-5 h-5"></i> 立即阅读
                                     </button>
-                                    <button
+                                    <button id="btnAddShelf" onclick="toggleShelf()"
                                         class="px-6 py-3 bg-white border border-gray-200 text-slate-700 font-bold rounded-lg hover:bg-gray-50 transition-colors">
                                         加入书架
                                     </button>
@@ -124,29 +124,30 @@
 
                     const novelId = getQueryParam('id');
                     let currentChapters = [];
+                    let lastReadChapterId = null;
 
                     async function loadDetail() {
                         if (!novelId) return;
                         try {
-                            const res = await fetchJson(`../novel/detail?id=\${novelId}`);
+                            const res = await fetchJson(`../novel/detail?id=${novelId}`);
                             if (res.code === 200) {
                                 const data = res.data;
                                 const novel = data.novel;
                                 const chapters = data.chapters;
 
                                 document.getElementById('novelTitle').innerText = novel.name;
-                                document.getElementById('authorName').innerText = `\${novel.authorName || '佚名'} · 著`;
+                                document.getElementById('authorName').innerText = `${novel.authorName || '佚名'} · 著`;
                                 document.getElementById('description').innerText = novel.description || '暂无简介...';
                                 document.getElementById('categoryBadge').innerText = novel.categoryName || '综合';
                                 document.getElementById('coverImg').src = novel.cover || '../static/images/cover_placeholder.jpg';
-                                document.title = `\${novel.name} - 阅己`;
+                                document.title = `${novel.name} - 阅己`;
 
                                 // Status
                                 const statusHtml = novel.status === 2
                                     ? '<i data-lucide="check-circle-2" class="w-3 h-3"></i> 已完结'
                                     : '<i data-lucide="zap" class="w-3 h-3"></i> 连载中';
                                 document.getElementById('statusBadge').innerHTML = statusHtml;
-                                document.getElementById('statusBadge').className = `text-xs font-bold flex items-center gap-1 \${novel.status === 2 ? 'text-green-600' : 'text-blue-600'}`;
+                                document.getElementById('statusBadge').className = `text-xs font-bold flex items-center gap-1 ${novel.status === 2 ? 'text-green-600' : 'text-blue-600'}`;
                                 lucide.createIcons();
 
                                 if (chapters) {
@@ -155,6 +156,15 @@
                                 }
 
                                 loadComments();
+
+                                // Shelf Status
+                                updateShelfBtn(data.isCollected);
+
+                                if (data.lastReadChapterId) {
+                                    lastReadChapterId = data.lastReadChapterId;
+                                    document.getElementById('btnStartRead').innerHTML = '<i data-lucide="book-open" class="w-5 h-5"></i> 继续阅读';
+                                }
+                                lucide.createIcons();
                             }
                         } catch (e) {
                             console.error(e);
@@ -171,9 +181,9 @@
                                 <div class="text-left">
                                     <div class="flex items-center gap-2 mb-3">
                                         <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                                            \${user.realname ? user.realname[0] : user.username[0].toUpperCase()}
+                                            ${user.realname ? user.realname[0] : user.username[0].toUpperCase()}
                                         </div>
-                                        <span class="text-sm font-bold text-slate-700">\${user.realname || user.username}</span>
+                                        <span class="text-sm font-bold text-slate-700">${user.realname || user.username}</span>
                                     </div>
                                     <textarea id="commentContent" class="form-input w-full h-24 text-sm" placeholder="发表你的看法..."></textarea>
                                     <button onclick="postComment()" class="btn-primary w-full mt-2 py-2 text-sm">发表评论</button>
@@ -198,7 +208,7 @@
                         }
 
                         try {
-                            const res = await fetchJson(`../comment/list?novelId=\${novelId}`);
+                            const res = await fetchJson(`../comment/list?novelId=${novelId}`);
                             if (res.code === 200) {
                                 const userStr = localStorage.getItem('user');
                                 const currentUser = userStr ? JSON.parse(userStr) : null;
@@ -206,18 +216,18 @@
                                 listContainer.innerHTML = res.data.map(c => {
                                     let deleteBtn = '';
                                     if (currentUser && (currentUser.role === 1 || currentUser.id === c.userId)) {
-                                        deleteBtn = `<button onclick="deleteComment(\${c.id})" class="text-xs text-red-400 hover:text-red-600">删除</button>`;
+                                        deleteBtn = `<button onclick="deleteComment(${c.id})" class="text-xs text-red-400 hover:text-red-600">删除</button>`;
                                     }
                                     return `
                                       <div class="border-b border-gray-100 pb-4">
                                           <div class="flex justify-between items-start">
                                               <div class="flex items-center gap-2 mb-2">
-                                                  <span class="font-bold text-sm text-slate-700">\${c.username}</span>
-                                                  <span class="text-xs text-slate-400">\${new Date(c.createdTime).toLocaleString()}</span>
+                                                  <span class="font-bold text-sm text-slate-700">${c.username}</span>
+                                                  <span class="text-xs text-slate-400">${new Date(c.createdTime).toLocaleString()}</span>
                                               </div>
-                                              \${deleteBtn}
+                                              ${deleteBtn}
                                           </div>
-                                          <p class="text-sm text-slate-600">\${c.content}</p>
+                                          <p class="text-sm text-slate-600">${c.content}</p>
                                       </div>
                                   `;
                                 }).join('');
@@ -264,22 +274,58 @@
                     }
 
                     function renderChapters(chapters) {
-                        document.getElementById('chapterCount').innerText = `\${chapters.length} 章`;
+                        document.getElementById('chapterCount').innerText = `${chapters.length} 章`;
                         const container = document.getElementById('chapterList');
                         container.innerHTML = chapters.map((c, i) => `
-                <a href="read.jsp?novelId=\${novelId}&chapterId=\${c.id}" 
+                <a href="read.jsp?novelId=${novelId}&chapterId=${c.id}" 
                    class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-300 hover:bg-blue-50 transition-colors group">
-                    <span class="text-slate-300 font-bold text-sm w-6">\${i + 1}</span>
-                    <span class="text-sm font-medium text-slate-700 group-hover:text-blue-700 truncate">\${c.title}</span>
+                    <span class="text-slate-300 font-bold text-sm w-6">${i + 1}</span>
+                    <span class="text-sm font-medium text-slate-700 group-hover:text-blue-700 truncate">${c.title}</span>
                 </a>
             `).join('');
                     }
 
                     function startReading() {
                         if (currentChapters.length > 0) {
-                            location.href = `read.jsp?novelId=\${novelId}&chapterId=\${currentChapters[0].id}`;
+                            if (lastReadChapterId) {
+                                location.href = `read.jsp?novelId=${novelId}&chapterId=${lastReadChapterId}`;
+                            } else {
+                                location.href = `read.jsp?novelId=${novelId}&chapterId=${currentChapters[0].id}`;
+                            }
                         } else {
                             showToast('暂无章节可读', 'info');
+                        }
+                    }
+
+                    let isCollected = false;
+                    function updateShelfBtn(status) {
+                        isCollected = status;
+                        const btn = document.getElementById('btnAddShelf');
+                        if (status) {
+                            btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> 已在书架';
+                            btn.className = "px-6 py-3 bg-blue-50 border border-blue-200 text-blue-600 font-bold rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-2";
+                        } else {
+                            btn.innerText = "加入书架";
+                            btn.className = "px-6 py-3 bg-white border border-gray-200 text-slate-700 font-bold rounded-lg hover:bg-gray-50 transition-colors";
+                        }
+                        lucide.createIcons();
+                    }
+
+                    async function toggleShelf() {
+                        if (!novelId) return;
+                        const action = isCollected ? 'remove' : 'add';
+                        try {
+                            const formData = new URLSearchParams();
+                            formData.append('novelId', novelId);
+                            const res = await fetchJson(`../interaction/collection/${action}`, { method: 'POST', body: formData });
+                            if (res.code === 200) {
+                                showToast(isCollected ? '已移出书架' : '已加入书架', 'success');
+                                updateShelfBtn(!isCollected);
+                            } else {
+                                showToast(res.msg, 'error');
+                            }
+                        } catch (e) {
+                            showToast('操作失败', 'error');
                         }
                     }
                 </script>

@@ -81,13 +81,15 @@
                 }
 
                 // Auto Save Progress with Debounce
+                // Auto Save Progress with Debounce
                 window.addEventListener('scroll', debounce(() => {
-                    if (novelId && chapterId) {
-                        // Call Backend API
-                        // API.syncProgress might fail if not defined in script.js, checking support...
-                        // Assuming it exists or ignoring for now as user didn't complain about progress.
+                    if (novelId && chapterId && window.fetchJson) {
+                        const scrollY = window.scrollY || document.documentElement.scrollTop;
+                        // Silent POST
+                        fetchJson(`../interaction/progress/sync?novelId=${novelId}&chapterId=${chapterId}&scroll=${Math.floor(scrollY)}`, { method: 'POST' })
+                            .catch(e => { });
                     }
-                }, 1000));
+                }, 2000));
             });
 
             const novelId = getQueryParam('novelId');

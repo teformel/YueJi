@@ -46,6 +46,10 @@
                             class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all">
                             <i data-lucide="settings" class="w-5 h-5"></i> 系统设置
                         </button>
+                        <button onclick="switchTab('audit')"
+                            class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all">
+                            <i data-lucide="user-check" class="w-5 h-5"></i> 作者审核
+                        </button>
                     </aside>
 
                     <!-- Content -->
@@ -114,6 +118,31 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Tab: Audit -->
+                        <div id="tab-audit" class="tab-content hidden animate-fade-in">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-6 flex justify-between items-center">
+                                作者审核
+                                <button
+                                    class="text-sm px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                                    onclick="loadPendingAuthors()">刷新列表</button>
+                            </h2>
+                            <div
+                                class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[200px]">
+                                <table class="w-full text-left text-sm">
+                                    <thead
+                                        class="bg-gray-50 text-slate-500 font-bold uppercase border-b border-gray-200">
+                                        <tr>
+                                            <th class="px-6 py-4">ID</th>
+                                            <th class="px-6 py-4">笔名</th>
+                                            <th class="px-6 py-4">简介</th>
+                                            <th class="px-6 py-4 text-right">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="auditTableBody" class="divide-y divide-gray-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -137,10 +166,20 @@
                 }
 
                 // Stats (stubbed)
-                document.getElementById('stat-users').innerText = '-';
-                document.getElementById('stat-novels').innerText = '-';
+                // Stats
+                loadStats();
 
                 loadUsers();
+            }
+
+            async function loadStats() {
+                try {
+                    const res = await fetchJson('../admin/stats');
+                    if (res.code === 200) {
+                        document.getElementById('stat-users').innerText = res.data.users;
+                        document.getElementById('stat-novels').innerText = res.data.novels;
+                    }
+                } catch (e) { }
             }
 
             async function loadUsers() {
@@ -160,6 +199,46 @@
                 document.getElementById(`tab-\${tab}`).classList.remove('hidden');
 
                 if (tab === 'users') loadUsers();
+                if (tab === 'audit') loadPendingAuthors();
+            }
+
+            async function loadPendingAuthors() {
+                try {
+                    const res = await fetchJson('../admin/author/pending');
+                    const tbody = document.getElementById('auditTableBody');
+                    if (res.code === 200 && res.data && res.data.length > 0) {
+                        tbody.innerHTML = res.data.map(a => `
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-mono text-slate-400">\${a.id}</td>
+                                <td class="px-6 py-4 font-bold text-slate-900">\${a.penname}</td>
+                                <td class="px-6 py-4 text-slate-600 max-w-xs truncate">\${a.introduction}</td>
+                                <td class="px-6 py-4 text-right flex justify-end gap-2">
+                                    <button onclick="auditAuthor(\${a.id}, 'approve')" class="text-xs font-bold text-green-600 hover:bg-green-50 px-3 py-1 rounded border border-green-200">通过</button>
+                                    <button onclick="auditAuthor(\${a.id}, 'reject')" class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1 rounded border border-red-200">拒绝</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-400">暂无待审核申请</td></tr>';
+                    }
+                } catch (e) { console.error(e); }
+            }
+
+            async function auditAuthor(id, action) {
+                if (!confirm(action === 'approve' ? '确定通过该作者申请？' : '确定拒绝该作者申请？')) return;
+                try {
+                    const formData = new URLSearchParams();
+                    formData.append('id', id);
+                    const res = await fetchJson(`../admin/author/\${action}`, { method: 'POST', body: formData });
+                    if (res.code === 200) {
+                        showToast('操作成功', 'success');
+                        loadPendingAuthors();
+                    } else {
+                        showToast(res.msg, 'error');
+                    }
+                } catch (e) {
+                    showToast('操作失败', 'error');
+                }
             }
 
             function renderUserTable(users = []) {

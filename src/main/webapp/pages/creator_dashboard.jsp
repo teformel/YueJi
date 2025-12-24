@@ -147,6 +147,46 @@
                             </div>
                         </div>
 
+                        <!-- Tab: Edit Novel -->
+                        <div id="tab-edit-novel" class="tab-content hidden animate-fade-in">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-6">编辑作品信息</h2>
+                            <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm max-w-2xl">
+                                <input type="hidden" id="editNovelId">
+                                <div class="space-y-6">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">作品名称</label>
+                                        <input type="text" id="editTitle" class="form-input">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-bold text-slate-700 mb-2">作品分类</label>
+                                            <select id="editCategory" class="form-input">
+                                                <option>玄幻</option>
+                                                <option>都市</option>
+                                                <option>仙侠</option>
+                                                <option>科幻</option>
+                                                <option>历史</option>
+                                                <option>悬疑</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-bold text-slate-700 mb-2">封面链接 (可选)</label>
+                                            <input type="text" id="editCover" class="form-input">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">作品简介</label>
+                                        <textarea id="editDesc" class="form-input h-32"></textarea>
+                                    </div>
+                                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-4">
+                                        <button onclick="switchTab('novels')" class="btn-secondary">取消</button>
+                                        <button onclick="updateNovel()"
+                                            class="btn-primary px-8 py-3 shadow-lg shadow-blue-500/20">保存修改</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -211,12 +251,13 @@
                                 <h4 class="font-bold text-slate-900 text-lg">\${n.name || n.title}</h4>
                                 <div class="text-sm text-slate-500 mt-1">
                                     <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mr-2">\${n.categoryName || '默认'}</span>
-                                    \${n.totalChapters || 0} 章 · \${n.status === 1 ? '连载中' : '已完结'}
+                                    \${n.totalChapters || 0} 章 · \${n.viewCount || 0} 热度 · \${n.status === 1 ? '连载中' : '已完结'}
                                 </div>
                             </div>
                             <div class="flex gap-3">
-                                 <button onclick="openEditor('\${n.id}', '\${n.name || n.title}')" class="btn-primary px-4 py-2 text-sm">更新章节</button>
-                                 <button class="px-4 py-2 border border-gray-200 rounded text-slate-600 hover:text-red-500 hover:border-red-200 text-sm">管理</button>
+                                 <button onclick="openEditor('\${n.id}', '\${n.name || n.title}')" class="btn-primary px-3 py-1.5 text-xs">更新章节</button>
+                                 <button onclick="openEditNovel('\${n.id}')" class="px-3 py-1.5 border border-gray-200 rounded text-slate-600 hover:text-blue-600 hover:border-blue-200 text-xs transition-colors">编辑</button>
+                                 <button onclick="deleteNovel('\${n.id}')" class="px-3 py-1.5 border border-gray-200 rounded text-slate-600 hover:text-red-600 hover:border-red-200 text-xs transition-colors">删除</button>
                             </div>
                         </div>
                     `).join('');
@@ -257,6 +298,80 @@
                     }
                 } catch (e) {
                     showToast('创建失败', 'error');
+                }
+            }
+
+            async function openEditNovel(id) {
+                // Find novel data from loaded list or fetch details. 
+                // We don't have global list, let's just fetch details or iterate if we stored it.
+                // Re-fetching list to get details is okay but slightly wasteful. 
+                // Let's assume we can find it in DOM or just fetch detail.
+                // For simplicity, I'll fetch list again implicitly or just fetch detail?
+                // Actually I don't have a 'fetch detail' for creator exposed easily without ID.
+                // Let's modify loadMyNovels to store list globally.
+
+                // Hack: Pass data via params in render? Too messy.
+                // Better: fetch('../creator/novel/list') and find.
+                try {
+                    const res = await fetchJson('../creator/novel/list');
+                    if (res.code === 200) {
+                        const n = res.data.find(x => x.id == id);
+                        if (n) {
+                            document.getElementById('editNovelId').value = n.id;
+                            document.getElementById('editTitle').value = n.name || n.title;
+                            document.getElementById('editCategory').value = n.categoryName || '玄幻'; // Needs mapping back if names differ, assuming names match options.
+                            document.getElementById('editCover').value = n.cover;
+                            document.getElementById('editDesc').value = n.description;
+                            switchTab('edit-novel');
+                        }
+                    }
+                } catch (e) { }
+            }
+
+            async function updateNovel() {
+                const id = document.getElementById('editNovelId').value;
+                const title = document.getElementById('editTitle').value;
+                const category = document.getElementById('editCategory').value;
+                const desc = document.getElementById('editDesc').value;
+                const cover = document.getElementById('editCover').value;
+
+                const catMap = { '玄幻': 1, '都市': 2, '仙侠': 3, '科幻': 4, '历史': 5, '悬疑': 6 };
+                const catId = catMap[category] || 1;
+
+                const formData = new URLSearchParams();
+                formData.append('id', id);
+                formData.append('title', title);
+                formData.append('categoryId', catId);
+                formData.append('intro', desc);
+                formData.append('coverUrl', cover);
+
+                try {
+                    const res = await fetchJson('../creator/novel/update', { method: 'POST', body: formData });
+                    if (res.code === 200) {
+                        showToast('修改成功', 'success');
+                        switchTab('novels');
+                    } else {
+                        showToast(res.msg, 'error');
+                    }
+                } catch (e) {
+                    showToast('操作失败', 'error');
+                }
+            }
+
+            async function deleteNovel(id) {
+                if (!confirm('确定要删除这部作品吗？操作不可恢复！')) return;
+                try {
+                    const formData = new URLSearchParams();
+                    formData.append('id', id);
+                    const res = await fetchJson('../creator/novel/delete', { method: 'POST', body: formData });
+                    if (res.code === 200) {
+                        showToast('删除成功', 'success');
+                        loadMyNovels();
+                    } else {
+                        showToast(res.msg, 'error');
+                    }
+                } catch (e) {
+                    showToast('操作失败', 'error');
                 }
             }
 
