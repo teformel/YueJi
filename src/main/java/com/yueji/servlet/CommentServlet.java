@@ -72,6 +72,12 @@ public class CommentServlet extends HttpServlet {
         comment.setNovelId(novelId);
         comment.setUserId(user.getId());
         comment.setContent(content);
+        
+        String scoreStr = req.getParameter("score");
+        if (scoreStr != null && !scoreStr.isEmpty()) {
+            comment.setScore(Integer.parseInt(scoreStr));
+        }
+
         commentService.addComment(comment);
 
         ResponseUtils.writeJson(resp, 200, "Comment added", null);

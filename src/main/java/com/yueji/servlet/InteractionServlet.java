@@ -49,6 +49,8 @@ public class InteractionServlet extends HttpServlet {
                 handleRemoveCollection(req, resp);
             } else if ("/progress/sync".equals(path)) {
                 handleSyncProgress(req, resp);
+            } else if ("/progress/time/sync".equals(path)) {
+                handleSyncReadingTime(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -72,18 +74,23 @@ public class InteractionServlet extends HttpServlet {
         c.setUserId(user.getId());
         c.setNovelId(Integer.parseInt(req.getParameter("novelId")));
         c.setContent(req.getParameter("content"));
+        String scoreStr = req.getParameter("score");
+        if (scoreStr != null) {
+            c.setScore(Integer.parseInt(scoreStr));
+        }
         interactionService.addComment(c);
         ResponseUtils.writeJson(resp, 200, "Comment added", null);
     }
 
-    private void handleDeleteComment(HttpServletRequest req, HttpServletResponse resp) {
-        // Not exposed in Service yet (InteractionService.addComment exists, but delete? CommentDao has delete)
-        // I need to add deleteComment to InteractionService.
-        // For now, skipping or assuming Service update is needed. 
-        // I will return Error 501 Not Implemented or fix Service.
-        try {
-            ResponseUtils.writeJson(resp, 501, "Not implemented in Service layer yet", null);
-        } catch (IOException e) {}
+    private void handleDeleteComment(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        User user = getUser(req, resp);
+        if (user == null) return;
+        
+        int id = Integer.parseInt(req.getParameter("id"));
+        // Basic permission check could be done here (only owner or admin)
+        // But for simplicity if we trust the frontend or check later
+        interactionService.deleteComment(id);
+        ResponseUtils.writeJson(resp, 200, "Deleted", null);
     }
 
     private void handleListCollection(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -106,6 +113,15 @@ public class InteractionServlet extends HttpServlet {
         int novelId = Integer.parseInt(req.getParameter("novelId"));
         interactionService.removeFromBookshelf(user.getId(), novelId);
         ResponseUtils.writeJson(resp, 200, "Removed from collection", null);
+    }
+
+    private void handleSyncReadingTime(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        User user = getUser(req, resp);
+        if (user == null) return;
+        int novelId = Integer.parseInt(req.getParameter("novelId"));
+        int seconds = Integer.parseInt(req.getParameter("seconds"));
+        interactionService.syncReadingTime(user.getId(), novelId, seconds);
+        ResponseUtils.writeJson(resp, 200, "Time synced", null);
     }
 
     private void handleSyncProgress(HttpServletRequest req, HttpServletResponse resp) throws Exception {

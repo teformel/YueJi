@@ -8,6 +8,7 @@ import com.yueji.model.Novel;
 import com.yueji.model.User;
 import com.yueji.service.AuthorService;
 import com.yueji.service.NovelService;
+import com.yueji.service.InteractionService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -71,6 +72,15 @@ public class CreatorServlet extends HttpServlet {
             } else {
                 ResponseUtils.writeJson(resp, 403, "无权访问", null);
             }
+        } else if ("/stats".equals(path)) {
+            User user = (User) req.getSession().getAttribute("user");
+            com.yueji.dao.CoinLogDao coinLogDao = BeanFactory.getBean(com.yueji.dao.CoinLogDao.class);
+            java.util.Map<String, Object> stats = new java.util.HashMap<>();
+            stats.put("totalIncome", coinLogDao.sumAmountByType(user.getId(), 2));
+            ResponseUtils.writeJson(resp, 200, "Stats", stats);
+        } else if ("/comment/list".equals(path)) {
+             InteractionService interactionService = BeanFactory.getBean(InteractionService.class);
+             ResponseUtils.writeJson(resp, 200, "Comments", interactionService.getAuthorReceivedComments(author.getId()));
         } else {
             resp.sendError(404);
         }
@@ -120,14 +130,20 @@ public class CreatorServlet extends HttpServlet {
             ResponseUtils.writeJson(resp, 403, "非法操作", null);
             return;
         }
-        Novel novel = new Novel();
-        novel.setId(id);
+        Novel novel = novelService.getNovelDetails(id);
+        if (novel == null) {
+             ResponseUtils.writeJson(resp, 404, "作品不存在", null);
+             return;
+        }
         novel.setName(req.getParameter("title"));
-        novel.setAuthorId(authorId);
         String catIdStr = req.getParameter("categoryId");
         if (catIdStr != null) novel.setCategoryId(Integer.parseInt(catIdStr));
         novel.setDescription(req.getParameter("intro"));
         novel.setCover(req.getParameter("coverUrl"));
+        
+        String statusStr = req.getParameter("status");
+        if (statusStr != null) novel.setStatus(Integer.parseInt(statusStr));
+        
         novelService.updateNovel(novel);
         ResponseUtils.writeJson(resp, 200, "作品已更新", null);
     }
@@ -152,25 +168,33 @@ public class CreatorServlet extends HttpServlet {
         chapter.setNovelId(novelId);
         chapter.setTitle(req.getParameter("title"));
         chapter.setContent(req.getParameter("content"));
+        
+        String isPaidStr = req.getParameter("isPaid");
+        if (isPaidStr != null) chapter.setIsPaid(Integer.parseInt(isPaidStr));
+        
         String priceStr = req.getParameter("price");
         if (priceStr != null) chapter.setPrice(new java.math.BigDecimal(priceStr));
+        
         novelService.addChapter(chapter);
         ResponseUtils.writeJson(resp, 200, "章节已同步", null);
     }
 
     private void handleUpdateChapter(HttpServletRequest req, HttpServletResponse resp, int authorId) throws Exception {
         int id = Integer.parseInt(req.getParameter("id"));
-        Chapter old = novelService.getChapterById(id);
-        if (old == null || !checkNovelOwnership(old.getNovelId(), authorId)) {
+        Chapter chapter = novelService.getChapterById(id);
+        if (chapter == null || !checkNovelOwnership(chapter.getNovelId(), authorId)) {
             ResponseUtils.writeJson(resp, 403, "非法操作", null);
             return;
         }
-        Chapter chapter = new Chapter();
-        chapter.setId(id);
         chapter.setTitle(req.getParameter("title"));
         chapter.setContent(req.getParameter("content"));
+        
+        String isPaidStr = req.getParameter("isPaid");
+        if (isPaidStr != null) chapter.setIsPaid(Integer.parseInt(isPaidStr));
+        
         String priceStr = req.getParameter("price");
         if (priceStr != null) chapter.setPrice(new java.math.BigDecimal(priceStr));
+        
         novelService.updateChapter(chapter);
         ResponseUtils.writeJson(resp, 200, "章节已更新", null);
     }
