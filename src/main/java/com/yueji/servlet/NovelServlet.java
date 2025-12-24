@@ -35,6 +35,8 @@ public class NovelServlet extends HttpServlet {
             handleList(req, resp);
         } else if ("/detail".equals(path)) {
             handleDetail(req, resp);
+        } else if ("/announcements".equals(path)) {
+            handleAnnouncements(req, resp);
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -66,12 +68,15 @@ public class NovelServlet extends HttpServlet {
             ResponseUtils.writeJson(resp, 404, "Novel not found", null);
             return;
         }
+        double avgScore = interactionService.getNovelAverageScore(id);
+        novel.setScore(java.math.BigDecimal.valueOf(avgScore)); // Need to ensure Novel has score field or use data.put
 
         List<Chapter> chapters = novelService.getChapterList(id);
 
         Map<String, Object> data = new HashMap<>();
         data.put("novel", novel);
         data.put("chapters", chapters);
+        data.put("avgScore", String.format("%.1f", avgScore > 0 ? avgScore : 5.0));
 
         User user = (User) req.getSession().getAttribute("user");
         if (user != null) {
@@ -79,12 +84,33 @@ public class NovelServlet extends HttpServlet {
             data.put("isCollected", isCollected);
             com.yueji.model.ReadingProgress progress = interactionService.getReadingProgress(user.getId(), id);
             if (progress != null) {
-                data.put("lastReadChapterId", progress.getChapterId());
+                // Verify chapter still exists in this novel
+                boolean exists = false;
+                if (chapters != null) {
+                    for (Chapter c : chapters) {
+                        if (c.getId().equals(progress.getChapterId())) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                }
+                if (exists) {
+                    data.put("lastReadChapterId", progress.getChapterId());
+                } else {
+                    // Progress is stale, don't provide it
+                    data.put("lastReadChapterId", null);
+                }
             }
         } else {
             data.put("isCollected", false);
         }
 
         ResponseUtils.writeJson(resp, 200, "Success", data);
+    }
+
+    private void handleAnnouncements(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        com.yueji.service.AnnouncementService announcementService = BeanFactory.getBean(com.yueji.service.AnnouncementService.class);
+        List<com.yueji.model.Announcement> list = announcementService.getActiveAnnouncements();
+        ResponseUtils.writeJson(resp, 200, "Success", list);
     }
 }
