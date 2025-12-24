@@ -58,15 +58,15 @@
 
                                 <div class="grid grid-cols-3 gap-6 border-t border-gray-100 pt-6">
                                     <div>
-                                        <div class="text-2xl font-black text-slate-900">4.8</div>
+                                        <div id="novelRating" class="text-2xl font-black text-slate-900">4.8</div>
                                         <div class="text-xs text-slate-400 font-bold uppercase">评分</div>
                                     </div>
                                     <div>
-                                        <div class="text-2xl font-black text-slate-900">128</div>
+                                        <div id="statChapterCount" class="text-2xl font-black text-slate-900">0</div>
                                         <div class="text-xs text-slate-400 font-bold uppercase">章回</div>
                                     </div>
                                     <div>
-                                        <div class="text-2xl font-black text-slate-900">1.2w</div>
+                                        <div id="statViewCount" class="text-2xl font-black text-slate-900">0</div>
                                         <div class="text-xs text-slate-400 font-bold uppercase">人气</div>
                                     </div>
                                 </div>

@@ -172,13 +172,13 @@ async function loadHistory() {
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-4 py-3 whitespace-nowrap">${new Date(item.createTime).toLocaleString()}</td>
                     <td class="px-4 py-3">
-                        <span class="px-2 py-0.5 rounded text-xs font-bold ${item.type === 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}">
-                            ${item.type === 0 ? '充值' : '消费'}
+                        <span class="px-2 py-0.5 rounded text-xs font-bold ${item.type === 0 ? 'bg-green-100 text-green-700' : (item.type === 2 ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700')}">
+                            ${item.type === 0 ? '充值' : (item.type === 2 ? '收益' : '消费')}
                         </span>
                     </td>
                     <td class="px-4 py-3 max-w-xs truncate" title="${item.remark}">${item.remark}</td>
-                    <td class="px-4 py-3 text-right font-bold ${item.type === 0 ? 'text-green-600' : 'text-slate-900'}">
-                        ${item.type === 0 ? '+' : '-'}${item.amount}
+                    <td class="px-4 py-3 text-right font-bold ${item.type === 0 || item.type === 2 ? 'text-green-600' : 'text-slate-900'}">
+                        ${item.type === 0 || item.type === 2 ? '+' : '-'}${item.amount}
                     </td>
                 </tr>
             `).join('');

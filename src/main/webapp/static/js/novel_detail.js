@@ -30,6 +30,13 @@ async function loadDetail() {
                 : '<i data-lucide="zap" class="w-3 h-3"></i> 连载中';
             document.getElementById('statusBadge').innerHTML = statusHtml;
             document.getElementById('statusBadge').className = `text-xs font-bold flex items-center gap-1 ${novel.status === 2 ? 'text-green-600' : 'text-blue-600'}`;
+
+            // Real Stats
+            document.getElementById('statChapterCount').innerText = novel.totalChapters || 0;
+            const views = novel.viewCount || 0;
+            document.getElementById('statViewCount').innerText = views > 10000 ? (views / 10000).toFixed(1) + 'w' : views;
+            // For rating, use real average score from backend
+            document.getElementById('novelRating').innerText = data.avgScore || '5.0';
             lucide.createIcons();
 
             if (chapters) {
@@ -51,7 +58,6 @@ async function loadDetail() {
     } catch (e) {
         console.error(e);
     }
-
     checkLogin();
 }
 
@@ -60,17 +66,38 @@ function checkLogin() {
     if (user) {
         document.getElementById('discussionArea').innerHTML = `
             <div class="text-left">
-                <div class="flex items-center gap-2 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                        ${user.realname ? user.realname[0] : user.username[0].toUpperCase()}
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                            ${user.realname ? user.realname[0] : user.username[0].toUpperCase()}
+                        </div>
+                        <span class="text-sm font-bold text-slate-700">${user.realname || user.username}</span>
                     </div>
-                    <span class="text-sm font-bold text-slate-700">${user.realname || user.username}</span>
+                    <div class="flex items-center gap-1" id="starSelector">
+                        ${[1, 2, 3, 4, 5].map(i => `<i data-lucide="star" class="w-5 h-5 cursor-pointer text-gray-300 hover:text-yellow-400" onclick="setScore(${i})" data-value="${i}"></i>`).join('')}
+                        <input type="hidden" id="commentScore" value="5">
+                    </div>
                 </div>
-                <textarea id="commentContent" class="form-input w-full h-24 text-sm" placeholder="发表你的看法..."></textarea>
-                <button onclick="postComment()" class="btn-primary w-full mt-2 py-2 text-sm">发表评论</button>
+                <textarea id="commentContent" class="form-input w-full h-24 text-sm" placeholder="分享你的阅读感受..."></textarea>
+                <button onclick="postComment()" class="btn-primary w-full mt-2 py-2 text-sm font-bold">发表书评</button>
             </div>
         `;
+        lucide.createIcons();
     }
+}
+
+function setScore(s) {
+    document.getElementById('commentScore').value = s;
+    const stars = document.querySelectorAll('#starSelector i, #starSelector svg');
+    stars.forEach((star, idx) => {
+        if (idx < s) {
+            star.classList.add('text-yellow-400', 'fill-yellow-400');
+            star.classList.remove('text-gray-300');
+        } else {
+            star.classList.remove('text-yellow-400', 'fill-yellow-400');
+            star.classList.add('text-gray-300');
+        }
+    });
 }
 
 async function loadComments() {
@@ -91,38 +118,58 @@ async function loadComments() {
             listContainer.innerHTML = res.data.map(c => {
                 let deleteBtn = '';
                 if (currentUser && (currentUser.role === 1 || currentUser.id === c.userId)) {
-                    deleteBtn = `<button onclick="deleteComment(${c.id})" class="text-xs text-red-400 hover:text-red-600">删除</button>`;
+                    deleteBtn = `<button onclick="deleteComment(${c.id})" class="text-xs text-red-500 bg-red-50 border border-red-100 px-2 py-1 rounded hover:bg-red-500 hover:text-white transition-all">撤回</button>`;
                 }
+
+                const stars = Array(5).fill(0).map((_, i) =>
+                    `<i data-lucide="star" class="w-3 h-3 ${i < (c.score || 5) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}"></i>`
+                ).join('');
+
+                const duration = c.readingDuration ? (c.readingDuration / 60).toFixed(0) : 0;
+
                 return `
-                  <div class="border-b border-gray-100 pb-4">
-                      <div class="flex justify-between items-start">
-                          <div class="flex items-center gap-2 mb-2">
-                              <span class="font-bold text-sm text-slate-700">${c.username}</span>
-                              <span class="text-xs text-slate-400">${new Date(c.createdTime).toLocaleString()}</span>
+                  <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm transition-all hover:shadow-md mb-4">
+                      <div class="flex justify-between items-start mb-3">
+                          <div class="flex items-center gap-3">
+                              <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold border border-gray-200">
+                                  ${c.username[0].toUpperCase()}
+                              </div>
+                              <div>
+                                  <div class="flex items-center gap-2">
+                                      <span class="font-bold text-sm text-slate-800">${c.username}</span>
+                                      <div class="flex">${stars}</div>
+                                  </div>
+                                  <div class="text-[10px] text-slate-400 font-medium">
+                                      阅读时长：${duration} 分钟 · ${new Date(c.createdTime).toLocaleString()}
+                                  </div>
+                              </div>
                           </div>
                           ${deleteBtn}
                       </div>
-                      <p class="text-sm text-slate-600">${c.content}</p>
+                      <p class="text-sm text-slate-600 leading-relaxed">${c.content}</p>
                   </div>
               `;
             }).join('');
+            lucide.createIcons();
         }
     } catch (e) { console.error(e); }
 }
 
 async function postComment() {
     const content = document.getElementById('commentContent').value;
-    if (!content) return showToast('请输入内容', 'warning');
+    const score = document.getElementById('commentScore').value;
+    if (!content) return showToast('请输入书评内容', 'warning');
 
     try {
         const formData = new URLSearchParams();
         formData.append('novelId', novelId);
         formData.append('content', content);
+        formData.append('score', score);
         const res = await fetchJson('../comment/add', { method: 'POST', body: formData });
         if (res.code === 200) {
             showToast('评论成功', 'success');
             document.getElementById('commentContent').value = '';
-            loadComments();
+            loadDetail(); // Refresh score and comments
         } else {
             showToast(res.msg, 'error');
         }
@@ -139,7 +186,7 @@ async function deleteComment(id) {
         const res = await fetchJson('../comment/delete', { method: 'POST', body: formData });
         if (res.code === 200) {
             showToast('删除成功', 'success');
-            loadComments();
+            loadDetail(); // Refresh score and comments
         } else {
             showToast(res.msg, 'error');
         }

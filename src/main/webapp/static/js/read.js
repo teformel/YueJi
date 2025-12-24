@@ -8,8 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('backLink').href = `novel_detail.jsp?id=${novelId}`;
     }
 
-    // Auto Save Progress with Debounce
-    // Auto Save Progress with Debounce
     window.addEventListener('scroll', debounce(() => {
         if (novelId && chapterId && window.fetchJson) {
             const scrollY = window.scrollY || document.documentElement.scrollTop;
@@ -18,6 +16,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(e => { });
         }
     }, 2000));
+
+    // Reading Duration Heartbeat (Every 30s)
+    let startTime = Date.now();
+    setInterval(() => {
+        if (novelId && Auth.getUser()) {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            if (elapsed >= 30) {
+                fetchJson(`../interaction/progress/time/sync?novelId=${novelId}&seconds=${elapsed}`, { method: 'POST' })
+                    .then(() => {
+                        startTime = Date.now(); // Reset
+                    }).catch(e => { });
+            }
+        }
+    }, 30000);
 });
 
 const novelId = getQueryParam('novelId');
@@ -80,6 +92,16 @@ async function loadContent() {
                     <button class="btn-primary" onclick="purchaseChapter(${chapterId})">立即购买</button>
                 </div>
              `;
+        } else if (res.code === 404) {
+            document.getElementById('content').innerHTML = `
+                <div class="text-center py-20">
+                    <i data-lucide="alert-circle" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
+                    <h3 class="font-bold text-xl text-slate-900 mb-2">章节不存在或已删除</h3>
+                    <p class="text-slate-500 mb-6">该章节可能已被作者删除或正在审核中。</p>
+                    <a href="novel_detail.jsp?id=${novelId}" class="btn-primary px-8 py-3">返回作品详情</a>
+                </div>
+            `;
+            lucide.createIcons();
         }
     } catch (e) {
         console.error(e);
