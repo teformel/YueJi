@@ -28,7 +28,11 @@ public class AssetServiceImpl implements AssetService {
         this.coinLogDao = BeanFactory.getBean(CoinLogDao.class);
         this.chapterPurchaseDao = BeanFactory.getBean(ChapterPurchaseDao.class);
         this.chapterDao = BeanFactory.getBean(ChapterDao.class);
+        this.novelDao = BeanFactory.getBean(com.yueji.dao.NovelDao.class);
+        this.authorDao = BeanFactory.getBean(com.yueji.dao.AuthorDao.class);
     }
+    private final com.yueji.dao.NovelDao novelDao;
+    private final com.yueji.dao.AuthorDao authorDao;
 
     @Override
     public void recharge(int userId, BigDecimal amount) throws Exception {
@@ -45,7 +49,7 @@ public class AssetServiceImpl implements AssetService {
             log.setUserId(userId);
             log.setType(0); // Recharge
             log.setAmount(amount);
-            log.setRemark("User Recharge");
+            log.setRemark("用户充值");
             coinLogDao.create(log);
             
             DbUtils.commitTransaction();
@@ -91,8 +95,28 @@ public class AssetServiceImpl implements AssetService {
             log.setUserId(userId);
             log.setType(1); // Spend
             log.setAmount(price);
-            log.setRemark("Purchase Chapter: " + chapter.getTitle());
+            log.setRemark("购买章节：" + chapter.getTitle());
             coinLogDao.create(log);
+
+            // Author gets income
+            com.yueji.model.Novel novel = novelDao.findById(chapter.getNovelId());
+            if (novel != null) {
+                com.yueji.model.Author author = authorDao.findById(novel.getAuthorId());
+                if (author != null && author.getUserId() != null) {
+                    User authorUser = userDao.findById(author.getUserId());
+                    if (authorUser != null) {
+                        authorUser.setCoinBalance(authorUser.getCoinBalance().add(price));
+                        userDao.update(authorUser);
+                        
+                        CoinLog incomeLog = new CoinLog();
+                        incomeLog.setUserId(authorUser.getId());
+                        incomeLog.setType(2); // Author Income (稿费)
+                        incomeLog.setAmount(price);
+                        incomeLog.setRemark("稿费获得：" + chapter.getTitle());
+                        coinLogDao.create(incomeLog);
+                    }
+                }
+            }
 
             DbUtils.commitTransaction();
             return true;

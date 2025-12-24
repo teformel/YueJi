@@ -43,6 +43,7 @@ public class AuthServlet extends HttpServlet {
         if (user != null) {
             HttpSession session = req.getSession();
             session.setAttribute("user", user);
+            userService.updateLastLoginTime(user.getId());
             ResponseUtils.writeJson(resp, 200, "Login successful", user);
         } else {
             ResponseUtils.writeJson(resp, 401, "Invalid username or password", null);
