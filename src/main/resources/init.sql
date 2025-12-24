@@ -145,6 +145,15 @@ CREATE TABLE t_announcement (
     is_active SMALLINT DEFAULT 1 -- 1: Display, 0: Hidden
 );
 
+-- Table 11: t_follow (FR-C-003)
+CREATE TABLE t_follow (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES t_user(id),
+    author_id INT NOT NULL REFERENCES t_author(id),
+    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, author_id)
+);
+
 -- 3. Initialize Data
 INSERT INTO t_user (username, password, realname, phone, coin_balance, role, status) VALUES 
 ('admin', '0192023a7bbd73250516f069df18b500', 'Administrator', '13800000000', 999999.00, 1, 1),
