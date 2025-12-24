@@ -62,6 +62,13 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 lucide.createIcons();
+
+                // Add enter key support
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        login();
+                    }
+                });
             });
 
             async function login() {

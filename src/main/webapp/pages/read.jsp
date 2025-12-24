@@ -173,9 +173,12 @@
                         showToast('购买成功！', 'success');
                         setTimeout(() => location.reload(), 1000);
                     } else {
-                        showToast(res.msg || '购买失败', 'error');
                         if (res.msg && res.msg.includes("Insufficient")) {
-                            setTimeout(() => location.href = "user_center.jsp", 1500);
+                            if (confirm('余额不足，是否前往充值？')) {
+                                location.href = "user_center.jsp";
+                            }
+                        } else {
+                            showToast(res.msg || '购买失败', 'error');
                         }
                     }
                 } catch (e) {
