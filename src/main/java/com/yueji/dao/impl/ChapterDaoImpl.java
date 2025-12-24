@@ -53,8 +53,8 @@ public class ChapterDaoImpl implements ChapterDao {
             stmt.setInt(1, chapter.getNovelId());
             stmt.setString(2, chapter.getTitle());
             stmt.setString(3, chapter.getContent());
-            stmt.setBigDecimal(4, chapter.getPrice());
-            stmt.setInt(5, chapter.getIsPaid());
+            if (chapter.getPrice() != null) stmt.setBigDecimal(4, chapter.getPrice()); else stmt.setNull(4, Types.DECIMAL);
+            if (chapter.getIsPaid() != null) stmt.setInt(5, chapter.getIsPaid()); else stmt.setNull(5, Types.INTEGER);
             stmt.executeUpdate();
         }
     }
@@ -66,8 +66,8 @@ public class ChapterDaoImpl implements ChapterDao {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, chapter.getTitle());
             stmt.setString(2, chapter.getContent());
-            stmt.setBigDecimal(3, chapter.getPrice());
-            stmt.setInt(4, chapter.getIsPaid());
+            if (chapter.getPrice() != null) stmt.setBigDecimal(3, chapter.getPrice()); else stmt.setNull(3, Types.DECIMAL);
+            if (chapter.getIsPaid() != null) stmt.setInt(4, chapter.getIsPaid()); else stmt.setNull(4, Types.INTEGER);
             stmt.setInt(5, chapter.getId());
             stmt.executeUpdate();
         }

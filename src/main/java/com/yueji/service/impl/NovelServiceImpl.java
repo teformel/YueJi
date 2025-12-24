@@ -85,6 +85,7 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     public void addChapter(Chapter chapter) throws Exception {
+        if (chapter.getIsPaid() == null) chapter.setIsPaid(0); // Default to Free
         chapterDao.create(chapter);
     }
 
