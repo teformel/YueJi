@@ -1,7 +1,56 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadNovels();
+    loadAnnouncements();
     lucide.createIcons();
 });
+
+async function loadAnnouncements() {
+    try {
+        const res = await fetchJson('../novel/announcements');
+        if (res.code === 200 && res.data && res.data.length > 0) {
+            const bar = document.getElementById('announcementBar');
+            const scroll = document.getElementById('announcementScroll');
+            bar.classList.remove('hidden');
+
+            // Render announcements
+            scroll.innerHTML = res.data.map(a => `
+                <div class="flex items-center gap-2 cursor-pointer hover:underline" onclick="showAnnouncementDetail(${JSON.stringify(a).replace(/"/g, '&quot;')})">
+                    <span class="text-blue-900 font-bold"># ${a.title}</span>
+                    <span class="text-blue-600/70 text-xs">|</span>
+                    <span class="text-blue-700/80 max-w-[300px] truncate">${a.content}</span>
+                </div>
+            `).join('<div class="w-4"></div>'); // Gap between items
+
+            // Simple marquee effect if multiple items or long text
+            startMarquee(scroll);
+        }
+    } catch (e) {
+        console.error("加载公告失败:", e);
+    }
+}
+
+function startMarquee(el) {
+    let pos = 0;
+    const scroll = () => {
+        pos -= 0.5; // slow scroll
+        if (Math.abs(pos) > el.scrollWidth / 2 && el.scrollWidth > el.parentElement.offsetWidth) {
+            pos = 0;
+        }
+        el.style.transform = `translateX(${pos}px)`;
+        requestAnimationFrame(scroll);
+    };
+
+    // Duplicate content for seamless loop if content is wider than container
+    if (el.scrollWidth > el.parentElement.offsetWidth) {
+        el.innerHTML += el.innerHTML;
+        scroll();
+    }
+}
+
+function showAnnouncementDetail(a) {
+    // Simple window alert for now, or could use a modal
+    alert(`【${a.title}】\n\n${a.content}\n\n发布时间：${new Date(a.createTime).toLocaleString()}`);
+}
 
 async function loadNovels() {
     const grid = document.getElementById('novelGrid');

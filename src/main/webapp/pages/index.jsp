@@ -21,7 +21,23 @@
         <%@ include file="header.jsp" %>
 
             <main class="py-10">
-                <div class="container space-y-16">
+                <div class="container space-y-10"> <!-- Reduced space to 10 for announcement gap -->
+
+                    <!-- Announcement Bar -->
+                    <div id="announcementBar"
+                        class="hidden bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-3 overflow-hidden animate-fade-in">
+                        <div class="flex items-center gap-1.5 text-blue-600 font-bold shrink-0">
+                            <i data-lucide="megaphone" class="w-4 h-4"></i>
+                            <span class="text-xs uppercase tracking-wider">站内公告</span>
+                        </div>
+                        <div class="h-4 w-[1px] bg-blue-200 shrink-0"></div>
+                        <div class="flex-1 overflow-hidden relative h-5">
+                            <div id="announcementScroll"
+                                class="absolute flex gap-8 whitespace-nowrap items-center text-sm text-blue-800 font-medium">
+                                <!-- Loaded by index.js -->
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Standard Hero Section -->
                     <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
