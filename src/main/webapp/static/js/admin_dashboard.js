@@ -18,6 +18,7 @@ async function loadStats() {
         if (res.code === 200) {
             document.getElementById('stat-users').innerText = res.data.users;
             document.getElementById('stat-novels').innerText = res.data.novels;
+            document.getElementById('stat-active').innerText = res.data.activeToday || 0;
         }
     } catch (e) { }
 }
@@ -40,6 +41,93 @@ function switchTab(tab) {
 
     if (tab === 'users') loadUsers();
     if (tab === 'audit') loadPendingAuthors();
+    if (tab === 'settings') loadAnnouncements();
+}
+
+async function loadAnnouncements() {
+    try {
+        const res = await fetchJson('../admin/announcement/list');
+        const tbody = document.getElementById('announcementTableBody');
+        if (res.code === 200 && res.data) {
+            tbody.innerHTML = res.data.map(a => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 font-bold text-slate-900">${a.title}</td>
+                    <td class="px-6 py-4 text-slate-500 max-w-xs truncate">${a.content}</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold ${a.isActive === 1 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">
+                            ${a.isActive === 1 ? '展示中' : '已下架'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right flex justify-end gap-2">
+                        <button onclick='editAnnouncement(${JSON.stringify(a)})' class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1 rounded border border-blue-200">修改</button>
+                        <button onclick="deleteAnnouncement(${a.id})" class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1 rounded border border-red-200">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } catch (e) { console.error(e); }
+}
+
+function showAnnouncementModal() {
+    document.getElementById('modalTitle').innerText = '发布系统公告';
+    document.getElementById('annId').value = '';
+    document.getElementById('annTitle').value = '';
+    document.getElementById('annContent').value = '';
+    document.getElementById('annIsActive').checked = true;
+    document.getElementById('announcementModal').classList.remove('hidden');
+}
+
+function editAnnouncement(a) {
+    document.getElementById('modalTitle').innerText = '修改系统公告';
+    document.getElementById('annId').value = a.id;
+    document.getElementById('annTitle').value = a.title;
+    document.getElementById('annContent').value = a.content;
+    document.getElementById('annIsActive').checked = a.isActive === 1;
+    document.getElementById('announcementModal').classList.remove('hidden');
+}
+
+function closeAnnouncementModal() {
+    document.getElementById('announcementModal').classList.add('hidden');
+}
+
+async function saveAnnouncement() {
+    const id = document.getElementById('annId').value;
+    const title = document.getElementById('annTitle').value;
+    const content = document.getElementById('annContent').value;
+    const isActive = document.getElementById('annIsActive').checked ? 1 : 0;
+
+    if (!title || !content) return showToast('标题和内容不能为空', 'warning');
+
+    const action = id ? 'update' : 'create';
+    const formData = new URLSearchParams();
+    if (id) formData.append('id', id);
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('isActive', isActive);
+
+    try {
+        const res = await fetchJson(`../admin/announcement/${action}`, { method: 'POST', body: formData });
+        if (res.code === 200) {
+            showToast('保存成功', 'success');
+            closeAnnouncementModal();
+            loadAnnouncements();
+        } else {
+            showToast(res.msg, 'error');
+        }
+    } catch (e) { showToast('保存失败', 'error'); }
+}
+
+async function deleteAnnouncement(id) {
+    if (!confirm('确定删除该公告吗？此操作不可撤销。')) return;
+    try {
+        const formData = new URLSearchParams();
+        formData.append('id', id);
+        const res = await fetchJson('../admin/announcement/delete', { method: 'POST', body: formData });
+        if (res.code === 200) {
+            showToast('已删除', 'success');
+            loadAnnouncements();
+        }
+    } catch (e) { showToast('删除失败', 'error'); }
 }
 
 async function loadPendingAuthors() {

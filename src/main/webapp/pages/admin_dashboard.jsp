@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                                     <div class="text-slate-400 text-xs font-bold uppercase mb-2">今日活跃</div>
-                                    <div class="text-3xl font-black text-green-600">128</div>
+                                    <div class="text-3xl font-black text-green-600" id="stat-active">0</div>
                                 </div>
                             </div>
                         </div>
@@ -103,19 +103,65 @@
                             </div>
                         </div>
 
-                        <!-- Tab: Settings -->
+                        <!-- Tab: Settings (Now Announcements Management) -->
                         <div id="tab-settings" class="tab-content hidden animate-fade-in">
-                            <h2 class="text-2xl font-bold text-slate-900 mb-6">系统设置</h2>
-                            <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm space-y-6">
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">系统公告</label>
-                                    <textarea class="form-input h-32" placeholder="在此发布全站公告..."></textarea>
+                            <h2 class="text-2xl font-bold text-slate-900 mb-6 flex justify-between items-center">
+                                系统公告管理
+                                <button onclick="showAnnouncementModal()"
+                                    class="text-sm px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">发布新公告</button>
+                            </h2>
+                            <div
+                                class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[300px]">
+                                <table class="w-full text-left text-sm">
+                                    <thead
+                                        class="bg-gray-50 text-slate-500 font-bold uppercase border-b border-gray-200">
+                                        <tr>
+                                            <th class="px-6 py-4">公告标题</th>
+                                            <th class="px-6 py-4">内容预览</th>
+                                            <th class="px-6 py-4">状态</th>
+                                            <th class="px-6 py-4 text-right">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="announcementTableBody" class="divide-y divide-gray-100">
+                                        <!-- Loaded by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Modal for Announcement -->
+                        <div id="announcementModal"
+                            class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center p-4">
+                            <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-zoom-in">
+                                <div
+                                    class="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+                                    <h3 class="text-xl font-black text-slate-900" id="modalTitle">发布系统公告</h3>
+                                    <button onclick="closeAnnouncementModal()"
+                                        class="text-slate-400 hover:text-slate-600"><i data-lucide="x"
+                                            class="w-6 h-6"></i></button>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <button class="btn-primary"
-                                        onclick="showToast('公告已发布 (Mock)', 'success')">发布公告</button>
-                                    <button class="btn-secondary text-red-600 border-red-200 hover:bg-red-50"
-                                        onclick="resetSystem()">重置系统数据</button>
+                                <div class="p-8 space-y-6">
+                                    <input type="hidden" id="annId">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">公告标题</label>
+                                        <input type="text" id="annTitle" class="form-input" placeholder="输入公告标题...">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">公告内容</label>
+                                        <textarea id="annContent" class="form-input h-48"
+                                            placeholder="在此输入公告详细内容..."></textarea>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="annIsActive" checked
+                                            class="w-4 h-4 text-blue-600 rounded">
+                                        <label for="annIsActive"
+                                            class="text-sm text-slate-600 font-medium">立即向全站展示</label>
+                                    </div>
+                                </div>
+                                <div class="px-8 py-6 bg-slate-50 flex justify-end gap-3">
+                                    <button onclick="closeAnnouncementModal()"
+                                        class="px-6 py-2 text-sm font-bold text-slate-500 hover:text-slate-700">取消</button>
+                                    <button onclick="saveAnnouncement()" class="btn-primary px-8">保存并发布</button>
                                 </div>
                             </div>
                         </div>
