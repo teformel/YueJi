@@ -13,8 +13,11 @@ public class CollectionDaoImpl implements CollectionDao {
     @Override
     public List<Collection> findByUserId(int userId) {
         List<Collection> list = new ArrayList<>();
-        String sql = "SELECT c.id, c.novel_id, c.create_time, n.name as novel_name, n.cover FROM t_collection c " +
-                "JOIN t_novel n ON c.novel_id = n.id WHERE c.user_id = ? ORDER BY c.create_time DESC";
+        String sql = "SELECT c.id, c.novel_id, c.create_time, n.name as novel_name, n.cover, rp.chapter_id as last_read_chapter_id " +
+                     "FROM t_collection c " +
+                     "JOIN t_novel n ON c.novel_id = n.id " +
+                     "LEFT JOIN t_reading_progress rp ON c.user_id = rp.user_id AND c.novel_id = rp.novel_id " +
+                     "WHERE c.user_id = ? ORDER BY c.create_time DESC";
         try (Connection conn = DbUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
@@ -27,6 +30,9 @@ public class CollectionDaoImpl implements CollectionDao {
                     col.setCreateTime(rs.getTimestamp("create_time"));
                     col.setNovelName(rs.getString("novel_name"));
                     col.setCover(rs.getString("cover"));
+                    if (rs.getObject("last_read_chapter_id") != null) {
+                        col.setLastReadChapterId(rs.getInt("last_read_chapter_id"));
+                    }
                     list.add(col);
                 }
             }

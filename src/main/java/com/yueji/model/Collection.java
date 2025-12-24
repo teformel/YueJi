@@ -11,6 +11,7 @@ public class Collection {
     // Transient
     private String novelName;
     private String cover;
+    private Integer lastReadChapterId;
 
     public Collection() {}
 
@@ -60,5 +61,13 @@ public class Collection {
 
     public void setCover(String cover) {
         this.cover = cover;
+    }
+
+    public Integer getLastReadChapterId() {
+        return lastReadChapterId;
+    }
+
+    public void setLastReadChapterId(Integer lastReadChapterId) {
+        this.lastReadChapterId = lastReadChapterId;
     }
 }

@@ -68,6 +68,8 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     public void createNovel(Novel novel) throws Exception {
+        if (novel.getStatus() == null) novel.setStatus(1); // Default to Serializing
+        if (novel.getTotalChapters() == null) novel.setTotalChapters(0); // Default to 0
         novelDao.create(novel);
     }
 

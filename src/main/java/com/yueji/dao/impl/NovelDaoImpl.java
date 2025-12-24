@@ -119,8 +119,8 @@ public class NovelDaoImpl implements NovelDao {
             if (novel.getCategoryId() != null) stmt.setInt(3, novel.getCategoryId()); else stmt.setNull(3, Types.INTEGER);
             stmt.setString(4, novel.getDescription());
             stmt.setString(5, novel.getCover());
-            stmt.setInt(6, novel.getStatus());
-            stmt.setInt(7, novel.getTotalChapters());
+            if (novel.getStatus() != null) stmt.setInt(6, novel.getStatus()); else stmt.setNull(6, Types.INTEGER);
+            if (novel.getTotalChapters() != null) stmt.setInt(7, novel.getTotalChapters()); else stmt.setNull(7, Types.INTEGER);
             stmt.executeUpdate();
         }
     }
@@ -135,8 +135,8 @@ public class NovelDaoImpl implements NovelDao {
             if (novel.getCategoryId() != null) stmt.setInt(3, novel.getCategoryId()); else stmt.setNull(3, Types.INTEGER);
             stmt.setString(4, novel.getDescription());
             stmt.setString(5, novel.getCover());
-            stmt.setInt(6, novel.getStatus());
-            stmt.setInt(7, novel.getTotalChapters());
+            if (novel.getStatus() != null) stmt.setInt(6, novel.getStatus()); else stmt.setNull(6, Types.INTEGER);
+            if (novel.getTotalChapters() != null) stmt.setInt(7, novel.getTotalChapters()); else stmt.setNull(7, Types.INTEGER);
             stmt.setInt(8, novel.getId());
             stmt.executeUpdate();
         }
