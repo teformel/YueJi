@@ -13,7 +13,11 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public List<Author> findAll() {
         List<Author> list = new ArrayList<>();
-        String sql = "SELECT * FROM t_author ORDER BY id DESC";
+        // JOIN with t_user to ensure we only return records where user still has Author role (2)
+        String sql = "SELECT a.* FROM t_author a " +
+                "JOIN t_user u ON a.user_id = u.id " +
+                "WHERE u.role = 2 " +
+                "ORDER BY a.id DESC";
         try (Connection conn = DbUtils.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -74,7 +78,13 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public List<Author> findByStatus(int status) {
         List<Author> list = new ArrayList<>();
-        String sql = "SELECT * FROM t_author WHERE status = ? ORDER BY id DESC";
+        // For status=1 (Approved), we MUST ensure u.role is still 2 (Creator).
+        // For other statuses (0: Pending, 2: Rejected), we just return based on t_author status.
+        String sql = "SELECT a.* FROM t_author a " +
+                "JOIN t_user u ON a.user_id = u.id " +
+                "WHERE a.status = ? " +
+                (status == 1 ? "AND u.role = 2 " : "") + 
+                "ORDER BY a.id DESC";
         try (Connection conn = DbUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, status);
