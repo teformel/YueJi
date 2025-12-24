@@ -105,7 +105,7 @@
                         <aside class="space-y-6">
                             <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                                 <h4 class="font-bold text-slate-900 mb-4">共鸣讨论区</h4>
-                                <div class="text-center py-10">
+                                <div id="discussionArea" class="text-center py-10">
                                     <i data-lucide="message-square" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
                                     <p class="text-sm text-slate-400">登录后即可参与讨论</p>
                                 </div>
@@ -156,6 +156,27 @@
                             }
                         } catch (e) {
                             console.error(e);
+                        }
+
+                        checkLogin();
+                    }
+
+                    function checkLogin() {
+                        const userStr = localStorage.getItem('user');
+                        if (userStr) {
+                            const user = JSON.parse(userStr);
+                            document.getElementById('discussionArea').innerHTML = `
+                                <div class="text-left">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                            \${user.realname ? user.realname[0] : user.username[0].toUpperCase()}
+                                        </div>
+                                        <span class="text-sm font-bold text-slate-700">\${user.realname || user.username}</span>
+                                    </div>
+                                    <textarea class="form-input w-full h-24 text-sm" placeholder="发表你的看法..."></textarea>
+                                    <button class="btn-primary w-full mt-2 py-2 text-sm">发表评论</button>
+                                </div>
+                            `;
                         }
                     }
 

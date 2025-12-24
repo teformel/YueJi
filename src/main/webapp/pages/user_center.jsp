@@ -57,6 +57,10 @@
                                     class="nav-item w-full flex items-center gap-3 px-6 py-4 text-left font-bold text-slate-600 hover:bg-gray-50 border-l-4 border-transparent hover:border-blue-600 transition-all">
                                     <i data-lucide="credit-card" class="w-5 h-5"></i> 充值中心
                                 </button>
+                                <button onclick="switchTab('history')"
+                                    class="nav-item w-full flex items-center gap-3 px-6 py-4 text-left font-bold text-slate-600 hover:bg-gray-50 border-l-4 border-transparent hover:border-blue-600 transition-all">
+                                    <i data-lucide="history" class="w-5 h-5"></i> 消费记录
+                                </button>
                                 <button onclick="doLogout()"
                                     class="w-full flex items-center gap-3 px-6 py-4 text-left font-bold text-red-500 hover:bg-red-50 border-l-4 border-transparent transition-all">
                                     <i data-lucide="log-out" class="w-5 h-5"></i> 退出登录
@@ -137,10 +141,36 @@
                                         * 这是一个演示系统，并不会真的扣款。
                                     </p>
                                 </div>
+                                </p>
                             </div>
-
                         </div>
+
+                        <!-- Tab: History -->
+                        <div id="tab-history" class="tab-content hidden">
+                            <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+                                <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                    <i data-lucide="history" class="w-5 h-5 text-gray-500"></i> 消费记录
+                                </h3>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-sm text-slate-600">
+                                        <thead class="bg-gray-50 text-slate-900 font-bold border-b border-gray-200">
+                                            <tr>
+                                                <th class="px-4 py-3">时间</th>
+                                                <th class="px-4 py-3">类型</th>
+                                                <th class="px-4 py-3">详情</th>
+                                                <th class="px-4 py-3 text-right">金额</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="historyList" class="divide-y divide-gray-100">
+                                            <!-- Injected -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+                </div>
                 </div>
             </main>
 
@@ -155,6 +185,7 @@
                         initUser();
                         lucide.createIcons();
                         loadBookshelf();
+                        loadHistory();
                     });
 
                     async function initUser() {
@@ -274,6 +305,34 @@
                         } catch (e) {
                             console.error(e);
                             container.innerHTML = `<div class="p-4 text-center text-red-400">加载失败</div>`;
+                        }
+                    }
+
+                    async function loadHistory() {
+                        const container = document.getElementById('historyList');
+                        try {
+                            const res = await fetchJson('../pay/history');
+                            if (res.code === 200 && res.data && res.data.length > 0) {
+                                container.innerHTML = res.data.map(item => `
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-4 py-3 whitespace-nowrap">\${new Date(item.createTime).toLocaleString()}</td>
+                                        <td class="px-4 py-3">
+                                            <span class="px-2 py-0.5 rounded text-xs font-bold \${item.type === 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}">
+                                                \${item.type === 0 ? '充值' : '消费'}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 max-w-xs truncate" title="\${item.remark}">\${item.remark}</td>
+                                        <td class="px-4 py-3 text-right font-bold \${item.type === 0 ? 'text-green-600' : 'text-slate-900'}">
+                                            \${item.type === 0 ? '+' : '-'}\${item.amount}
+                                        </td>
+                                    </tr>
+                                `).join('');
+                            } else {
+                                container.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">暂无记录</td></tr>`;
+                            }
+                        } catch (e) {
+                            console.error(e);
+                            container.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-red-400">加载失败</td></tr>`;
                         }
                     }
                 </script>
