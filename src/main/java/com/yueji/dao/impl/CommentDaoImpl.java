@@ -11,6 +11,31 @@ import java.util.List;
 public class CommentDaoImpl implements CommentDao {
 
     @Override
+    public Comment findById(int id) {
+        String sql = "SELECT * FROM t_comment WHERE id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Comment c = new Comment();
+                    c.setId(rs.getInt("id"));
+                    c.setUserId(rs.getInt("user_id"));
+                    c.setNovelId(rs.getInt("novel_id"));
+                    c.setContent(rs.getString("content"));
+                    c.setReplyToId(rs.getInt("reply_to_id"));
+                    c.setCreatedTime(rs.getTimestamp("created_time"));
+                    c.setStatus(rs.getInt("status"));
+                    return c;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public List<Comment> findByNovelId(int novelId) {
         List<Comment> list = new ArrayList<>();
         String sql = "SELECT c.*, u.username FROM t_comment c " +
