@@ -171,7 +171,6 @@ public class NovelDaoImpl implements NovelDao {
         n.setDescription(rs.getString("description"));
         n.setCover(rs.getString("cover"));
         n.setStatus(rs.getInt("status"));
-        n.setStatus(rs.getInt("status"));
         n.setTotalChapters(rs.getInt("total_chapters"));
         if(hasColumn(rs, "view_count")) {
             n.setViewCount(rs.getInt("view_count"));
