@@ -101,4 +101,18 @@ public class UserServiceImpl implements UserService {
     public long getUserCount() {
         return userDao.count();
     }
+
+    @Override
+    public void updateLastLoginTime(int userId) {
+        try {
+            userDao.updateLastLoginTime(userId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public long getActiveUserCountToday() {
+        return userDao.countActiveUsersToday();
+    }
 }
