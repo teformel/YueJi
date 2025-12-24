@@ -130,4 +130,116 @@
     border: 1px solid var(--border-dim);
     box-shadow: var(--shadow-md);
   }
+
+  /* Navigation Links */
+  .nav-link {
+    @apply text-sm font-bold text-slate-500 hover:text-blue-600 transition-all duration-200 relative py-1;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 rounded-full;
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    @apply w-full;
+  }
+
+  .nav-link.active {
+    @apply text-blue-600;
+  }
+
+  .nav-dropdown-item {
+    @apply flex items-center px-3 py-2 text-[13px] font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all;
+  }
+}
+
+/* Fixes and Compatibility (FR-O-001) */
+@layer base {
+
+  button,
+  input:where([type=button]),
+  input:where([type=reset]),
+  input:where([type=submit]) {
+    appearance: button;
+  }
+
+  [type=search] {
+    appearance: textfield;
+  }
+
+  audio,
+  canvas,
+  embed,
+  iframe,
+  img,
+  object,
+  svg,
+  video {
+    vertical-align: unset;
+  }
+}
+
+/* Reading Themes (FR-E-003) */
+@layer utilities {
+  .theme-parchment {
+    background-color: #f4ecd8 !important;
+    color: #5c4033 !important;
+  }
+
+  .theme-parchment .reader-content {
+    color: #5c4033 !important;
+  }
+
+  .theme-parchment article {
+    background-color: #fdf6e3 !important;
+    border-color: #eee8d5 !important;
+  }
+
+  .theme-green {
+    background-color: #c7edcc !important;
+    color: #2d4a2d !important;
+  }
+
+  .theme-green .reader-content {
+    color: #2d4a2d !important;
+  }
+
+  .theme-green article {
+    background-color: #ddefe0 !important;
+    border-color: #bcd5bc !important;
+  }
+
+  .theme-night {
+    background-color: #1a1c1e !important;
+    color: #a0a0a0 !important;
+  }
+
+  .theme-night .reader-content {
+    color: #a0a0a0 !important;
+  }
+
+  .theme-night article {
+    background-color: #242628 !important;
+    border-color: #2d2f31 !important;
+  }
+
+  .theme-night header,
+  .theme-night #settingsPanel {
+    background-color: rgba(30, 32, 34, 0.95) !important;
+    border-color: #3d3f41 !important;
+  }
+
+  .theme-night .text-slate-900 {
+    color: #e0e0e0 !important;
+  }
+
+  .theme-night .bg-white {
+    background-color: #242628 !important;
+  }
+
+  .reader-content p {
+    transition: font-size 0.2s ease;
+  }
 }

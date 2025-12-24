@@ -62,6 +62,10 @@
                                     class="nav-item w-full flex items-center gap-3 px-6 py-4 text-left font-bold text-slate-600 hover:bg-gray-50 border-l-4 border-transparent hover:border-blue-600 transition-all">
                                     <i data-lucide="history" class="w-5 h-5"></i> 消费记录
                                 </button>
+                                <button onclick="switchTab('follows')"
+                                    class="nav-item w-full flex items-center gap-3 px-6 py-4 text-left font-bold text-slate-600 hover:bg-gray-50 border-l-4 border-transparent hover:border-blue-600 transition-all">
+                                    <i data-lucide="users" class="w-5 h-5"></i> 关注作者
+                                </button>
                                 <button onclick="doLogout()"
                                     class="w-full flex items-center gap-3 px-6 py-4 text-left font-bold text-red-500 hover:bg-red-50 border-l-4 border-transparent transition-all">
                                     <i data-lucide="log-out" class="w-5 h-5"></i> 退出登录
@@ -170,6 +174,21 @@
                                                 <!-- Injected -->
                                             </tbody>
                                         </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab: Follows -->
+                            <div id="tab-follows" class="tab-content hidden space-y-6">
+                                <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+                                    <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                        <i data-lucide="users" class="w-5 h-5 text-blue-500"></i> 我关注的作者
+                                    </h3>
+                                    <div id="followList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Injected via JS -->
+                                        <div class="p-8 text-center text-slate-400 bg-gray-50 rounded-lg col-span-full">
+                                            尚未关注任何作者
+                                        </div>
                                     </div>
                                 </div>
                             </div>

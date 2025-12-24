@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadNovels();
+    loadRankings();
     loadAnnouncements();
     lucide.createIcons();
 });
@@ -84,7 +85,6 @@ async function loadNovels() {
         if (result && result.code === 200) {
             const novels = result.data;
             renderGrid(novels.slice(0, 9));
-            if (!keyword) renderRankings(novels.slice(0, 5));
         } else {
             grid.innerHTML = '<p class="col-span-full text-center text-slate-500">暂无数据</p>';
         }
@@ -114,6 +114,17 @@ function renderGrid(novels) {
 </div>
 `).join('');
     lucide.createIcons();
+}
+
+async function loadRankings() {
+    try {
+        const result = await fetchJson("../novel/list?sort=hot");
+        if (result && result.code === 200) {
+            renderRankings(result.data.slice(0, 5));
+        }
+    } catch (e) {
+        console.error("加载排行榜失败:", e);
+    }
 }
 
 function renderRankings(novels) {

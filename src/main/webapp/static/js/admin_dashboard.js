@@ -42,6 +42,7 @@ function switchTab(tab) {
     if (tab === 'users') loadUsers();
     if (tab === 'audit') loadPendingAuthors();
     if (tab === 'settings') loadAnnouncements();
+    if (tab === 'categories') loadCategories();
 }
 
 async function loadAnnouncements() {
@@ -302,6 +303,82 @@ function renderActionButtons(u) {
             ${roleLabel}
         </button>
     `;
+}
+
+async function loadCategories() {
+    try {
+        const res = await fetchJson('../admin/category/list');
+        const tbody = document.getElementById('categoryTableBody');
+        if (res.code === 200 && res.data) {
+            tbody.innerHTML = res.data.map(c => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 font-mono text-slate-400">${c.id}</td>
+                    <td class="px-6 py-4 font-bold text-slate-900">${c.name}</td>
+                    <td class="px-6 py-4 text-slate-500">${new Date(c.createdTime).toLocaleString()}</td>
+                    <td class="px-6 py-4 text-right flex justify-end gap-2">
+                        <button onclick='editCategory(${JSON.stringify(c)})' class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1 rounded border border-blue-200">修改</button>
+                        <button onclick="deleteCategory(${c.id})" class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1 rounded border border-red-200">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } catch (e) { console.error(e); }
+}
+
+function showCategoryModal() {
+    document.getElementById('catModalTitle').innerText = '添加新分类';
+    document.getElementById('catId').value = '';
+    document.getElementById('catName').value = '';
+    document.getElementById('categoryModal').classList.remove('hidden');
+}
+
+function editCategory(c) {
+    document.getElementById('catModalTitle').innerText = '修改分类';
+    document.getElementById('catId').value = c.id;
+    document.getElementById('catName').value = c.name;
+    document.getElementById('categoryModal').classList.remove('hidden');
+}
+
+function closeCategoryModal() {
+    document.getElementById('categoryModal').classList.add('hidden');
+}
+
+async function saveCategory() {
+    const id = document.getElementById('catId').value;
+    const name = document.getElementById('catName').value;
+
+    if (!name) return showToast('分类名称不能为空', 'warning');
+
+    const action = id ? 'update' : 'create';
+    const formData = new URLSearchParams();
+    if (id) formData.append('id', id);
+    formData.append('name', name);
+
+    try {
+        const res = await fetchJson(`../admin/category/${action}`, { method: 'POST', body: formData });
+        if (res.code === 200) {
+            showToast('保存成功', 'success');
+            closeCategoryModal();
+            loadCategories();
+        } else {
+            showToast(res.msg, 'error');
+        }
+    } catch (e) { showToast('保存失败', 'error'); }
+}
+
+async function deleteCategory(id) {
+    if (!confirm('确定删除该分类吗？关联的小说分类ID可能需要手动调整。')) return;
+    try {
+        const formData = new URLSearchParams();
+        formData.append('id', id);
+        const res = await fetchJson('../admin/category/delete', { method: 'POST', body: formData });
+        if (res.code === 200) {
+            showToast('已删除', 'success');
+            loadCategories();
+        } else {
+            showToast(res.msg, 'error');
+        }
+    } catch (e) { showToast('删除失败', 'error'); }
 }
 
 function resetSystem() {

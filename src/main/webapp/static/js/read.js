@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     loadContent();
+    initSettings();
 
     // Set back link
     if (novelId) {
@@ -28,9 +29,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         startTime = Date.now(); // Reset
                     }).catch(e => { });
             }
+            updateReadingTimeDisplay(Math.floor((Date.now() - initTime) / 1000));
         }
-    }, 30000);
+    }, 1000);
 });
+
+const initTime = Date.now();
+function updateReadingTimeDisplay(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    const display = document.getElementById('readingTimeDisplay');
+    if (display) {
+        display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+}
 
 const novelId = getQueryParam('novelId');
 const chapterId = getQueryParam('chapterId');
@@ -177,4 +189,61 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
+}
+
+// Settings Logic
+let readerSettings = {
+    fontSize: 1.25,
+    theme: 'default'
+};
+
+function initSettings() {
+    const saved = localStorage.getItem('yueji_reader_settings');
+    if (saved) {
+        readerSettings = JSON.parse(saved);
+    }
+    applySettings();
+}
+
+function applySettings() {
+    const content = document.querySelector('.reader-content');
+    if (content) {
+        content.style.fontSize = `${readerSettings.fontSize}rem`;
+    }
+    document.getElementById('fontSizeDisplay').innerText = `${readerSettings.fontSize.toFixed(2)}rem`;
+
+    // Apply Theme to body
+    const body = document.body;
+    body.classList.remove('theme-parchment', 'theme-green', 'theme-night');
+    if (readerSettings.theme !== 'default') {
+        body.classList.add(`theme-${readerSettings.theme}`);
+    }
+
+    // Update Theme Buttons
+    document.querySelectorAll('[id^="theme-"]').forEach(btn => {
+        btn.classList.remove('border-blue-500', 'border-2');
+        btn.classList.add('border-gray-100', 'border');
+    });
+    const activeBtn = document.getElementById(`theme-${readerSettings.theme}`);
+    if (activeBtn) {
+        activeBtn.classList.add('border-blue-500', 'border-2');
+        activeBtn.classList.remove('border-gray-100', 'border');
+    }
+
+    localStorage.setItem('yueji_reader_settings', JSON.stringify(readerSettings));
+}
+
+function toggleSettings() {
+    const panel = document.getElementById('settingsPanel');
+    panel.classList.toggle('translate-x-full');
+}
+
+function changeFontSize(delta) {
+    readerSettings.fontSize = Math.max(0.8, Math.min(2.5, readerSettings.fontSize + delta));
+    applySettings();
+}
+
+function setTheme(t) {
+    readerSettings.theme = t;
+    applySettings();
 }

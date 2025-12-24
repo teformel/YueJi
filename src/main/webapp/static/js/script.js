@@ -204,5 +204,53 @@ function getQueryParam(name) {
 document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide) lucide.createIcons();
     updateAuthUI();
+    highlightNav();
+    loadGlobalCategories();
     if (localStorage.getItem('user')) Auth.check();
 });
+
+async function loadGlobalCategories() {
+    const hotContainer = document.getElementById('headerCategoryHot');
+    const moreContainer = document.getElementById('headerCategoryMore');
+    if (!hotContainer || !moreContainer) return;
+
+    try {
+        const res = await fetchJson('../novel/categories');
+        if (res.code === 200) {
+            const categories = res.data || [];
+            if (categories.length === 0) return;
+
+            // Split into hot (first 3) and more
+            const hot = categories.slice(0, 3);
+            const more = categories.slice(3, 9);
+            const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf('/pages/'));
+
+            hotContainer.innerHTML = hot.map(c => `
+                <a href="${contextPath}/pages/browse.jsp?categoryId=${c.id}" class="nav-dropdown-item">
+                    ${c.name} <span class="text-[10px] opacity-40 px-1 bg-gray-50 rounded ml-auto">热</span>
+                </a>
+            `).join('');
+
+            moreContainer.innerHTML = more.map(c => `
+                <a href="${contextPath}/pages/browse.jsp?categoryId=${c.id}" class="nav-dropdown-item">${c.name}</a>
+            `).join('');
+        }
+    } catch (e) {
+        console.error('Failed to load categories:', e);
+    }
+}
+
+function highlightNav() {
+    const path = window.location.pathname;
+    const search = window.location.search;
+    const links = document.querySelectorAll('.nav-link');
+
+    links.forEach(link => {
+        const type = link.getAttribute('data-nav');
+        if (!type) return;
+
+        if (type === 'index' && path.includes('index.jsp')) link.classList.add('active');
+        if (type === 'browse' && path.includes('browse.jsp') && !search.includes('sort=hot')) link.classList.add('active');
+        if (type === 'rank' && search.includes('sort=hot')) link.classList.add('active');
+    });
+}

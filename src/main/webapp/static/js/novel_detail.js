@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
 const novelId = getQueryParam('id');
 let currentChapters = [];
 let lastReadChapterId = null;
+let authorId = null;
+let isFollowing = false;
 
 async function loadDetail() {
     if (!novelId) return;
@@ -48,6 +50,12 @@ async function loadDetail() {
 
             // Shelf Status
             updateShelfBtn(data.isCollected);
+
+            // Follow Status
+            authorId = novel.authorId;
+            if (authorId) {
+                checkFollowStatus();
+            }
 
             if (data.lastReadChapterId) {
                 lastReadChapterId = data.lastReadChapterId;
@@ -101,58 +109,147 @@ function setScore(s) {
 }
 
 async function loadComments() {
-    const container = document.getElementById('discussionArea');
-    let listContainer = document.getElementById('commentList');
-    if (!listContainer) {
-        listContainer = document.createElement('div');
-        listContainer.id = 'commentList';
-        listContainer.className = 'mt-8 text-left space-y-4';
-        document.getElementById('discussionArea').parentNode.appendChild(listContainer);
-    }
-
     try {
-        const res = await fetchJson(`../comment/list?novelId=${novelId}`);
+        const res = await fetchJson(`../comment/list?novelId=${novelId}&_=${Date.now()}`);
         if (res.code === 200) {
-            const currentUser = Auth.getUser();
+            const listContainer = document.getElementById('commentList');
+            const rootComments = res.data || [];
 
-            listContainer.innerHTML = res.data.map(c => {
-                let deleteBtn = '';
-                if (currentUser && (currentUser.role === 1 || currentUser.id === c.userId)) {
-                    deleteBtn = `<button onclick="deleteComment(${c.id})" class="text-xs text-red-500 bg-red-50 border border-red-100 px-2 py-1 rounded hover:bg-red-500 hover:text-white transition-all">撤回</button>`;
-                }
+            // Calculate total comments (root + all nested replies)
+            const countAll = (comments) => {
+                let count = comments.length;
+                comments.forEach(c => {
+                    if (c.replies) count += countAll(c.replies);
+                });
+                return count;
+            };
 
-                const stars = Array(5).fill(0).map((_, i) =>
-                    `<i data-lucide="star" class="w-3 h-3 ${i < (c.score || 5) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}"></i>`
-                ).join('');
+            const totalCount = countAll(rootComments);
+            document.getElementById('commentCountTotal').innerText = `${totalCount} 条评论`;
 
-                const duration = c.readingDuration ? (c.readingDuration / 60).toFixed(0) : 0;
-
-                return `
-                  <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm transition-all hover:shadow-md mb-4">
-                      <div class="flex justify-between items-start mb-3">
-                          <div class="flex items-center gap-3">
-                              <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold border border-gray-200">
-                                  ${c.username[0].toUpperCase()}
-                              </div>
-                              <div>
-                                  <div class="flex items-center gap-2">
-                                      <span class="font-bold text-sm text-slate-800">${c.username}</span>
-                                      <div class="flex">${stars}</div>
-                                  </div>
-                                  <div class="text-[10px] text-slate-400 font-medium">
-                                      阅读时长：${duration} 分钟 · ${new Date(c.createdTime).toLocaleString()}
-                                  </div>
-                              </div>
-                          </div>
-                          ${deleteBtn}
-                      </div>
-                      <p class="text-sm text-slate-600 leading-relaxed">${c.content}</p>
-                  </div>
-              `;
-            }).join('');
+            if (rootComments.length > 0) {
+                listContainer.innerHTML = rootComments.map(c => renderComment(c)).join('');
+            } else {
+                listContainer.innerHTML = `
+                    <div class="text-center py-20 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+                        <i data-lucide="message-circle" class="w-12 h-12 text-gray-200 mx-auto mb-4"></i>
+                        <p class="text-slate-400 font-medium">暂无评论，快来抢占沙发吧</p>
+                    </div>
+                `;
+            }
             lucide.createIcons();
         }
     } catch (e) { console.error(e); }
+}
+
+function renderComment(c, depth = 0) {
+    const isReply = depth > 0;
+    const currentUser = Auth.getUser();
+    let deleteBtn = '';
+    if (currentUser && (currentUser.role === 1 || currentUser.id === c.userId)) {
+        deleteBtn = `<button onclick="deleteComment(${c.id})" class="text-[11px] text-red-400 hover:text-red-600 transition-colors uppercase font-bold tracking-wider">撤回</button>`;
+    }
+
+    const stars = isReply ? '' : Array(5).fill(0).map((_, i) =>
+        `<i data-lucide="star" class="w-3.5 h-3.5 ${i < (c.score || 5) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}"></i>`
+    ).join('');
+
+    const duration = c.readingDuration ? Math.floor(c.readingDuration / 60) : 0;
+    const durationText = duration > 0 ? `${duration} 分钟` : '不足 1 分钟';
+    const repliesHtml = c.replies && c.replies.length > 0
+        ? `<div class="mt-4 space-y-6">${c.replies.map(r => renderComment(r, depth + 1)).join('')}</div>`
+        : '';
+
+    // Style adjustment for replies
+    const containerClass = isReply
+        ? 'relative pl-8 md:pl-12'
+        : 'bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300';
+
+    // Add a left line for replies
+    const indentLine = isReply
+        ? `<div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-100 to-transparent"></div>`
+        : '';
+
+    return `
+        <div class="${containerClass}">
+            ${indentLine}
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="${isReply ? 'w-8 h-8 text-xs' : 'w-12 h-12 text-sm'} rounded-full bg-slate-50 flex items-center justify-center text-slate-500 font-bold border border-gray-100 shadow-inner">
+                        ${c.username[0].toUpperCase()}
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-bold text-slate-900">${c.username}</span>
+                            <div class="flex">${stars}</div>
+                        </div>
+                        <div class="text-[11px] text-slate-400 font-medium tracking-tight">
+                            ${isReply ? '' : `阅读时长：${durationText} · `}${new Date(c.createdTime).toLocaleString()}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    ${deleteBtn}
+                    <button onclick="showReplyForm(${c.id}, '${c.username}')" class="text-[11px] text-blue-500 hover:text-blue-700 font-bold uppercase tracking-wider transition-colors">回复</button>
+                </div>
+            </div>
+            <div class="text-slate-600 leading-relaxed ${isReply ? 'text-sm' : 'text-[15px]'} mb-2">
+                ${c.content}
+            </div>
+            <div id="replyFormContainer-${c.id}" class="hidden my-4"></div>
+            ${repliesHtml}
+        </div>
+    `;
+}
+
+function showReplyForm(commentId, username) {
+    const container = document.getElementById(`replyFormContainer-${commentId}`);
+    if (!container) return;
+
+    if (!Auth.getUser()) {
+        showToast('请先登录后回复', 'warning');
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100 transition-all animate-in fade-in slide-in-from-top-2 duration-300">
+            <div class="text-[10px] font-bold text-blue-600 mb-2">回复 @${username}:</div>
+            <textarea id="replyContent-${commentId}" class="form-input w-full h-20 text-xs bg-white" placeholder="写下你的回复..."></textarea>
+            <div class="flex justify-end gap-2 mt-2">
+                <button onclick="cancelReply(${commentId})" class="text-xs text-slate-400 font-bold hover:text-slate-600 px-3 py-1.5">取消</button>
+                <button onclick="submitReply(${commentId})" class="btn-primary py-1.5 px-4 text-xs font-bold">提交</button>
+            </div>
+        </div>
+    `;
+    container.classList.remove('hidden');
+    document.getElementById(`replyContent-${commentId}`).focus();
+}
+
+function cancelReply(commentId) {
+    const container = document.getElementById(`replyFormContainer-${commentId}`);
+    container.classList.add('hidden');
+    container.innerHTML = '';
+}
+
+async function submitReply(commentId) {
+    const content = document.getElementById(`replyContent-${commentId}`).value;
+    if (!content) return showToast('请输入回复内容', 'warning');
+
+    try {
+        const formData = new URLSearchParams();
+        formData.append('novelId', novelId);
+        formData.append('content', content);
+        formData.append('replyToId', commentId);
+        const res = await fetchJson('../comment/add', { method: 'POST', body: formData });
+        if (res.code === 200) {
+            showToast('回复成功', 'success');
+            loadComments();
+        } else {
+            showToast(res.msg, 'error');
+        }
+    } catch (e) {
+        showToast('回复失败', 'error');
+    }
 }
 
 async function postComment() {
@@ -243,6 +340,55 @@ async function toggleShelf() {
         if (res.code === 200) {
             showToast(isCollected ? '已移出书架' : '已加入书架', 'success');
             updateShelfBtn(!isCollected);
+        } else {
+            showToast(res.msg, 'error');
+        }
+    } catch (e) {
+        showToast('操作失败', 'error');
+    }
+}
+
+async function checkFollowStatus() {
+    const user = Auth.getUser();
+    if (!user || !authorId) return;
+
+    // Hide follow if author is the current user
+    if (user.authorId === authorId) {
+        document.getElementById('btnFollowAuthor').classList.add('hidden');
+        return;
+    }
+
+    try {
+        const res = await fetchJson(`../interaction/follow/check?authorId=${authorId}`);
+        if (res.code === 200) {
+            document.getElementById('btnFollowAuthor').classList.remove('hidden');
+            updateFollowBtn(res.data);
+        }
+    } catch (e) { console.error(e); }
+}
+
+function updateFollowBtn(status) {
+    isFollowing = status;
+    const btn = document.getElementById('btnFollowAuthor');
+    if (status) {
+        btn.innerText = '已关注';
+        btn.className = "px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full hover:bg-blue-700 transition-colors";
+    } else {
+        btn.innerText = '+ 关注';
+        btn.className = "px-3 py-1 border border-blue-600 text-blue-600 text-xs font-bold rounded-full hover:bg-blue-50 transition-colors";
+    }
+}
+
+async function toggleFollow() {
+    if (!authorId) return;
+    const action = isFollowing ? 'remove' : 'add';
+    try {
+        const formData = new URLSearchParams();
+        formData.append('authorId', authorId);
+        const res = await fetchJson(`../interaction/follow/${action}`, { method: 'POST', body: formData });
+        if (res.code === 200) {
+            showToast(isFollowing ? '已取消关注' : '已关注作者', 'success');
+            updateFollowBtn(!isFollowing);
         } else {
             showToast(res.msg, 'error');
         }

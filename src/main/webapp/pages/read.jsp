@@ -38,6 +38,10 @@
                 </a>
                 <span id="chapterTitleHeader" class="text-sm font-bold text-slate-900 truncate max-w-xs">加载中...</span>
                 <div class="flex items-center gap-4">
+                    <button onclick="toggleSettings()" class="text-slate-400 hover:text-slate-900 transition-colors"
+                        title="阅读设置">
+                        <i data-lucide="settings-2" class="w-5 h-5"></i>
+                    </button>
                     <a href="index.jsp" class="text-slate-400 hover:text-slate-900"><i data-lucide="home"
                             class="w-5 h-5"></i></a>
                 </div>
@@ -57,6 +61,61 @@
                     </div>
                 </div>
             </article>
+
+            <!-- Floating Sidebar Settings (Hidden by default) -->
+            <div id="settingsPanel"
+                class="fixed right-0 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-md shadow-2xl border-l border-y border-gray-100 rounded-l-2xl p-6 z-50 translate-x-full transition-transform duration-300 w-64">
+                <h4 class="text-sm font-black text-slate-900 mb-6 flex items-center gap-2">
+                    <i data-lucide="settings-2" class="w-4 h-4"></i> 阅读设置
+                </h4>
+
+                <div class="space-y-8">
+                    <!-- Font Size -->
+                    <div>
+                        <label
+                            class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">字号大小</label>
+                        <div class="flex items-center justify-between gap-4">
+                            <button onclick="changeFontSize(-0.1)"
+                                class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                <i data-lucide="minus" class="w-4 h-4"></i>
+                            </button>
+                            <span id="fontSizeDisplay" class="text-sm font-bold text-slate-700">1.25rem</span>
+                            <button onclick="changeFontSize(0.1)"
+                                class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Themes -->
+                    <div>
+                        <label
+                            class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">阅读背景</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="setTheme('default')" id="theme-default"
+                                class="w-full aspect-square rounded-full border-2 border-blue-500 bg-[#f0f2f5]"
+                                title="默认"></button>
+                            <button onclick="setTheme('parchment')" id="theme-parchment"
+                                class="w-full aspect-square rounded-full border border-gray-100 bg-[#f4ecd8]"
+                                title="雅致"></button>
+                            <button onclick="setTheme('green')" id="theme-green"
+                                class="w-full aspect-square rounded-full border border-gray-100 bg-[#c7edcc]"
+                                title="护眼"></button>
+                            <button onclick="setTheme('night')" id="theme-night"
+                                class="w-full aspect-square rounded-full border border-gray-100 bg-[#1a1c1e]"
+                                title="夜间"></button>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="pt-4 border-t border-gray-100">
+                        <div class="flex items-center justify-between text-[10px] font-bold text-slate-400">
+                            <span>阅读时长</span>
+                            <span id="readingTimeDisplay" class="text-blue-600">00:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Navigation -->
             <div class="mt-10 grid grid-cols-2 gap-4">

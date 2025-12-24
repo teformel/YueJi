@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     loadBookshelf();
     loadHistory();
+    loadFollows();
 });
 
 async function initUser() {
@@ -80,6 +81,8 @@ function switchTab(tabName) {
     });
     event.currentTarget.classList.remove('border-transparent');
     event.currentTarget.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-600');
+
+    if (tabName === 'follows') loadFollows();
 }
 
 async function saveProfile() {
@@ -188,5 +191,59 @@ async function loadHistory() {
     } catch (e) {
         console.error(e);
         container.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-red-400">加载失败</td></tr>`;
+    }
+}
+
+async function loadFollows() {
+    const container = document.getElementById('followList');
+    try {
+        const res = await fetchJson('../interaction/follow/list');
+        if (res.code === 200 && res.data && res.data.length > 0) {
+            container.innerHTML = res.data.map(item => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 group hover:border-blue-200 transition-all">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold border border-gray-100 shadow-sm">
+                            ${item.authorPenname ? item.authorPenname[0] : (item.authorName ? item.authorName[0] : '?')}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">${item.authorPenname || item.authorName}</h4>
+                            <p class="text-[10px] text-slate-400 font-medium">关注于: ${new Date(item.createdTime).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    <button onclick="unfollowFromList(${item.authorId})" class="text-xs font-bold text-slate-400 hover:text-red-500 px-3 py-1 rounded-lg hover:bg-red-50 transition-all">
+                        取消关注
+                    </button>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="p-8 text-center text-slate-400 bg-gray-50 rounded-lg col-span-full">
+                    <i data-lucide="users" class="w-12 h-12 mx-auto mb-2 opacity-30"></i>
+                    <p>尚未关注任何作者</p>
+                    <a href="index.jsp" class="inline-block mt-4 text-sm text-blue-600 font-bold hover:underline">寻找喜欢的作者 -></a>
+                </div>
+            `;
+        }
+        lucide.createIcons();
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = `<div class="p-4 text-center text-red-400">加载失败</div>`;
+    }
+}
+
+async function unfollowFromList(authorId) {
+    if (!confirm('确定取消关注该作者吗？')) return;
+    try {
+        const formData = new URLSearchParams();
+        formData.append('authorId', authorId);
+        const res = await fetchJson('../interaction/follow/remove', { method: 'POST', body: formData });
+        if (res.code === 200) {
+            showToast('已取消关注', 'success');
+            loadFollows();
+        } else {
+            showToast(res.msg, 'error');
+        }
+    } catch (e) {
+        showToast('操作失败', 'error');
     }
 }

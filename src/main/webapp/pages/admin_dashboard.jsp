@@ -51,6 +51,10 @@
                             class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all">
                             <i data-lucide="user-check" class="w-5 h-5"></i> 作者审核
                         </button>
+                        <button onclick="switchTab('categories')"
+                            class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all">
+                            <i data-lucide="tags" class="w-5 h-5"></i> 分类管理
+                        </button>
                     </aside>
 
                     <!-- Content -->
@@ -81,7 +85,7 @@
                                 用户管理
                                 <button
                                     class="text-sm px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
-                                    onclick="renderUserTable()">刷新列表</button>
+                                    onclick="loadUsers()">刷新列表</button>
                             </h2>
 
                             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -168,6 +172,7 @@
 
                         <!-- Tab: Audit -->
                         <div id="tab-audit" class="tab-content hidden animate-fade-in">
+                            <!-- Existing audit content ... -->
                             <h2 class="text-2xl font-bold text-slate-900 mb-6 flex justify-between items-center">
                                 作者审核
                                 <button
@@ -188,6 +193,56 @@
                                     </thead>
                                     <tbody id="auditTableBody" class="divide-y divide-gray-100"></tbody>
                                 </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Categories -->
+                        <div id="tab-categories" class="tab-content hidden animate-fade-in">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-6 flex justify-between items-center">
+                                小说分类管理
+                                <button onclick="showCategoryModal()"
+                                    class="text-sm px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">添加新分类</button>
+                            </h2>
+                            <div
+                                class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[300px]">
+                                <table class="w-full text-left text-sm">
+                                    <thead
+                                        class="bg-gray-50 text-slate-500 font-bold uppercase border-b border-gray-200">
+                                        <tr>
+                                            <th class="px-6 py-4">ID</th>
+                                            <th class="px-6 py-4">分类名称</th>
+                                            <th class="px-6 py-4">创建时间</th>
+                                            <th class="px-6 py-4 text-right">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categoryTableBody" class="divide-y divide-gray-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Modal for Category -->
+                        <div id="categoryModal"
+                            class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center p-4">
+                            <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-zoom-in">
+                                <div
+                                    class="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+                                    <h3 class="text-xl font-black text-slate-900" id="catModalTitle">分类编辑</h3>
+                                    <button onclick="closeCategoryModal()"
+                                        class="text-slate-400 hover:text-slate-600"><i data-lucide="x"
+                                            class="w-6 h-6"></i></button>
+                                </div>
+                                <div class="p-8 space-y-6">
+                                    <input type="hidden" id="catId">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">分类名称</label>
+                                        <input type="text" id="catName" class="form-input" placeholder="输入分类名称...">
+                                    </div>
+                                </div>
+                                <div class="px-8 py-6 bg-slate-50 flex justify-end gap-3">
+                                    <button onclick="closeCategoryModal()"
+                                        class="px-6 py-2 text-sm font-bold text-slate-500 hover:text-slate-700">取消</button>
+                                    <button onclick="saveCategory()" class="btn-primary px-8">确定</button>
+                                </div>
                             </div>
                         </div>
                     </div>

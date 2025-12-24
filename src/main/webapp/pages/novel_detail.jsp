@@ -42,7 +42,13 @@
                                         </span>
                                     </div>
                                     <h1 id="novelTitle" class="text-4xl font-black text-slate-900 mb-2">加载中...</h1>
-                                    <p id="authorName" class="text-lg text-slate-500 font-medium">佚名 · 著</p>
+                                    <div class="flex items-center gap-3">
+                                        <p id="authorName" class="text-lg text-slate-500 font-medium">佚名 · 著</p>
+                                        <button id="btnFollowAuthor" onclick="toggleFollow()"
+                                            class="hidden px-3 py-1 border border-blue-600 text-blue-600 text-xs font-bold rounded-full hover:bg-blue-50 transition-colors">
+                                            + 关注
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div class="flex items-center gap-4 mb-8">
@@ -90,7 +96,9 @@
                                 </div>
                             </section>
 
-                            <section>
+                            </section>
+
+                            <section class="mb-10">
                                 <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
                                     <i data-lucide="list" class="w-5 h-5 text-blue-600"></i> 目录正文
                                     <span id="chapterCount"
@@ -101,15 +109,35 @@
                                     <!-- Injected -->
                                 </div>
                             </section>
+
+                            <!-- Comments Section -->
+                            <section id="commentsSection" class="pt-10 border-t border-gray-100">
+                                <div class="flex items-center justify-between mb-8">
+                                    <h3 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                                        <i data-lucide="message-square" class="w-6 h-6 text-blue-600"></i> 作品评论
+                                    </h3>
+                                    <div id="commentCountTotal" class="text-sm text-slate-400 font-medium">0 条评论</div>
+                                </div>
+                                <div id="discussionArea"
+                                    class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm mb-10">
+                                    <div class="text-center py-10">
+                                        <i data-lucide="message-square"
+                                            class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
+                                        <p class="text-sm text-slate-400">登录后即可参与讨论</p>
+                                    </div>
+                                </div>
+                                <div id="commentList" class="space-y-6">
+                                    <!-- Injected -->
+                                </div>
+                            </section>
                         </div>
 
                         <!-- Right: Side Panel -->
                         <aside class="space-y-6">
                             <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                                <h4 class="font-bold text-slate-900 mb-4">共鸣讨论区</h4>
-                                <div id="discussionArea" class="text-center py-10">
-                                    <i data-lucide="message-square" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
-                                    <p class="text-sm text-slate-400">登录后即可参与讨论</p>
+                                <h4 class="font-bold text-slate-900 mb-4">阅读公告</h4>
+                                <div class="text-sm text-slate-600 leading-relaxed">
+                                    欢迎来到阅己小说网。请遵守社区公约，发表友善的评论。
                                 </div>
                             </div>
                         </aside>

@@ -10,17 +10,50 @@
             </a>
 
             <!-- Nav Links -->
-            <nav class="hidden md:flex items-center gap-8">
-                <a href="${pageContext.request.contextPath}/pages/index.jsp"
-                    class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">首页</a>
-                <a href="${pageContext.request.contextPath}/pages/browse.jsp?category=玄幻"
-                    class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">玄幻</a>
-                <a href="${pageContext.request.contextPath}/pages/browse.jsp?category=悬疑"
-                    class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">悬疑</a>
-                <a href="${pageContext.request.contextPath}/pages/browse.jsp?category=都市"
-                    class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">都市</a>
-                <a href="${pageContext.request.contextPath}/pages/browse.jsp"
-                    class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">全部作品</a>
+            <nav class="hidden md:flex items-center gap-6">
+                <a href="${pageContext.request.contextPath}/pages/index.jsp" class="nav-link" data-nav="index">首页</a>
+
+                <!-- Category Dropdown -->
+                <div class="relative group py-5">
+                    <button class="nav-link flex items-center gap-1 group-hover:text-blue-600 transition-colors">
+                        分类 <i data-lucide="chevron-down"
+                            class="w-4 h-4 transition-transform group-hover:rotate-180"></i>
+                    </button>
+                    <!-- Dropdown Content -->
+                    <div
+                        class="absolute left-0 top-full hidden group-hover:block w-[480px] bg-white border border-gray-100 rounded-2xl shadow-xl p-6 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <h5 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">热门推荐
+                                </h5>
+                                <div class="space-y-3" id="headerCategoryHot">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">核心分类
+                                </h5>
+                                <div class="space-y-3" id="headerCategoryMore">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                            <div class="bg-blue-50/50 rounded-xl p-4">
+                                <h5 class="text-[11px] font-bold text-blue-600 uppercase tracking-widest mb-3">全景书库</h5>
+                                <p class="text-[11px] text-slate-500 mb-4 leading-relaxed">发现万千世界的奥秘，找到你心灵的归宿。</p>
+                                <a href="${pageContext.request.contextPath}/pages/browse.jsp"
+                                    class="inline-flex items-center text-xs font-bold text-blue-600 hover:gap-2 transition-all">
+                                    进入书库 <i data-lucide="arrow-right" class="w-3 h-3 ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="${pageContext.request.contextPath}/pages/browse.jsp" class="nav-link" data-nav="browse">书库</a>
+                <a href="${pageContext.request.contextPath}/pages/browse.jsp?sort=hot"
+                    class="nav-link flex items-center gap-1" data-nav="rank">
+                    排行榜 <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                </a>
             </nav>
 
             <!-- User Actions -->
