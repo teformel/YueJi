@@ -23,6 +23,7 @@ public class BeanFactory {
         beans.put(CoinLogDao.class, new CoinLogDaoImpl());
         beans.put(ChapterPurchaseDao.class, new ChapterPurchaseDaoImpl());
         beans.put(ReadingProgressDao.class, new ReadingProgressDaoImpl());
+        beans.put(AnnouncementDao.class, new AnnouncementDaoImpl());
 
         // Initialize Services (Inject DAOs)
         beans.put(UserService.class, new UserServiceImpl());
@@ -31,6 +32,7 @@ public class BeanFactory {
         beans.put(AssetService.class, new AssetServiceImpl());
         beans.put(AuthorService.class, new AuthorServiceImpl());
         beans.put(CommentService.class, new CommentServiceImpl());
+        beans.put(AnnouncementService.class, new AnnouncementServiceImpl());
     }
 
 
