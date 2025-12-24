@@ -6,9 +6,10 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>注册 - 阅己 YueJi</title>
-        <link rel="stylesheet" href="../static/css/style.css?v=3">
-        <script src="../static/js/lucide.js"></script>
-        <script src="../static/js/script.js"></script>
+        <link rel="stylesheet"
+            href="${pageContext.request.contextPath}/static/css/style.css?v=${System.currentTimeMillis()}">
+        <script src="${pageContext.request.contextPath}/static/js/lucide.js"></script>
+        <script src="${pageContext.request.contextPath}/static/js/script.js?v=${System.currentTimeMillis()}"></script>
     </head>
 
     <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
@@ -67,46 +68,7 @@
         <!-- Toast Container -->
         <div id="toast" class="invisible translate-y-4"></div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                lucide.createIcons();
-            });
-
-            async function register() {
-                const realname = document.getElementById('realname').value;
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-
-                if (!username || !password || !realname) {
-                    showToast('请完整填写信息', 'error');
-                    return;
-                }
-
-                try {
-                    const formData = new URLSearchParams();
-                    formData.append('realname', realname);
-                    formData.append('username', username);
-                    formData.append('password', password);
-
-                    const response = await fetch('../auth/register', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: formData
-                    });
-                    const result = await response.json();
-
-                    if (result.code === 200) {
-                        showToast('注册成功，正在跳转登录...', 'success');
-                        setTimeout(() => location.href = "login.jsp", 1500);
-                    } else {
-                        showToast(result.msg || '注册失败', 'error');
-                    }
-                } catch (e) {
-                    console.error(e);
-                    showToast('网络错误，请重试', 'error');
-                }
-            }
-        </script>
+        <script src="${pageContext.request.contextPath}/static/js/register.js?v=${System.currentTimeMillis()}"></script>
     </body>
 
     </html>

@@ -2,7 +2,7 @@
     <header class="sticky top-0 z-50 w-full bg-white border-b border-gray-200">
         <div class="container flex h-16 items-center justify-between">
             <!-- Brand -->
-            <a href="index.jsp" class="flex items-center gap-2 group">
+            <a href="${pageContext.request.contextPath}/pages/index.jsp" class="flex items-center gap-2 group">
                 <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white">
                     <i data-lucide="book-open" class="w-5 h-5"></i>
                 </div>
@@ -11,15 +11,15 @@
 
             <!-- Nav Links -->
             <nav class="hidden md:flex items-center gap-8">
-                <a href="index.jsp"
+                <a href="${pageContext.request.contextPath}/pages/index.jsp"
                     class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">首页</a>
-                <a href="browse.jsp?category=玄幻"
+                <a href="${pageContext.request.contextPath}/pages/browse.jsp?category=玄幻"
                     class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">玄幻</a>
-                <a href="browse.jsp?category=悬疑"
+                <a href="${pageContext.request.contextPath}/pages/browse.jsp?category=悬疑"
                     class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">悬疑</a>
-                <a href="browse.jsp?category=都市"
+                <a href="${pageContext.request.contextPath}/pages/browse.jsp?category=都市"
                     class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">都市</a>
-                <a href="browse.jsp"
+                <a href="${pageContext.request.contextPath}/pages/browse.jsp"
                     class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">全部作品</a>
             </nav>
 
@@ -28,16 +28,18 @@
                 <!-- Checking session via JS in script.js to toggle this would be better, but JSP is server side. 
                  Since we are doing full client-side mock auth, we will toggle this class via JS in common script -->
                 <div id="authLinks" class="flex items-center gap-4">
-                    <a href="login.jsp" class="text-sm font-medium text-slate-600 hover:text-slate-900">登录</a>
-                    <a href="register.jsp" class="btn-primary text-sm px-5 py-2">注册</a>
+                    <a href="${pageContext.request.contextPath}/pages/login.jsp"
+                        class="text-sm font-medium text-slate-600 hover:text-slate-900">登录</a>
+                    <a href="${pageContext.request.contextPath}/pages/register.jsp"
+                        class="btn-primary text-sm px-5 py-2">注册</a>
                 </div>
 
                 <div id="userMenu" class="hidden items-center gap-3">
-                    <a href="creator_dashboard.jsp" id="creatorLink"
+                    <a href="${pageContext.request.contextPath}/pages/creator_dashboard.jsp" id="creatorLink"
                         class="hidden text-sm font-bold text-slate-500 hover:text-blue-600">作家后台</a>
-                    <a href="admin_dashboard.jsp" id="adminLink"
+                    <a href="${pageContext.request.contextPath}/pages/admin_dashboard.jsp" id="adminLink"
                         class="hidden text-sm font-bold text-slate-500 hover:text-red-500">管理后台</a>
-                    <a href="user_center.jsp"
+                    <a href="${pageContext.request.contextPath}/pages/user_center.jsp"
                         class="flex items-center gap-2 hover:bg-gray-50 p-1 pr-3 rounded-full border border-transparent hover:border-gray-200 transition-all">
                         <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
                             <i data-lucide="user" class="w-4 h-4"></i>
@@ -47,27 +49,4 @@
                 </div>
             </div>
         </div>
-        <script>
-            // Simple Auth Check for Header
-            // Simple Auth Check for Header
-            document.addEventListener('DOMContentLoaded', () => {
-                const userJson = localStorage.getItem('user');
-                if (userJson) {
-                    try {
-                        const u = JSON.parse(userJson);
-                        document.getElementById('authLinks').classList.add('hidden');
-                        document.getElementById('userMenu').classList.remove('hidden');
-                        document.getElementById('userMenu').classList.add('flex');
-                        document.getElementById('headerUsername').innerText = u.realname || u.username;
-
-                        if (u.role === 1 || u.role === 'admin') { // Backend role is int 1 for admin
-                            document.getElementById('creatorLink').classList.remove('hidden');
-                            document.getElementById('adminLink').classList.remove('hidden');
-                        }
-                    } catch (e) {
-                        localStorage.removeItem('user');
-                    }
-                }
-            });
-        </script>
     </header>

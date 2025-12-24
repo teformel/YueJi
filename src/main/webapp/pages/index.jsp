@@ -5,11 +5,17 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>阅己 YueJi - 探索无限故事</title>
-        <link rel="stylesheet" href="../static/css/style.css?v=3">
-        <script src="../static/js/lucide.js"></script>
-        <script src="../static/js/script.js"></script>
-    </head>
+
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>阅己 YueJi - 探索无限故事</title>
+            <link rel="stylesheet"
+                href="${pageContext.request.contextPath}/static/css/style.css?v=${System.currentTimeMillis()}">
+            <script src="${pageContext.request.contextPath}/static/js/lucide.js"></script>
+            <script
+                src="${pageContext.request.contextPath}/static/js/script.js?v=${System.currentTimeMillis()}"></script>
+        </head>
 
     <body class="bg-gray-50 min-h-screen">
         <%@ include file="header.jsp" %>
@@ -60,7 +66,7 @@
                         <!-- Novel Grid (8 cols) -->
                         <div class="lg:col-span-8 space-y-8">
                             <div class="flex items-center justify-between border-b border-gray-200 pb-4">
-                                <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                                <h2 id="sectionTitle" class="text-2xl font-bold text-slate-900 flex items-center gap-2">
                                     <i data-lucide="sparkles" class="w-6 h-6 text-yellow-500"></i> 精选推荐
                                 </h2>
                                 <button onclick="loadNovels()"
@@ -94,7 +100,7 @@
                             <div class="bg-slate-900 rounded-xl p-8 text-center text-white shadow-lg">
                                 <h4 class="text-xl font-bold mb-2">成为创作者</h4>
                                 <p class="text-slate-300 text-sm mb-6">让您的想象力绽放。每一位伟大的作者都始于第一行文字。</p>
-                                <button
+                                <button onclick="handleContribute()"
                                     class="w-full py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-gray-100 transition-colors">
                                     立即投稿
                                 </button>
@@ -107,74 +113,8 @@
 
             <%@ include file="footer.jsp" %>
 
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        loadNovels();
-                        lucide.createIcons();
-                    });
-
-                    async function loadNovels() {
-                        const grid = document.getElementById('novelGrid');
-                        try {
-                            const result = await fetchJson("../novel/list");
-                            if (result && result.code === 200) {
-                                const novels = result.data;
-                                renderGrid(novels.slice(0, 9));
-                                renderRankings(novels.slice(0, 5));
-                            } else {
-                                grid.innerHTML = '<p class="col-span-full text-center text-slate-500">暂无数据</p>';
-                            }
-                        } catch (e) {
-                            console.error("加载失败:", e);
-                            grid.innerHTML = '<p class="col-span-full text-center text-red-500">连接服务器失败</p>';
-                        }
-                    }
-
-                    function renderGrid(novels) {
-                        const container = document.getElementById('novelGrid');
-                        if (!novels.length) {
-                            container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400">暂无书籍</div>';
-                            return;
-                        }
-                        container.innerHTML = novels.map(n => `
-                <div class="standard-card group cursor-pointer" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
-                    <div class="aspect-[2/3] overflow-hidden bg-gray-100 relative">
-                        <img src="\${n.cover || '../static/images/cover_placeholder.jpg'}" 
-                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                             onerror="this.src='../static/images/cover_placeholder.jpg'">
-                    </div>
-                    <div class="p-4">
-                        <h4 class="font-bold text-slate-900 truncate mb-1 group-hover:text-blue-600 transition-colors">\${n.name}</h4>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">\${n.authorName || '佚名'}</p>
-                    </div>
-                </div>
-            `).join('');
-                        lucide.createIcons();
-                    }
-
-                    function renderRankings(novels) {
-                        const container = document.getElementById('rankingList');
-                        container.innerHTML = novels.map((n, i) => `
-                <div class="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" onclick="location.href='novel_detail.jsp?id=\${n.id}'">
-                    <span class="text-lg font-black w-6 text-center \${i < 3 ? 'text-orange-500' : 'text-slate-300'}">\${i + 1}</span>
-                    <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold text-slate-700 truncate hover:text-blue-600 transition-colors">\${n.name}</div>
-                        <div class="text-xs text-slate-400">\${n.categoryName || '综合'}</div>
-                    </div>
-                </div>
-            `).join('');
-                    }
-
-                    async function handleSearch() {
-                        const q = document.getElementById('searchInput').value.trim();
-                        if (!q) return;
-                        location.href = `index.jsp?keyword=\${encodeURIComponent(q)}`;
-                    }
-
-                    document.getElementById('searchInput').addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') handleSearch();
-                    });
-                </script>
+                <script
+                    src="${pageContext.request.contextPath}/static/js/index.js?v=${System.currentTimeMillis()}"></script>
     </body>
 
     </html>
