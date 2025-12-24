@@ -3,6 +3,7 @@
 -- Table Prefix: t_*
 
 -- 1. Drop existing tables (Reverse order of dependencies)
+DROP TABLE IF EXISTS t_announcement; -- [NEW]
 DROP TABLE IF EXISTS t_chapter_purchase; -- [NEW]
 DROP TABLE IF EXISTS t_coin_log;
 DROP TABLE IF EXISTS t_comment;
@@ -38,6 +39,7 @@ CREATE TABLE t_user (
     coin_balance DECIMAL(10,2) DEFAULT 0.00,
     role SMALLINT DEFAULT 0,
     status SMALLINT DEFAULT 1,
+    last_login_time TIMESTAMP,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -109,6 +111,7 @@ CREATE TABLE t_comment (
     content VARCHAR(500),
     reply_to_id INT,
     status SMALLINT DEFAULT 1,
+    score INT DEFAULT 5, -- [NEW]
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -119,6 +122,27 @@ CREATE TABLE t_collection (
     novel_id INT REFERENCES t_novel(id) ON DELETE CASCADE,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, novel_id)
+);
+
+-- Table Reading Progress
+CREATE TABLE t_reading_progress (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES t_user(id) ON DELETE CASCADE,
+    novel_id INT REFERENCES t_novel(id) ON DELETE CASCADE,
+    chapter_id INT,
+    scroll_y INT DEFAULT 0,
+    total_reading_time INT DEFAULT 0, -- [NEW] in seconds
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, novel_id)
+);
+
+-- Table 10: t_announcement (System Announcements)
+CREATE TABLE t_announcement (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    content TEXT,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_active SMALLINT DEFAULT 1 -- 1: Display, 0: Hidden
 );
 
 -- 3. Initialize Data
@@ -142,13 +166,15 @@ INSERT INTO t_chapter (novel_id, title, content, price, is_paid) VALUES
 (2, '第一回 灭门', '和风熏柳，花香醉人，正是南国春光漫烂季节...', 0.00, 0),
 (2, '第二回 聆秘', '林平之大叫一声，晕了过去...', 10.00, 1);
 
--- Table Reading Progress
-CREATE TABLE t_reading_progress (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES t_user(id) ON DELETE CASCADE,
-    novel_id INT REFERENCES t_novel(id) ON DELETE CASCADE,
-    chapter_id INT,
-    scroll_y INT DEFAULT 0,
-    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, novel_id)
-);
+-- Sample Comments with Scores
+INSERT INTO t_comment (novel_id, user_id, content, score) VALUES 
+(1, 1, '发人深省的作品，五星好评！', 5),
+(1, 2, '文学价值极高，但是读起来有点压抑。', 4),
+(2, 2, '金庸武侠经典之作，百看不厌。', 5);
+
+INSERT INTO t_reading_progress (user_id, novel_id, chapter_id, scroll_y, total_reading_time) VALUES
+(2, 1, 1, 100, 3600); -- user1 read 1 hour of 狂人日记
+
+INSERT INTO t_announcement (title, content, is_active) VALUES
+('系统上线公告', '欢迎来到阅己小说阅读系统！在这里，您可以读懂故事，更是读懂自己。', 1),
+('充值优惠活动', '即日起，首充即送 10% 书币，快来领取吧！', 1);
