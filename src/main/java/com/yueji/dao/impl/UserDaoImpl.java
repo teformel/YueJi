@@ -117,6 +117,31 @@ public class UserDaoImpl implements UserDao {
         return list;
     }
 
+    @Override
+    public void updateLastLoginTime(int userId) throws SQLException {
+        String sql = "UPDATE t_user SET last_login_time = CURRENT_TIMESTAMP WHERE id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public long countActiveUsersToday() {
+        String sql = "SELECT COUNT(DISTINCT id) FROM t_user WHERE last_login_time >= CURRENT_DATE";
+        try (Connection conn = DbUtils.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     private User mapRow(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("id"));
@@ -128,6 +153,7 @@ public class UserDaoImpl implements UserDao {
         user.setRole(rs.getInt("role"));
         user.setStatus(rs.getInt("status"));
         user.setCreateTime(rs.getTimestamp("create_time"));
+        user.setLastLoginTime(rs.getTimestamp("last_login_time"));
         return user;
     }
 }

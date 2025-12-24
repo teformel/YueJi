@@ -13,8 +13,17 @@ public class User {
     private Integer role; // 0: User, 1: Admin
     private Integer status; // 0: Disabled, 1: Enabled
     private Timestamp createTime;
+    private Timestamp lastLoginTime;
 
     public User() {}
+
+    public Timestamp getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Timestamp lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
 
     public Integer getId() {
         return id;

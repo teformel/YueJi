@@ -12,4 +12,6 @@ public interface UserDao {
     void updatePassword(int userId, String newPassword) throws SQLException;
     List<User> findAll();
     long count();
+    void updateLastLoginTime(int userId) throws SQLException;
+    long countActiveUsersToday();
 }
