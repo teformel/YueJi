@@ -23,6 +23,21 @@ public class PayServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String path = req.getPathInfo();
+        try {
+            if ("/history".equals(path)) {
+                handleHistory(req, resp);
+            } else {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ResponseUtils.writeJson(resp, 500, "Error: " + e.getMessage(), null);
+        }
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getPathInfo();
         try {
@@ -37,6 +52,12 @@ public class PayServlet extends HttpServlet {
             e.printStackTrace();
             ResponseUtils.writeJson(resp, 500, "Error: " + e.getMessage(), null);
         }
+    }
+
+    private void handleHistory(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        User user = getUser(req, resp);
+        if (user == null) return;
+        ResponseUtils.writeJson(resp, 200, "Success", assetService.getTransactionHistory(user.getId()));
     }
 
     private void handleRecharge(HttpServletRequest req, HttpServletResponse resp) throws Exception {
