@@ -76,8 +76,8 @@ async function loadContent() {
                             <p class="text-slate-500 text-sm">解锁后即可继续阅读精彩内容</p>
                         </div>
                         <div class="space-y-4">
-                            <div class="text-2xl font-black text-slate-900">10 <span class="text-sm font-normal text-slate-500">阅币</span></div>
-                            <button onclick="purchaseChapter(${chapterId})" 
+                            <div class="text-2xl font-black text-slate-900">${ch.price} <span class="text-sm font-normal text-slate-500">书币</span></div>
+                            <button onclick="purchaseChapter(${chapterId}, ${ch.price})" 
                                 class="px-8 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-lg shadow-lg shadow-yellow-500/20 transition-all active:scale-95">
                                 立即购买
                             </button>
@@ -121,8 +121,8 @@ async function loadContent() {
     }
 }
 
-async function purchaseChapter(cId) {
-    if (!confirm('确认花费 10 阅币购买此章节？')) return;
+async function purchaseChapter(cId, price) {
+    if (!confirm(`确认花费 ${price} 书币购买此章节？`)) return;
 
     try {
         const formData = new URLSearchParams();
