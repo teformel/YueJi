@@ -24,33 +24,33 @@ public class UserServiceImpl implements UserService {
     private void populateLevelInfo(User user) {
         if (user == null) return;
         try {
-            // 1. Get Stats
+            // 1. 获取统计数据
             BigDecimal totalRecharge = coinLogDao.getTotalRecharge(user.getId());
             long totalReadingSeconds = readingProgressDao.getTotalReadingTime(user.getId());
             int readNovels = readingProgressDao.getReadNovelCount(user.getId());
 
-            // 2. Calculate EXP
-            // EXP = (Recharge * 1) + (Reading Mins * 2) + (Novels * 50)
+            // 2. 计算经验值
+            // 总经验 = (累计充值 * 1) + (阅读时长(分) * 2) + (阅读小说数 * 50)
             int expFromRecharge = totalRecharge.intValue();
             int expFromReading = (int) (totalReadingSeconds / 60) * 2;
             int expFromNovels = readNovels * 50;
             
             int totalExp = expFromRecharge + expFromReading + expFromNovels;
 
-            // 3. Calculate Level
-            // Level = floor(sqrt(EXP) / 10) + 1
-            // e.g. 0 -> 1, 100 -> 2, 400 -> 3
+            // 3. 计算等级
+            // 等级 = floor(sqrt(总经验) / 10) + 1
+            // 例如: 0 -> 1, 100 -> 2, 400 -> 3
             int level = (int) (Math.sqrt(totalExp) / 10) + 1;
             if (level > 10) level = 10; // Cap at 10
 
-            // 4. Calculate Next Level Exp
-            // Next Level = Level + 1
-            // Exp for Next Level = ((Level) * 10)^2
-            // e.g. for Level 1 (current), target Level 2. Exp = (1*10)^2 = 100.
-            // e.g. for Level 2 (current), target Level 3. Exp = (2*10)^2 = 400.
-            int targetLevel = level; // Because logic is: reached sqrt/10 + 1. 
-            // example: exp 99. sqrt(99)=9.9. /10 = 0.99. +1 = 1. Level 1.
-            // Next boundary is when sqrt(exp)/10 = 1 => sqrt(exp)=10 => exp=100.
+            // 4. 计算下一级所需经验
+            // 下一级 = 当前等级 + 1
+            // 下一级所需经验 = ((当前等级) * 10)^2
+            // 例如: 当前等级 1, 目标等级 2. 所需经验 = (1*10)^2 = 100.
+            // 例如: 当前等级 2, 目标等级 3. 所需经验 = (2*10)^2 = 400.
+            int targetLevel = level; // 逻辑: 达到 sqrt/10 + 1.
+            // 举例: exp 99. sqrt(99)=9.9. /10 = 0.99. +1 = 1. 等级 1.
+            // 下一级边界是 sqrt(exp)/10 = 1 => sqrt(exp)=10 => exp=100.
             
             int nextLevelBoundary = (int) Math.pow(targetLevel * 10, 2);
 
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
         if (user != null && user.getPassword().equalsIgnoreCase(hashedInput)) {
             if (user.getStatus() == 0) return null; // Disabled
             
-            populateLevelInfo(user); // Populate Level
+            populateLevelInfo(user); // 填充等级信息
             return user;
         }
         return null;
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(User user) throws Exception {
         if (userDao.findByUsername(user.getUsername()) != null) {
-            throw new Exception("Username already exists");
+            throw new Exception("用户名已存在");
         }
         user.setCoinBalance(BigDecimal.ZERO);
         user.setRole(0); 
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         if (user != null && user.getPassword().equalsIgnoreCase(hashedOld)) {
             userDao.updatePassword(userId, com.yueji.common.AuthUtils.md5(newPwd));
         } else {
-            throw new Exception("Wrong old password");
+            throw new Exception("原密码错误");
         }
     }
 

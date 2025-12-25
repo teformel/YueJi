@@ -13,7 +13,7 @@ public class ReadingProgressDaoImpl implements ReadingProgressDao {
 
     @Override
     public void upsert(int userId, int novelId, int chapterId, int scrollY) throws SQLException {
-        // Upsert logic (PostgreSQL 9.5+ uses ON CONFLICT)
+        // 插入或更新逻辑 (PostgreSQL 9.5+ 使用 ON CONFLICT)
         String sql = "INSERT INTO t_reading_progress (user_id, novel_id, chapter_id, scroll_y, update_time) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP) " +
                      "ON CONFLICT (user_id, novel_id) DO UPDATE SET chapter_id = EXCLUDED.chapter_id, scroll_y = EXCLUDED.scroll_y, update_time = CURRENT_TIMESTAMP";
         try (Connection conn = DbUtils.getConnection();

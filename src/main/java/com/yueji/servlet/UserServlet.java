@@ -49,7 +49,7 @@ public class UserServlet extends HttpServlet {
     private void handleGetInfo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            ResponseUtils.writeJson(resp, 401, "Not logged in", null);
+            ResponseUtils.writeJson(resp, 401, "未登录", null);
             return;
         }
         User sessionUser = (User) session.getAttribute("user");
@@ -61,13 +61,13 @@ public class UserServlet extends HttpServlet {
         boolean isAuthor = authorDao.findByUserId(user.getId()) != null;
         json.addProperty("isAuthor", isAuthor);
         
-        ResponseUtils.writeJson(resp, 200, "User info", json);
+        ResponseUtils.writeJson(resp, 200, "获取成功", json);
     }
 
     private void handleUpdateInfo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            ResponseUtils.writeJson(resp, 401, "Not logged in", null);
+            ResponseUtils.writeJson(resp, 401, "未登录", null);
             return;
         }
         User sessionUser = (User) session.getAttribute("user");
@@ -87,17 +87,17 @@ public class UserServlet extends HttpServlet {
         try {
             userService.updateProfile(user);
             session.setAttribute("user", user); // Update session
-            ResponseUtils.writeJson(resp, 200, "Profile updated", null);
+            ResponseUtils.writeJson(resp, 200, "资料已更新", null);
         } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtils.writeJson(resp, 500, "Error updating profile", null);
+            ResponseUtils.writeJson(resp, 500, "更新资料失败", null);
         }
     }
 
     private void handleUpdatePassword(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            ResponseUtils.writeJson(resp, 401, "Not logged in", null);
+            ResponseUtils.writeJson(resp, 401, "未登录", null);
             return;
         }
         User sessionUser = (User) session.getAttribute("user");
@@ -107,7 +107,7 @@ public class UserServlet extends HttpServlet {
 
         try {
             userService.updatePassword(sessionUser.getId(), oldPassword, newPassword);
-            ResponseUtils.writeJson(resp, 200, "Password updated", null);
+            ResponseUtils.writeJson(resp, 200, "密码已修改", null);
         } catch (Exception e) {
             e.printStackTrace();
             ResponseUtils.writeJson(resp, 400, e.getMessage(), null); // "Wrong old password" etc

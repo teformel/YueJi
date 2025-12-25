@@ -44,9 +44,9 @@ public class AuthServlet extends HttpServlet {
             HttpSession session = req.getSession();
             session.setAttribute("user", user);
             userService.updateLastLoginTime(user.getId());
-            ResponseUtils.writeJson(resp, 200, "Login successful", user);
+            ResponseUtils.writeJson(resp, 200, "登录成功", user);
         } else {
-            ResponseUtils.writeJson(resp, 401, "Invalid username or password", null);
+            ResponseUtils.writeJson(resp, 401, "用户名或密码错误", null);
         }
     }
 
@@ -65,7 +65,7 @@ public class AuthServlet extends HttpServlet {
 
         try {
             userService.register(newUser);
-            ResponseUtils.writeJson(resp, 200, "Registration successful", null);
+            ResponseUtils.writeJson(resp, 200, "注册成功", null);
         } catch (Exception e) {
             e.printStackTrace();
             ResponseUtils.writeJson(resp, 400, e.getMessage(), null); // 400 for business error
@@ -74,6 +74,6 @@ public class AuthServlet extends HttpServlet {
 
     private void handleLogout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.getSession().invalidate();
-        ResponseUtils.writeJson(resp, 200, "Logged out", null);
+        ResponseUtils.writeJson(resp, 200, "已退出登录", null);
     }
 }

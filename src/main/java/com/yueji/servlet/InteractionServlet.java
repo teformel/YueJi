@@ -64,14 +64,14 @@ public class InteractionServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtils.writeJson(resp, 500, "Error: " + e.getMessage(), null);
+            ResponseUtils.writeJson(resp, 500, "错误: " + e.getMessage(), null);
         }
     }
 
     private void handleListComments(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         int novelId = Integer.parseInt(req.getParameter("novelId"));
         List<Comment> comments = interactionService.getNovelComments(novelId);
-        ResponseUtils.writeJson(resp, 200, "Success", comments);
+        ResponseUtils.writeJson(resp, 200, "成功", comments);
     }
 
     private void handleCreateComment(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -93,7 +93,7 @@ public class InteractionServlet extends HttpServlet {
             c.setScore(Integer.parseInt(scoreStr));
         }
         interactionService.addComment(c);
-        ResponseUtils.writeJson(resp, 200, "Comment added", null);
+        ResponseUtils.writeJson(resp, 200, "评论已发布", null);
     }
 
     private void handleDeleteComment(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -104,13 +104,13 @@ public class InteractionServlet extends HttpServlet {
         // Basic permission check could be done here (only owner or admin)
         // But for simplicity if we trust the frontend or check later
         interactionService.deleteComment(id);
-        ResponseUtils.writeJson(resp, 200, "Deleted", null);
+        ResponseUtils.writeJson(resp, 200, "已删除", null);
     }
 
     private void handleListCollection(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         User user = getUser(req, resp);
         if (user == null) return;
-        ResponseUtils.writeJson(resp, 200, "Success", interactionService.getUserBookshelf(user.getId()));
+        ResponseUtils.writeJson(resp, 200, "成功", interactionService.getUserBookshelf(user.getId()));
     }
 
     private void handleAddCollection(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -118,7 +118,7 @@ public class InteractionServlet extends HttpServlet {
         if (user == null) return;
         int novelId = Integer.parseInt(req.getParameter("novelId"));
         interactionService.addToBookshelf(user.getId(), novelId);
-        ResponseUtils.writeJson(resp, 200, "Added to collection", null);
+        ResponseUtils.writeJson(resp, 200, "已加入书架", null);
     }
 
     private void handleRemoveCollection(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -126,7 +126,7 @@ public class InteractionServlet extends HttpServlet {
         if (user == null) return;
         int novelId = Integer.parseInt(req.getParameter("novelId"));
         interactionService.removeFromBookshelf(user.getId(), novelId);
-        ResponseUtils.writeJson(resp, 200, "Removed from collection", null);
+        ResponseUtils.writeJson(resp, 200, "已移出书架", null);
     }
 
     private void handleSyncReadingTime(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -135,7 +135,7 @@ public class InteractionServlet extends HttpServlet {
         int novelId = Integer.parseInt(req.getParameter("novelId"));
         int seconds = Integer.parseInt(req.getParameter("seconds"));
         interactionService.syncReadingTime(user.getId(), novelId, seconds);
-        ResponseUtils.writeJson(resp, 200, "Time synced", null);
+        ResponseUtils.writeJson(resp, 200, "时间已同步", null);
     }
 
     private void handleSyncProgress(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -151,7 +151,7 @@ public class InteractionServlet extends HttpServlet {
         try { scroll = Integer.parseInt(req.getParameter("scroll")); } catch (Exception e) {}
         
         interactionService.updateReadingProgress(user.getId(), novelId, chapterId, scroll);
-        ResponseUtils.writeJson(resp, 200, "Progress saved", null);
+        ResponseUtils.writeJson(resp, 200, "进度已保存", null);
     }
 
     private void handleFollow(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -159,7 +159,7 @@ public class InteractionServlet extends HttpServlet {
         if (user == null) return;
         int authorId = Integer.parseInt(req.getParameter("authorId"));
         interactionService.followAuthor(user.getId(), authorId);
-        ResponseUtils.writeJson(resp, 200, "Followed", null);
+        ResponseUtils.writeJson(resp, 200, "已关注", null);
     }
 
     private void handleUnfollow(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -167,7 +167,7 @@ public class InteractionServlet extends HttpServlet {
         if (user == null) return;
         int authorId = Integer.parseInt(req.getParameter("authorId"));
         interactionService.unfollowAuthor(user.getId(), authorId);
-        ResponseUtils.writeJson(resp, 200, "Unfollowed", null);
+        ResponseUtils.writeJson(resp, 200, "已取消关注", null);
     }
 
     private void handleCheckFollow(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -175,19 +175,19 @@ public class InteractionServlet extends HttpServlet {
         if (user == null) return;
         int authorId = Integer.parseInt(req.getParameter("authorId"));
         boolean following = interactionService.isFollowingAuthor(user.getId(), authorId);
-        ResponseUtils.writeJson(resp, 200, "Success", following);
+        ResponseUtils.writeJson(resp, 200, "成功", following);
     }
 
     private void handleListFollows(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         User user = getUser(req, resp);
         if (user == null) return;
-        ResponseUtils.writeJson(resp, 200, "Success", interactionService.getUserFollowList(user.getId()));
+        ResponseUtils.writeJson(resp, 200, "成功", interactionService.getUserFollowList(user.getId()));
     }
 
     private User getUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            ResponseUtils.writeJson(resp, 401, "Not logged in", null);
+            ResponseUtils.writeJson(resp, 401, "未登录", null);
             return null;
         }
         return (User) session.getAttribute("user");
