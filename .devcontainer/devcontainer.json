@@ -8,17 +8,20 @@
             "extensions": [
                 "vscjava.vscode-java-pack",
                 "redhat.vscode-xml",
-                "vmware.vscode-boot-dev-pack"
+                "vmware.vscode-boot-dev-pack",
+                "eamodio.gitlens"
             ]
         }
     },
     "features": {
         "ghcr.io/devcontainers/features/java:1": {
-            "version": "17",
+            "version": "none",
             "installMaven": "true",
             "installGradle": "false"
         },
-        "ghcr.io/devcontainers/features/node:1": {}
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "latest"
+        }
     },
     "postCreateCommand": "sudo apt-get update && sudo apt-get install -y postgresql-client && npm install && mvn clean install -DskipTests",
     "remoteUser": "vscode"
