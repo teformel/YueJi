@@ -168,8 +168,8 @@ INSERT INTO t_author (user_id, penname, introduction, status) VALUES
 (1, '官方运营', '阅己官方账号', 1); -- Admin as Author
 
 INSERT INTO t_novel (author_id, category_id, name, cover, description, total_chapters, status, view_count) VALUES 
-(1, 4, '狂人日记', '/static/images/covers/default.jpg', '借狂人之口，暴露家族制度与礼教的弊害。', 1, 2, 1000),
-(2, 3, '笑傲江湖', '/static/images/covers/default.jpg', '生性放荡不羁的令狐冲...', 2, 2, 5000);
+(1, 4, '狂人日记', '/static/images/covers/default.jpg', '借狂人之口，暴露家族制度与礼教的弊害。', 1, 2, 0),
+(2, 3, '笑傲江湖', '/static/images/covers/default.jpg', '生性放荡不羁的令狐冲...', 2, 2, 0);
 
 INSERT INTO t_chapter (novel_id, title, content, price, is_paid) VALUES 
 (1, '第一章', '今天晚上，很好的月光。即使没有月光，我也要写作业。', 0.00, 0),
