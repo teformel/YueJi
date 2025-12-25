@@ -38,7 +38,7 @@
                                         <div class="text-xs text-slate-400">书币</div>
                                     </div>
                                     <div class="text-center">
-                                        <div class="text-xl font-black text-slate-900">V1</div>
+                                        <div id="levelDisplay" class="text-xl font-black text-slate-900">V1</div>
                                         <div class="text-xs text-slate-400">等级</div>
                                     </div>
                                 </div>

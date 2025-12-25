@@ -26,6 +26,16 @@ function renderUserInfo(user) {
     // Prefill edit form
     document.getElementById('editNickname').value = user.realname || '';
 
+    // Show Level
+    const levelEl = document.getElementById('levelDisplay');
+    if (levelEl) {
+        levelEl.innerText = 'V' + (user.level || 1);
+        if (user.nextLevelExp) {
+            levelEl.title = `EXP: ${user.currentExp || 0} / ${user.nextLevelExp}`;
+            levelEl.parentElement.title = `下一级需要 ${user.nextLevelExp - user.currentExp} 经验`;
+        }
+    }
+
     // Show Apply Button if Role is 0 (Reader)
     if (user.role === 0) {
         document.getElementById('btnApplyAuthor').classList.remove('hidden');
