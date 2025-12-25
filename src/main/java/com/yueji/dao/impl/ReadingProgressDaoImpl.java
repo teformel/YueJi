@@ -66,4 +66,39 @@ public class ReadingProgressDaoImpl implements ReadingProgressDao {
             stmt.executeUpdate();
         }
     }
+
+
+    @Override
+    public long getTotalReadingTime(int userId) {
+        String sql = "SELECT SUM(total_reading_time) FROM t_reading_progress WHERE user_id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public int getReadNovelCount(int userId) {
+        String sql = "SELECT COUNT(DISTINCT novel_id) FROM t_reading_progress WHERE user_id = ?";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

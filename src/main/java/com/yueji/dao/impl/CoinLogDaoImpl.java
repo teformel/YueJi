@@ -65,4 +65,21 @@ public class CoinLogDaoImpl implements CoinLogDao {
         }
         return java.math.BigDecimal.ZERO;
     }
+    @Override
+    public java.math.BigDecimal getTotalRecharge(int userId) {
+        String sql = "SELECT SUM(amount) FROM t_coin_log WHERE user_id = ? AND type = 0";
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    java.math.BigDecimal res = rs.getBigDecimal(1);
+                    return res != null ? res : java.math.BigDecimal.ZERO;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return java.math.BigDecimal.ZERO;
+    }
 }

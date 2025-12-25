@@ -8,4 +8,5 @@ public interface CoinLogDao {
     void create(CoinLog log) throws SQLException;
     List<CoinLog> findByUserId(int userId);
     java.math.BigDecimal sumAmountByType(int userId, int type);
+    java.math.BigDecimal getTotalRecharge(int userId);
 }

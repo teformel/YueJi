@@ -13,7 +13,22 @@ public class User {
     private Integer role; // 0: User, 1: Admin
     private Integer status; // 0: Disabled, 1: Enabled
     private Timestamp createTime;
+
     private Timestamp lastLoginTime;
+
+    // Transient fields for Leveling System
+    private Integer level = 1;
+    private Integer currentExp = 0;
+    private Integer nextLevelExp = 100;
+
+    public Integer getLevel() { return level; }
+    public void setLevel(Integer level) { this.level = level; }
+
+    public Integer getCurrentExp() { return currentExp; }
+    public void setCurrentExp(Integer currentExp) { this.currentExp = currentExp; }
+
+    public Integer getNextLevelExp() { return nextLevelExp; }
+    public void setNextLevelExp(Integer nextLevelExp) { this.nextLevelExp = nextLevelExp; }
 
     public User() {}
 
