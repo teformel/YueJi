@@ -136,7 +136,11 @@ public class CreatorServlet extends HttpServlet {
         String catIdStr = req.getParameter("categoryId");
         if (catIdStr != null) novel.setCategoryId(Integer.parseInt(catIdStr));
         novel.setDescription(req.getParameter("intro"));
-        novel.setCover(req.getParameter("coverUrl"));
+        String cover = req.getParameter("coverUrl");
+        if (cover == null || cover.trim().isEmpty()) {
+            cover = "/static/images/covers/default.jpg";
+        }
+        novel.setCover(cover);
         novelService.createNovel(novel);
         ResponseUtils.writeJson(resp, 200, "作品已发布", null);
     }
