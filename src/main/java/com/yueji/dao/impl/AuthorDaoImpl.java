@@ -16,7 +16,6 @@ public class AuthorDaoImpl implements AuthorDao {
         // JOIN with t_user to ensure we only return records where user still has Author role (2)
         String sql = "SELECT a.* FROM t_author a " +
                 "JOIN t_user u ON a.user_id = u.id " +
-                "WHERE u.role = 2 " +
                 "ORDER BY a.id DESC";
         try (Connection conn = DbUtils.getConnection();
              Statement stmt = conn.createStatement();
