@@ -1,7 +1,9 @@
 package com.yueji.common;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DbUtils {
@@ -10,6 +12,7 @@ public class DbUtils {
     private static final String USER = "yueji_user";
     private static final String PASS = "yueji_password";
 
+    private static final HikariDataSource dataSource;
     private static final ThreadLocal<Connection> threadLocalConn = new ThreadLocal<>();
 
     static {
@@ -18,6 +21,22 @@ public class DbUtils {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("PostgreSQL Driver not found", e);
         }
+
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(URL);
+        config.setUsername(USER);
+        config.setPassword(PASS);
+        
+        // Optimizations for high concurrency
+        config.setMaximumPoolSize(20); // Adjust based on DB capability (100+ reqs usually need a decent pool, but async helps. Tomcats threads > pool size usually)
+        config.setMinimumIdle(5);
+        config.setIdleTimeout(300000);
+        config.setConnectionTimeout(30000);
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        dataSource = new HikariDataSource(config);
     }
 
     public static Connection getConnection() throws SQLException {
@@ -39,7 +58,7 @@ public class DbUtils {
                 }
             );
         }
-        return DriverManager.getConnection(URL, USER, PASS);
+        return dataSource.getConnection();
     }
     
     public static void beginTransaction() throws SQLException {
@@ -47,7 +66,7 @@ public class DbUtils {
         if (conn != null) {
             throw new SQLException("Transaction already active");
         }
-        conn = DriverManager.getConnection(URL, USER, PASS);
+        conn = dataSource.getConnection();
         conn.setAutoCommit(false);
         threadLocalConn.set(conn);
     }
@@ -58,7 +77,7 @@ public class DbUtils {
             throw new SQLException("No active transaction");
         }
         conn.commit();
-        conn.close();
+        conn.close(); // Returns to pool
         threadLocalConn.remove();
     }
     
@@ -67,7 +86,7 @@ public class DbUtils {
         if (conn != null) {
             try {
                 conn.rollback();
-                conn.close();
+                conn.close(); // Returns to pool
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
