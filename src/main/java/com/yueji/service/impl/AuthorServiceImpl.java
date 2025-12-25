@@ -78,10 +78,14 @@ public class AuthorServiceImpl implements AuthorService {
         author.setStatus(1);
         authorDao.update(author);
         
-        // Update User Role to Creator (2)
+        // Update User Role to Creator (2) ONLY if not Admin
         com.yueji.service.UserService userService = BeanFactory.getBean(com.yueji.service.UserService.class);
         if (author.getUserId() != null) {
-            userService.updateUserRole(author.getUserId(), 2);
+            com.yueji.model.User u = userService.getUserById(author.getUserId());
+            // If user is not Admin (1), upgrade to Creator (2)
+            if (u != null && u.getRole() != 1) {
+                userService.updateUserRole(author.getUserId(), 2);
+            }
         }
     }
 
@@ -94,6 +98,7 @@ public class AuthorServiceImpl implements AuthorService {
         authorDao.update(author);
 
         // Undo: Demote back to Reader (0) if they were Creator (2)
+        // BUT DO NOT DEMOTE if they are Admin (1)
         com.yueji.service.UserService userService = BeanFactory.getBean(com.yueji.service.UserService.class);
         if (author.getUserId() != null) {
             com.yueji.model.User u = userService.getUserById(author.getUserId());
