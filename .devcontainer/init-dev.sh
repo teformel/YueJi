@@ -9,7 +9,7 @@ sudo apt-get update
 sudo apt-get install -y postgresql-client
 
 echo "Installing npm dependencies..."
-npm install
+npm install --registry=https://registry.npmmirror.com
 
 echo "Building Maven project..."
 mvn clean install -DskipTests
