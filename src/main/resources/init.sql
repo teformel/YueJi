@@ -112,6 +112,7 @@ CREATE TABLE t_comment (
     reply_to_id INT,
     status SMALLINT DEFAULT 1,
     score INT DEFAULT 5, -- [NEW]
+    reading_duration INT DEFAULT 0, -- [NEW]
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
