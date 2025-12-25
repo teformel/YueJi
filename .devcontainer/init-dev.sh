@@ -22,6 +22,11 @@ until pg_isready -h db -p 5432 -U yueji_user; do
 done
 
 echo "Database is up - executing initialization..."
+echo "Resetting database..."
+export PGPASSWORD=yueji_password
+psql -h db -U yueji_user -d postgres -c "DROP DATABASE IF EXISTS yueji_db WITH (FORCE);"
+psql -h db -U yueji_user -d postgres -c "CREATE DATABASE yueji_db;"
+
 mvn exec:java -Dexec.mainClass="com.yueji.tool.DbInit"
 
 echo "Dev Container Initialization Complete!"
