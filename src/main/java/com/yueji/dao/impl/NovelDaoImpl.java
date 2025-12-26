@@ -154,7 +154,7 @@ public class NovelDaoImpl implements NovelDao {
 
     @Override
     public void incrementViewCount(int id) throws SQLException {
-        String sql = "UPDATE t_novel SET view_count = view_count + 1 WHERE id = ?";
+        String sql = "UPDATE t_novel SET view_count = view_count + 1 WHERE id = ? AND view_count < 2147483647";
         try (Connection conn = DbUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
