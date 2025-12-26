@@ -295,13 +295,28 @@ async function deleteComment(id) {
 function renderChapters(chapters) {
     document.getElementById('chapterCount').innerText = `${chapters.length} 章`;
     const container = document.getElementById('chapterList');
-    container.innerHTML = chapters.map((c, i) => `
+    container.innerHTML = chapters.map((c, i) => {
+        const isPaid = c.isPaid === 1 || (c.price && c.price > 0);
+        let statusIcon = '';
+        if (isPaid) {
+            if (c.isPurchased) {
+                // Unlocked/Purchased
+                statusIcon = '<i data-lucide="unlock" class="w-3.5 h-3.5 text-green-500"></i>';
+            } else {
+                // Locked
+                statusIcon = '<i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400"></i>';
+            }
+        }
+
+        return `
         <a href="read.jsp?novelId=${novelId}&chapterId=${c.id}" 
            class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-300 hover:bg-blue-50 transition-colors group">
             <span class="text-slate-300 font-bold text-sm w-6">${i + 1}</span>
-            <span class="text-sm font-medium text-slate-700 group-hover:text-blue-700 truncate">${c.title}</span>
+            <span class="text-sm font-medium text-slate-700 group-hover:text-blue-700 truncate flex-1">${c.title}</span>
+            ${statusIcon}
         </a>
-    `).join('');
+    `}).join('');
+    lucide.createIcons();
 }
 
 function startReading() {
