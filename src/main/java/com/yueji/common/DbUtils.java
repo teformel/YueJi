@@ -1,7 +1,6 @@
 package com.yueji.common;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import com.alibaba.druid.pool.DruidDataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,7 +11,7 @@ public class DbUtils {
     private static final String USER = "yueji_user";
     private static final String PASS = "yueji_password";
 
-    private static final HikariDataSource dataSource;
+    private static final DruidDataSource dataSource;
     private static final ThreadLocal<Connection> threadLocalConn = new ThreadLocal<>();
 
     static {
@@ -22,21 +21,31 @@ public class DbUtils {
             throw new RuntimeException("PostgreSQL Driver not found", e);
         }
 
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(URL);
-        config.setUsername(USER);
-        config.setPassword(PASS);
+        dataSource = new DruidDataSource();
+        dataSource.setUrl(URL);
+        dataSource.setUsername(USER);
+        dataSource.setPassword(PASS);
         
-        // Optimizations for high concurrency
-        config.setMaximumPoolSize(20); // Adjust based on DB capability (100+ reqs usually need a decent pool, but async helps. Tomcats threads > pool size usually)
-        config.setMinimumIdle(5);
-        config.setIdleTimeout(300000);
-        config.setConnectionTimeout(30000);
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", "250");
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        // Optimizations and Monitoring
+        dataSource.setInitialSize(5);
+        dataSource.setMinIdle(5);
+        dataSource.setMaxActive(20);
+        dataSource.setMaxWait(60000);
+        dataSource.setTimeBetweenEvictionRunsMillis(60000);
+        dataSource.setMinEvictableIdleTimeMillis(300000);
+        
+        // Enable monitoring filters: stat (statistics), wall (SQL firewall)
+        try {
+            dataSource.setFilters("stat,wall");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-        dataSource = new HikariDataSource(config);
+        // Keep-alive settings
+        dataSource.setTestWhileIdle(true);
+        dataSource.setTestOnBorrow(false);
+        dataSource.setTestOnReturn(false);
+        dataSource.setValidationQuery("SELECT 1");
     }
 
     public static Connection getConnection() throws SQLException {
