@@ -77,6 +77,9 @@ function showAnnouncementModal() {
     document.getElementById('annContent').value = '';
     document.getElementById('annIsActive').checked = true;
     document.getElementById('announcementModal').classList.remove('hidden');
+
+    bindCharCounter('annTitle', 'count-annTitle', 100);
+    bindCharCounter('annContent', 'count-annContent', 2000);
 }
 
 function editAnnouncement(a) {
@@ -86,6 +89,12 @@ function editAnnouncement(a) {
     document.getElementById('annContent').value = a.content;
     document.getElementById('annIsActive').checked = a.isActive === 1;
     document.getElementById('announcementModal').classList.remove('hidden');
+
+    bindCharCounter('annTitle', 'count-annTitle', 100);
+    bindCharCounter('annContent', 'count-annContent', 2000);
+    // Trigger updates
+    document.getElementById('annTitle').dispatchEvent(new Event('input'));
+    document.getElementById('annContent').dispatchEvent(new Event('input'));
 }
 
 function closeAnnouncementModal() {

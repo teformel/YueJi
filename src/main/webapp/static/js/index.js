@@ -1,8 +1,10 @@
-document.addEventListener('DOMContentLoaded', () => {
-    loadNovels();
-    loadRankings();
-    loadAnnouncements();
-    lucide.createIcons();
+loadNovels();
+loadRankings();
+loadAnnouncements();
+lucide.createIcons();
+
+// Bind search counter
+bindCharCounter('searchInput', 'count-searchInput', 50);
 });
 
 async function loadAnnouncements() {

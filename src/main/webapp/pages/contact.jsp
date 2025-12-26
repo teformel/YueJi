@@ -36,11 +36,14 @@
                             <h3 class="font-bold text-lg">在线留言</h3>
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">您的邮箱</label>
-                                <input type="email" class="form-input" placeholder="example@mail.com">
+                                <input type="email" class="form-input" placeholder="example@mail.com" maxlength="100">
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">留言内容</label>
-                                <textarea class="form-input h-32" placeholder="请详细描述您的问题..."></textarea>
+                                <textarea id="contactMessage" class="form-input h-32" placeholder="请详细描述您的问题..."
+                                    maxlength="1000"></textarea>
+                                <div class="text-right text-xs text-slate-400 mt-1"><span
+                                        id="count-contactMessage">0</span>/1000</div>
                             </div>
                             <button type="button" onclick="alert('留言已发送！')" class="btn-primary">发送留言</button>
                         </form>

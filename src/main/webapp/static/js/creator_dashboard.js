@@ -3,6 +3,21 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     lucide.createIcons();
     initCharCounter();
+
+    // Bind form counters
+    bindCharCounter('newTitle', 'count-newTitle', 50);
+    bindCharCounter('newDesc', 'count-newDesc', 500);
+    bindCharCounter('editTitle', 'count-editTitle', 50);
+    bindCharCounter('editDesc', 'count-editDesc', 500);
+    bindCharCounter('chapterTitle', 'count-chapterTitle', 100);
+
+    // Add Price Limit Listener
+    const priceInput = document.getElementById('chapterPrice');
+    if (priceInput) {
+        priceInput.addEventListener('input', (e) => {
+            if (e.target.value > 9999) e.target.value = 9999;
+        });
+    }
 });
 
 function initCharCounter() {
@@ -214,6 +229,11 @@ async function openEditNovel(id) {
                 document.getElementById('editCover').value = n.cover;
                 document.getElementById('editDesc').value = n.description;
                 document.getElementById('editStatus').value = n.status;
+
+                // Trigger counters
+                document.getElementById('editTitle').dispatchEvent(new Event('input'));
+                document.getElementById('editDesc').dispatchEvent(new Event('input'));
+
                 switchTab('edit-novel');
             }
         }
@@ -344,6 +364,8 @@ async function editChapter(chapterId) {
             document.getElementById('chapterIsPaid').value = c.isPaid;
             document.getElementById('chapterPrice').value = c.price;
             togglePriceInput();
+
+            document.getElementById('chapterTitle').dispatchEvent(new Event('input'));
 
             const btn = document.getElementById('publishChapterBtn');
             btn.innerText = '保存修改';

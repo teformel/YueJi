@@ -250,7 +250,35 @@ function highlightNav() {
         if (!type) return;
 
         if (type === 'index' && path.includes('index.jsp')) link.classList.add('active');
-        if (type === 'browse' && path.includes('browse.jsp') && !search.includes('sort=hot')) link.classList.add('active');
         if (type === 'rank' && search.includes('sort=hot')) link.classList.add('active');
     });
+
+    // Global Bindings for pages not having own JS
+    bindCharCounter('contactMessage', 'count-contactMessage', 1000);
+}
+
+/**
+ * Global Character Counter Utility
+ * @param {string} inputId - ID of input element
+ * @param {string} displayId - ID of display element
+ * @param {number} max - Max characters
+ */
+function bindCharCounter(inputId, displayId, max) {
+    const input = document.getElementById(inputId);
+    const display = document.getElementById(displayId);
+    if (!input || !display) return;
+
+    const update = () => {
+        const len = input.value.length;
+        display.innerText = len;
+        if (len >= max) {
+            display.classList.add('text-red-500', 'font-bold');
+        } else {
+            display.classList.remove('text-red-500', 'font-bold');
+        }
+    };
+
+    input.addEventListener('input', update);
+    // Initialize
+    update();
 }

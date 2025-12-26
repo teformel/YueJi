@@ -34,7 +34,8 @@
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">账号</label>
                         <div class="relative">
                             <i data-lucide="user" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
-                            <input type="text" id="username" class="form-input pl-10" placeholder="请输入用户名">
+                            <input type="text" id="username" class="form-input pl-10" placeholder="请输入用户名"
+                                maxlength="20">
                         </div>
                     </div>
                     <div>

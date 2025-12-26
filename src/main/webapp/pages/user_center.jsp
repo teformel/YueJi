@@ -91,12 +91,13 @@
                                 <div class="space-y-6 max-w-lg">
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">昵称</label>
-                                        <input type="text" id="editNickname" class="form-input" placeholder="请输入昵称">
+                                        <input type="text" id="editNickname" class="form-input" placeholder="请输入昵称"
+                                            maxlength="20">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">密码</label>
                                         <input type="password" id="editPassword" class="form-input"
-                                            placeholder="输入新密码以修改 (留空即不改)">
+                                            placeholder="输入新密码以修改 (留空即不改)" maxlength="50">
                                     </div>
                                     <button onclick="saveProfile()" class="btn-primary px-8 py-3">保存修改</button>
                                 </div>
@@ -236,11 +237,15 @@
                     <div id="stepForm" class="hidden space-y-4">
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2">笔名</label>
-                            <input type="text" id="applyPenname" class="form-input" placeholder="请输入您的笔名">
+                            <input type="text" id="applyPenname" class="form-input" placeholder="请输入您的笔名"
+                                maxlength="20">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2">个人简介</label>
-                            <textarea id="applyIntro" class="form-input h-24" placeholder="向读者介绍一下自己..."></textarea>
+                            <textarea id="applyIntro" class="form-input h-24" placeholder="向读者介绍一下自己..."
+                                maxlength="500"></textarea>
+                            <div class="text-right text-xs text-slate-400 mt-1"><span id="count-applyIntro">0</span>/500
+                            </div>
                         </div>
                         <button onclick="submitApply()" class="btn-primary w-full py-3">提交申请</button>
                     </div>

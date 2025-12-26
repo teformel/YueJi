@@ -230,25 +230,31 @@ function showReplyForm(commentId, username) {
     container.innerHTML = `
         <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100 transition-all animate-in fade-in slide-in-from-top-2 duration-300">
             <div class="text-[10px] font-bold text-blue-600 mb-2">回复 @${username}:</div>
-            <textarea id="replyContent-${commentId}" class="form-input w-full h-20 text-xs bg-white" placeholder="写下你的回复..."></textarea>
-            <div class="flex justify-end gap-2 mt-2">
-                <button onclick="cancelReply(${commentId})" class="text-xs text-slate-400 font-bold hover:text-slate-600 px-3 py-1.5">取消</button>
-                <button onclick="submitReply(${commentId})" class="btn-primary py-1.5 px-4 text-xs font-bold">提交</button>
+            <textarea id="replyContent-${commentId}" class="form-input w-full h-20 text-xs bg-white" placeholder="写下你的回复..." maxlength="500"></textarea>
+            <div class="flex justify-between items-center mt-2">
+                 <div class="text-xs text-slate-400"><span id="count-reply-${commentId}">0</span>/500</div>
+                 <div class="flex gap-2">
+                    <button onclick="cancelReply(${commentId})" class="text-xs text-slate-400 font-bold hover:text-slate-600 px-3 py-1.5">取消</button>
+                    <button onclick="submitReply(${commentId})" class="btn-primary py-1.5 px-4 text-xs font-bold">提交</button>
+                </div>
             </div>
         </div>
     `;
     container.classList.remove('hidden');
     document.getElementById(`replyContent-${commentId}`).focus();
+
+    // Bind counter
+    bindCharCounter(`replyContent-${commentId}`, `count-reply-${commentId}`, 500);
 }
 
 function cancelReply(commentId) {
-    const container = document.getElementById(`replyFormContainer-${commentId}`);
+    const container = document.getElementById(`replyFormContainer - ${commentId}`);
     container.classList.add('hidden');
     container.innerHTML = '';
 }
 
 async function submitReply(commentId) {
-    const content = document.getElementById(`replyContent-${commentId}`).value;
+    const content = document.getElementById(`replyContent - ${commentId}`).value;
     if (!content) return showToast('请输入回复内容', 'warning');
 
     try {
@@ -325,22 +331,22 @@ function renderChapters(chapters) {
         }
 
         return `
-        <a href="read.jsp?novelId=${novelId}&chapterId=${c.id}" 
-           class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-300 hover:bg-blue-50 transition-colors group">
+    < a href = "read.jsp?novelId=${novelId}&chapterId=${c.id}" 
+           class= "flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-300 hover:bg-blue-50 transition-colors group" >
             <span class="text-slate-300 font-bold text-sm w-6">${i + 1}</span>
             <span class="text-sm font-medium text-slate-700 group-hover:text-blue-700 truncate flex-1">${c.title}</span>
             ${statusIcon}
-        </a>
-    `}).join('');
+        </a >
+        `}).join('');
     lucide.createIcons();
 }
 
 function startReading() {
     if (currentChapters.length > 0) {
         if (lastReadChapterId) {
-            location.href = `read.jsp?novelId=${novelId}&chapterId=${lastReadChapterId}`;
+            location.href = `read.jsp ? novelId = ${novelId} & chapterId=${lastReadChapterId}`;
         } else {
-            location.href = `read.jsp?novelId=${novelId}&chapterId=${currentChapters[0].id}`;
+            location.href = `read.jsp ? novelId = ${novelId} & chapterId=${currentChapters[0].id}`;
         }
     } else {
         showToast('暂无章节可读', 'info');
@@ -367,7 +373,7 @@ async function toggleShelf() {
     try {
         const formData = new URLSearchParams();
         formData.append('novelId', novelId);
-        const res = await fetchJson(`../interaction/collection/${action}`, { method: 'POST', body: formData });
+        const res = await fetchJson(`../ interaction / collection / ${action}`, { method: 'POST', body: formData });
         if (res.code === 200) {
             showToast(isCollected ? '已移出书架' : '已加入书架', 'success');
             updateShelfBtn(!isCollected);
@@ -390,7 +396,7 @@ async function checkFollowStatus() {
     }
 
     try {
-        const res = await fetchJson(`../interaction/follow/check?authorId=${authorId}`);
+        const res = await fetchJson(`../ interaction / follow / check ? authorId = ${authorId}`);
         if (res.code === 200) {
             document.getElementById('btnFollowAuthor').classList.remove('hidden');
             updateFollowBtn(res.data);
@@ -416,7 +422,7 @@ async function toggleFollow() {
     try {
         const formData = new URLSearchParams();
         formData.append('authorId', authorId);
-        const res = await fetchJson(`../interaction/follow/${action}`, { method: 'POST', body: formData });
+        const res = await fetchJson(`../ interaction / follow / ${action}`, { method: 'POST', body: formData });
         if (res.code === 200) {
             showToast(isFollowing ? '已取消关注' : '已关注作者', 'success');
             updateFollowBtn(!isFollowing);

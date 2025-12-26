@@ -47,6 +47,9 @@ function openApplyModal() {
     document.getElementById('stepAgreement').classList.remove('hidden');
     document.getElementById('stepForm').classList.add('hidden');
     document.getElementById('agreeCheck').checked = false;
+
+    // Bind counter
+    bindCharCounter('applyIntro', 'count-applyIntro', 500);
 }
 
 function nextStep() {

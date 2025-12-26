@@ -93,7 +93,10 @@
                                 <div class="space-y-6">
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">作品名称</label>
-                                        <input type="text" id="newTitle" class="form-input" placeholder="给作品起个响亮的名字">
+                                        <input type="text" id="newTitle" class="form-input" placeholder="给作品起个响亮的名字"
+                                            maxlength="50">
+                                        <div class="text-right text-xs text-slate-400 mt-1"><span
+                                                id="count-newTitle">0</span>/50</div>
                                     </div>
                                     <div class="grid grid-cols-2 gap-6">
                                         <div>
@@ -114,8 +117,10 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">作品简介</label>
-                                        <textarea id="newDesc" class="form-input h-32"
-                                            placeholder="这是一本关于..."></textarea>
+                                        <textarea id="newDesc" class="form-input h-32" placeholder="这是一本关于..."
+                                            maxlength="500"></textarea>
+                                        <div class="text-right text-xs text-slate-400 mt-1"><span
+                                                id="count-newDesc">0</span>/500</div>
                                     </div>
                                     <div class="pt-4 border-t border-gray-100 flex justify-end">
                                         <button onclick="createNovel()"
@@ -139,7 +144,10 @@
                                 <div class="space-y-6">
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">章节标题</label>
-                                        <input type="text" id="chapterTitle" class="form-input" placeholder="例如：第一章 重生">
+                                        <input type="text" id="chapterTitle" class="form-input" placeholder="例如：第一章 重生"
+                                            maxlength="100">
+                                        <div class="text-right text-xs text-slate-400 mt-1"><span
+                                                id="count-chapterTitle">0</span>/100</div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">正文内容</label>
@@ -160,9 +168,10 @@
                                             </select>
                                         </div>
                                         <div id="priceInputWrapper" class="hidden">
-                                            <label class="block text-sm font-bold text-slate-700 mb-2">章节价格 (书币)</label>
-                                            <input type="number" id="chapterPrice" class="form-input" value="10"
-                                                min="1">
+                                            <label class="block text-sm font-bold text-slate-700 mb-2">章节价格 (书币) <span
+                                                    class="text-xs font-normal text-slate-400">(上限 9999)</span></label>
+                                            <input type="number" id="chapterPrice" class="form-input" value="10" min="1"
+                                                max="9999">
                                         </div>
                                     </div>
                                     <div class="flex justify-between items-center pt-4">
@@ -223,7 +232,9 @@
                                 <div class="space-y-6">
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">作品名称</label>
-                                        <input type="text" id="editTitle" class="form-input">
+                                        <input type="text" id="editTitle" class="form-input" maxlength="50">
+                                        <div class="text-right text-xs text-slate-400 mt-1"><span
+                                                id="count-editTitle">0</span>/50</div>
                                     </div>
                                     <div class="grid grid-cols-2 gap-6">
                                         <div>
@@ -244,7 +255,9 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">作品简介</label>
-                                        <textarea id="editDesc" class="form-input h-32"></textarea>
+                                        <textarea id="editDesc" class="form-input h-32" maxlength="500"></textarea>
+                                        <div class="text-right text-xs text-slate-400 mt-1"><span
+                                                id="count-editDesc">0</span>/500</div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">作品状态</label>

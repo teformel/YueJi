@@ -57,9 +57,11 @@
                             <div
                                 class="flex items-center p-2 bg-white border border-gray-200 rounded-lg shadow-sm max-w-md focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
                                 <i data-lucide="search" class="ml-3 w-5 h-5 text-gray-400"></i>
-                                <input type="text" id="searchInput"
+                                <input type="text" id="searchInput" maxlength="50"
                                     class="flex-1 px-4 py-2 outline-none text-slate-700 placeholder-gray-400 bg-transparent"
                                     placeholder="搜索书名、作者...">
+                                <span id="count-searchInput"
+                                    class="text-xs text-slate-400 mr-3 hidden md:inline">0/50</span>
                                 <button onclick="handleSearch()"
                                     class="px-6 py-2 bg-slate-900 text-white font-medium rounded-md hover:bg-slate-800 transition-colors">
                                     搜索

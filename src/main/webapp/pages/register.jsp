@@ -34,21 +34,24 @@
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">姓名</label>
                         <div class="relative">
                             <i data-lucide="smile" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
-                            <input type="text" id="realname" class="form-input pl-10" placeholder="给自己起个名字">
+                            <input type="text" id="realname" class="form-input pl-10" placeholder="给自己起个名字"
+                                maxlength="20">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">账号</label>
                         <div class="relative">
                             <i data-lucide="user" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
-                            <input type="text" id="username" class="form-input pl-10" placeholder="设置登录账号">
+                            <input type="text" id="username" class="form-input pl-10" placeholder="设置登录账号"
+                                maxlength="20">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">密码</label>
                         <div class="relative">
                             <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
-                            <input type="password" id="password" class="form-input pl-10" placeholder="设置登录密码">
+                            <input type="password" id="password" class="form-input pl-10" placeholder="设置登录密码"
+                                maxlength="50">
                         </div>
                     </div>
                 </div>

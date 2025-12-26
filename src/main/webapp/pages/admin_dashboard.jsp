@@ -211,12 +211,17 @@
                                     <input type="hidden" id="annId">
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">公告标题</label>
-                                        <input type="text" id="annTitle" class="form-input" placeholder="输入公告标题...">
+                                        <input type="text" id="annTitle" class="form-input" placeholder="输入公告标题..."
+                                            maxlength="100">
+                                        <div class="text-right text-xs text-slate-400 mt-1"><span
+                                                id="count-annTitle">0</span>/100</div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">公告内容</label>
-                                        <textarea id="annContent" class="form-input h-48"
-                                            placeholder="在此输入公告详细内容..."></textarea>
+                                        <textarea id="annContent" class="form-input h-48" placeholder="在此输入公告详细内容..."
+                                            maxlength="2000"></textarea>
+                                        <div class="text-right text-xs text-slate-400 mt-1"><span
+                                                id="count-annContent">0</span>/2000</div>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <input type="checkbox" id="annIsActive" checked
@@ -308,7 +313,8 @@
                                     <input type="hidden" id="catId">
                                     <div>
                                         <label class="block text-sm font-bold text-slate-700 mb-2">分类名称</label>
-                                        <input type="text" id="catName" class="form-input" placeholder="输入分类名称...">
+                                        <input type="text" id="catName" class="form-input" placeholder="输入分类名称..."
+                                            maxlength="20">
                                     </div>
                                 </div>
                                 <div class="px-8 py-6 bg-slate-50 flex justify-end gap-3">
