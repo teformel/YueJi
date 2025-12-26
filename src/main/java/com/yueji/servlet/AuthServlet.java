@@ -56,6 +56,20 @@ public class AuthServlet extends HttpServlet {
         String realname = req.getParameter("realname"); // Changed from nickname
         String phone = req.getParameter("phone");
 
+        // [VALIDATION]
+        if (username == null || username.length() > 20) {
+            ResponseUtils.writeJson(resp, 400, "用户名长度不能超过20个字符", null);
+            return;
+        }
+        if (password == null || password.length() > 50) {
+            ResponseUtils.writeJson(resp, 400, "密码长度不能超过50个字符", null);
+            return;
+        }
+        if (realname != null && realname.length() > 20) {
+            ResponseUtils.writeJson(resp, 400, "真实姓名长度不能超过20个字符", null);
+            return;
+        }
+
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setPassword(password);

@@ -81,7 +81,13 @@ public class UserServlet extends HttpServlet {
 
         // Refresh and update
         User user = userService.getUserById(sessionUser.getId());
-        if (realname != null) user.setRealname(realname);
+        if (realname != null) {
+            if (realname.length() > 20) {
+                ResponseUtils.writeJson(resp, 400, "姓名长度不能超过20个字符", null);
+                return;
+            }
+            user.setRealname(realname);
+        }
         if (phone != null) user.setPhone(phone);
 
         try {
