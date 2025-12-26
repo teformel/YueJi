@@ -1,35 +1,3 @@
--- Database Initialization Script for YueJi Novel Software
--- Compliant with Requirement Analysis Report
--- Table Prefix: t_*
-
--- 1. Drop existing tables (Reverse order of dependencies)
-DROP TABLE IF EXISTS t_announcement; -- [NEW]
-DROP TABLE IF EXISTS t_chapter_purchase; -- [NEW]
-DROP TABLE IF EXISTS t_coin_log;
-DROP TABLE IF EXISTS t_comment;
-DROP TABLE IF EXISTS t_collection;
-DROP TABLE IF EXISTS t_follow;
-DROP TABLE IF EXISTS t_chapter;
-DROP TABLE IF EXISTS t_novel;
-DROP TABLE IF EXISTS t_author;
-DROP TABLE IF EXISTS t_category;
-DROP TABLE IF EXISTS t_user;
-
--- Drop legacy tables if they exist
-DROP TABLE IF EXISTS sys_chapter_purchase;
-DROP TABLE IF EXISTS sys_order;
-DROP TABLE IF EXISTS sys_reading_record;
-DROP TABLE IF EXISTS sys_follow;
-DROP TABLE IF EXISTS sys_collection;
-DROP TABLE IF EXISTS sys_comment;
-DROP TABLE IF EXISTS sys_chapter;
-DROP TABLE IF EXISTS sys_novel;
-DROP TABLE IF EXISTS sys_author;
-DROP TABLE IF EXISTS sys_user;
-
--- 2. Create Tables
-
--- Table 1: t_user (User Information)
 CREATE TABLE t_user (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -43,23 +11,20 @@ CREATE TABLE t_user (
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table 5: t_category
 CREATE TABLE t_category (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table 6: t_author
 CREATE TABLE t_author (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES t_user(id) ON DELETE SET NULL,
     penname VARCHAR(100) NOT NULL UNIQUE,
     introduction TEXT,
-    status SMALLINT DEFAULT 1 -- 0: Pending, 1: Approved, 2: Rejected
+    status SMALLINT DEFAULT 1
 );
 
--- Table 2: t_novel
 CREATE TABLE t_novel (
     id SERIAL PRIMARY KEY,
     author_id INT REFERENCES t_author(id),
@@ -68,11 +33,10 @@ CREATE TABLE t_novel (
     cover VARCHAR(200),
     description TEXT,
     total_chapters INT DEFAULT 0,
-    view_count INT DEFAULT 0, -- [NEW] Hotness/Heat
+    view_count INT DEFAULT 0,
     status INT DEFAULT 1
 );
 
--- Table 3: t_chapter
 CREATE TABLE t_chapter (
     id SERIAL PRIMARY KEY,
     novel_id INT REFERENCES t_novel(id) ON DELETE CASCADE,
@@ -83,17 +47,15 @@ CREATE TABLE t_chapter (
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table 4: t_coin_log (Transaction Logs)
 CREATE TABLE t_coin_log (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES t_user(id),
-    type INT NOT NULL, -- 0: Recharge, 1: Consumption
+    type INT NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
     remark VARCHAR(500),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- [NEW] Table 9: t_chapter_purchase (Unlock Records)
 CREATE TABLE t_chapter_purchase (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES t_user(id) ON DELETE CASCADE,
@@ -103,7 +65,6 @@ CREATE TABLE t_chapter_purchase (
     UNIQUE(user_id, chapter_id)
 );
 
--- Table 7: t_comment
 CREATE TABLE t_comment (
     id SERIAL PRIMARY KEY,
     novel_id INT REFERENCES t_novel(id) ON DELETE CASCADE,
@@ -111,12 +72,11 @@ CREATE TABLE t_comment (
     content VARCHAR(500),
     reply_to_id INT,
     status SMALLINT DEFAULT 1,
-    score INT DEFAULT 5, -- [NEW]
-    reading_duration INT DEFAULT 0, -- [NEW]
+    score INT DEFAULT 5,
+    reading_duration INT DEFAULT 0,
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table 8: t_collection
 CREATE TABLE t_collection (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES t_user(id) ON DELETE CASCADE,
@@ -125,28 +85,25 @@ CREATE TABLE t_collection (
     UNIQUE(user_id, novel_id)
 );
 
--- Table Reading Progress
 CREATE TABLE t_reading_progress (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES t_user(id) ON DELETE CASCADE,
     novel_id INT REFERENCES t_novel(id) ON DELETE CASCADE,
     chapter_id INT,
     scroll_y INT DEFAULT 0,
-    total_reading_time INT DEFAULT 0, -- [NEW] in seconds
+    total_reading_time INT DEFAULT 0,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, novel_id)
 );
 
--- Table 10: t_announcement (System Announcements)
 CREATE TABLE t_announcement (
     id SERIAL PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
     content TEXT,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_active SMALLINT DEFAULT 1 -- 1: Display, 0: Hidden
+    is_active SMALLINT DEFAULT 1
 );
 
--- Table 11: t_follow (FR-C-003)
 CREATE TABLE t_follow (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES t_user(id),
@@ -155,7 +112,7 @@ CREATE TABLE t_follow (
     UNIQUE(user_id, author_id)
 );
 
--- 3. Initialize Data
+
 INSERT INTO t_user (username, password, realname, phone, coin_balance, role, status) VALUES 
 ('admin', '0192023a7bbd73250516f069df18b500', 'Administrator', '13800000000', 999999.00, 1, 1),
 ('user1', 'e10adc3949ba59abbe56e057f20f883e', 'Reader One', '13900000001', 100.00, 0, 1);
@@ -165,7 +122,7 @@ INSERT INTO t_category (name) VALUES ('玄幻'), ('都市'), ('仙侠'), ('历�
 INSERT INTO t_author (user_id, penname, introduction, status) VALUES 
 (NULL, '鲁迅', '著名文学家', 1), 
 (NULL, '金庸', '武侠泰斗', 1),
-(1, '官方运营', '阅己官方账号', 1); -- Admin as Author
+(1, '官方运营', '阅己官方账号', 1);
 
 INSERT INTO t_novel (author_id, category_id, name, cover, description, total_chapters, status, view_count) VALUES 
 (1, 4, '狂人日记', '/static/images/covers/default.jpg', '借狂人之口，暴露家族制度与礼教的弊害。', 1, 2, 0),
@@ -176,14 +133,13 @@ INSERT INTO t_chapter (novel_id, title, content, price, is_paid) VALUES
 (2, '第一回 灭门', '和风熏柳，花香醉人，正是南国春光漫烂季节...', 0.00, 0),
 (2, '第二回 聆秘', '林平之大叫一声，晕了过去...', 10.00, 1);
 
--- Sample Comments with Scores
 INSERT INTO t_comment (novel_id, user_id, content, score) VALUES 
 (1, 1, '发人深省的作品，五星好评！', 5),
 (1, 2, '文学价值极高，但是读起来有点压抑。', 4),
 (2, 2, '金庸武侠经典之作，百看不厌。', 5);
 
 INSERT INTO t_reading_progress (user_id, novel_id, chapter_id, scroll_y, total_reading_time) VALUES
-(2, 1, 1, 100, 3600); -- user1 read 1 hour of 狂人日记
+(2, 1, 1, 100, 3600);
 
 INSERT INTO t_announcement (title, content, is_active) VALUES
 ('系统上线公告', '欢迎来到阅己小说阅读系统！在这里，您可以读懂故事，更是读懂自己。', 1),

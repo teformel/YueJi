@@ -25,7 +25,7 @@ public class DbUtils {
         dataSource.setUrl(URL);
         dataSource.setUsername(USER);
         dataSource.setPassword(PASS);
-        
+
         // Optimizations and Monitoring
         dataSource.setInitialSize(5);
         dataSource.setMinIdle(5);
@@ -33,7 +33,7 @@ public class DbUtils {
         dataSource.setMaxWait(60000);
         dataSource.setTimeBetweenEvictionRunsMillis(60000);
         dataSource.setMinEvictableIdleTimeMillis(300000);
-        
+
         // Enable monitoring filters: stat (statistics), wall (SQL firewall)
         try {
             dataSource.setFilters("stat,wall");
@@ -53,23 +53,22 @@ public class DbUtils {
         if (conn != null) {
             // Return a proxy that ignores close()
             return (Connection) java.lang.reflect.Proxy.newProxyInstance(
-                DbUtils.class.getClassLoader(),
-                new Class<?>[]{Connection.class},
-                (proxy, method, args) -> {
-                    if ("close".equals(method.getName())) {
-                        return null; // Ignore close
-                    }
-                    try {
-                        return method.invoke(conn, args);
-                    } catch (java.lang.reflect.InvocationTargetException e) {
-                        throw e.getCause();
-                    }
-                }
-            );
+                    DbUtils.class.getClassLoader(),
+                    new Class<?>[] { Connection.class },
+                    (proxy, method, args) -> {
+                        if ("close".equals(method.getName())) {
+                            return null; // Ignore close
+                        }
+                        try {
+                            return method.invoke(conn, args);
+                        } catch (java.lang.reflect.InvocationTargetException e) {
+                            throw e.getCause();
+                        }
+                    });
         }
         return dataSource.getConnection();
     }
-    
+
     public static void beginTransaction() throws SQLException {
         Connection conn = threadLocalConn.get();
         if (conn != null) {
@@ -79,7 +78,7 @@ public class DbUtils {
         conn.setAutoCommit(false);
         threadLocalConn.set(conn);
     }
-    
+
     public static void commitTransaction() throws SQLException {
         Connection conn = threadLocalConn.get();
         if (conn == null) {
@@ -89,7 +88,7 @@ public class DbUtils {
         conn.close(); // Returns to pool
         threadLocalConn.remove();
     }
-    
+
     public static void rollbackTransaction() {
         Connection conn = threadLocalConn.get();
         if (conn != null) {
@@ -103,7 +102,7 @@ public class DbUtils {
             }
         }
     }
-    
+
     public static void closeQuietly(AutoCloseable... closeables) {
         for (AutoCloseable c : closeables) {
             if (c != null) {
@@ -114,7 +113,8 @@ public class DbUtils {
                 }
                 try {
                     c.close();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }
     }
