@@ -46,6 +46,15 @@ public class AuthorServlet extends HttpServlet {
             return;
         }
 
+        if (penname.length() > 20) {
+            ResponseUtils.writeJson(resp, 400, "笔名长度不能超过20个字符", null);
+            return;
+        }
+        if (intro.length() > 500) {
+            ResponseUtils.writeJson(resp, 400, "简介长度不能超过500个字符", null);
+            return;
+        }
+
         try {
             authorService.applyAuthor(user.getId(), penname, intro);
             ResponseUtils.writeJson(resp, 200, "Application submitted", null);

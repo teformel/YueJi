@@ -130,12 +130,24 @@ public class CreatorServlet extends HttpServlet {
     }
 
     private void handleCreateNovel(HttpServletRequest req, HttpServletResponse resp, int authorId) throws Exception {
+        String name = req.getParameter("title");
+        String desc = req.getParameter("intro");
+
+        if (name != null && name.length() > 50) {
+            ResponseUtils.writeJson(resp, 400, "作品名称长度不能超过50个字符", null);
+            return;
+        }
+        if (desc != null && desc.length() > 500) {
+            ResponseUtils.writeJson(resp, 400, "作品简介长度不能超过500个字符", null);
+            return;
+        }
+
         Novel novel = new Novel();
-        novel.setName(req.getParameter("title"));
+        novel.setName(name);
         novel.setAuthorId(authorId);
         String catIdStr = req.getParameter("categoryId");
         if (catIdStr != null) novel.setCategoryId(Integer.parseInt(catIdStr));
-        novel.setDescription(req.getParameter("intro"));
+        novel.setDescription(desc);
         String cover = req.getParameter("coverUrl");
         if (cover == null || cover.trim().isEmpty()) {
             cover = "/static/images/covers/default.jpg";
@@ -160,6 +172,16 @@ public class CreatorServlet extends HttpServlet {
         String catIdStr = req.getParameter("categoryId");
         if (catIdStr != null) novel.setCategoryId(Integer.parseInt(catIdStr));
         novel.setDescription(req.getParameter("intro"));
+        
+        // [VALIDATION]
+        if (novel.getName() != null && novel.getName().length() > 50) {
+             ResponseUtils.writeJson(resp, 400, "作品名称长度不能超过50个字符", null);
+             return;
+        }
+        if (novel.getDescription() != null && novel.getDescription().length() > 500) {
+             ResponseUtils.writeJson(resp, 400, "作品简介长度不能超过500个字符", null);
+             return;
+        }
         novel.setCover(req.getParameter("coverUrl"));
         
         String statusStr = req.getParameter("status");
@@ -187,8 +209,16 @@ public class CreatorServlet extends HttpServlet {
         }
         Chapter chapter = new Chapter();
         chapter.setNovelId(novelId);
-        chapter.setTitle(req.getParameter("title"));
-        chapter.setContent(req.getParameter("content"));
+        String title = req.getParameter("title");
+        String content = req.getParameter("content");
+        
+        if (title != null && title.length() > 100) {
+            ResponseUtils.writeJson(resp, 400, "章节标题长度不能超过100个字符", null);
+            return;
+        }
+        
+        chapter.setTitle(title);
+        chapter.setContent(content);
         
         String isPaidStr = req.getParameter("isPaid");
         if (isPaidStr != null) chapter.setIsPaid(Integer.parseInt(isPaidStr));
@@ -207,7 +237,13 @@ public class CreatorServlet extends HttpServlet {
             ResponseUtils.writeJson(resp, 403, "非法操作", null);
             return;
         }
-        chapter.setTitle(req.getParameter("title"));
+        String title = req.getParameter("title");
+        if (title != null && title.length() > 100) {
+            ResponseUtils.writeJson(resp, 400, "章节标题长度不能超过100个字符", null);
+            return;
+        }
+
+        chapter.setTitle(title);
         chapter.setContent(req.getParameter("content"));
         
         String isPaidStr = req.getParameter("isPaid");

@@ -154,13 +154,25 @@ public class AdminServlet extends HttpServlet {
     }
 
     private void handleCreateNovel(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        String name = req.getParameter("title");
+        String desc = req.getParameter("intro");
+
+        if (name != null && name.length() > 50) {
+            ResponseUtils.writeJson(resp, 400, "作品名称长度不能超过50个字符", null);
+            return;
+        }
+        if (desc != null && desc.length() > 500) {
+            ResponseUtils.writeJson(resp, 400, "作品简介长度不能超过500个字符", null);
+            return;
+        }
+
         Novel novel = new Novel();
-        novel.setName(req.getParameter("title"));
+        novel.setName(name);
         novel.setAuthorId(Integer.parseInt(req.getParameter("authorId")));
         String catIdStr = req.getParameter("categoryId");
         if (catIdStr != null) novel.setCategoryId(Integer.parseInt(catIdStr));
         
-        novel.setDescription(req.getParameter("intro")); 
+        novel.setDescription(desc); 
         novel.setCover(req.getParameter("coverUrl")); 
         novelService.createNovel(novel);
         ResponseUtils.writeJson(resp, 200, "Novel created", null);
@@ -169,11 +181,24 @@ public class AdminServlet extends HttpServlet {
     private void handleUpdateNovel(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         Novel novel = new Novel();
         novel.setId(Integer.parseInt(req.getParameter("id")));
-        novel.setName(req.getParameter("title"));
+        
+        String name = req.getParameter("title");
+        String desc = req.getParameter("intro");
+
+        if (name != null && name.length() > 50) {
+            ResponseUtils.writeJson(resp, 400, "作品名称长度不能超过50个字符", null);
+            return;
+        }
+        if (desc != null && desc.length() > 500) {
+            ResponseUtils.writeJson(resp, 400, "作品简介长度不能超过500个字符", null);
+            return;
+        }
+
+        novel.setName(name);
         novel.setAuthorId(Integer.parseInt(req.getParameter("authorId")));
         String catIdStr = req.getParameter("categoryId");
         if (catIdStr != null) novel.setCategoryId(Integer.parseInt(catIdStr));
-        novel.setDescription(req.getParameter("intro"));
+        novel.setDescription(desc);
         novel.setCover(req.getParameter("coverUrl"));
         novelService.updateNovel(novel);
         ResponseUtils.writeJson(resp, 200, "Novel updated", null);
@@ -187,8 +212,20 @@ public class AdminServlet extends HttpServlet {
 
     private void handleCreateAuthor(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         Author author = new Author();
-        author.setPenname(req.getParameter("name")); 
-        author.setIntroduction(req.getParameter("bio")); 
+        String name = req.getParameter("name");
+        String bio = req.getParameter("bio");
+        
+        if (name != null && name.length() > 20) {
+            ResponseUtils.writeJson(resp, 400, "笔名长度不能超过20个字符", null);
+            return;
+        }
+        if (bio != null && bio.length() > 500) {
+            ResponseUtils.writeJson(resp, 400, "简介长度不能超过500个字符", null);
+            return;
+        }
+
+        author.setPenname(name); 
+        author.setIntroduction(bio); 
         String userIdStr = req.getParameter("userId");
         if (userIdStr != null && !userIdStr.isEmpty()) {
             author.setUserId(Integer.parseInt(userIdStr));
@@ -200,8 +237,21 @@ public class AdminServlet extends HttpServlet {
     private void handleUpdateAuthor(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         Author author = new Author();
         author.setId(Integer.parseInt(req.getParameter("id")));
-        author.setPenname(req.getParameter("name"));
-        author.setIntroduction(req.getParameter("bio"));
+        
+        String name = req.getParameter("name");
+        String bio = req.getParameter("bio");
+
+        if (name != null && name.length() > 20) {
+            ResponseUtils.writeJson(resp, 400, "笔名长度不能超过20个字符", null);
+            return;
+        }
+        if (bio != null && bio.length() > 500) {
+            ResponseUtils.writeJson(resp, 400, "简介长度不能超过500个字符", null);
+            return;
+        }
+
+        author.setPenname(name);
+        author.setIntroduction(bio);
         String userIdStr = req.getParameter("userId");
         if (userIdStr != null && !userIdStr.isEmpty()) {
             author.setUserId(Integer.parseInt(userIdStr));
@@ -217,9 +267,18 @@ public class AdminServlet extends HttpServlet {
     }
 
     private void handleCreateChapter(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        String title = req.getParameter("title");
+        // Content is huge, TEXT type handles it, but maybe limit to reasonable invalid size?
+        // Let's stick to title limit 100 as per requirement.
+        
+        if (title != null && title.length() > 100) {
+            ResponseUtils.writeJson(resp, 400, "章节标题长度不能超过100个字符", null);
+            return;
+        }
+
         Chapter chapter = new Chapter();
         chapter.setNovelId(Integer.parseInt(req.getParameter("novelId")));
-        chapter.setTitle(req.getParameter("title"));
+        chapter.setTitle(title);
         chapter.setContent(req.getParameter("content"));
         String priceStr = req.getParameter("price");
         if (priceStr != null) chapter.setPrice(new java.math.BigDecimal(priceStr));
@@ -230,7 +289,15 @@ public class AdminServlet extends HttpServlet {
     private void handleUpdateChapter(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         Chapter chapter = new Chapter();
         chapter.setId(Integer.parseInt(req.getParameter("id")));
-        chapter.setTitle(req.getParameter("title"));
+        
+        String title = req.getParameter("title");
+        
+        if (title != null && title.length() > 100) {
+            ResponseUtils.writeJson(resp, 400, "章节标题长度不能超过100个字符", null);
+            return;
+        }
+
+        chapter.setTitle(title);
         chapter.setContent(req.getParameter("content"));
         String priceStr = req.getParameter("price");
         if (priceStr != null) chapter.setPrice(new java.math.BigDecimal(priceStr));
@@ -277,8 +344,20 @@ public class AdminServlet extends HttpServlet {
 
     private void handleCreateAnnouncement(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         com.yueji.model.Announcement a = new com.yueji.model.Announcement();
-        a.setTitle(req.getParameter("title"));
-        a.setContent(req.getParameter("content"));
+        String title = req.getParameter("title");
+        String content = req.getParameter("content");
+        
+        if (title != null && title.length() > 100) {
+            ResponseUtils.writeJson(resp, 400, "公告标题长度不能超过100个字符", null);
+            return;
+        }
+        if (content != null && content.length() > 2000) {
+            ResponseUtils.writeJson(resp, 400, "公告内容长度不能超过2000个字符", null);
+            return;
+        }
+
+        a.setTitle(title);
+        a.setContent(content);
         String active = req.getParameter("isActive");
         a.setIsActive(active != null ? Integer.parseInt(active) : 1);
         announcementService.addAnnouncement(a);
@@ -288,8 +367,21 @@ public class AdminServlet extends HttpServlet {
     private void handleUpdateAnnouncement(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         com.yueji.model.Announcement a = new com.yueji.model.Announcement();
         a.setId(Integer.parseInt(req.getParameter("id")));
-        a.setTitle(req.getParameter("title"));
-        a.setContent(req.getParameter("content"));
+        
+        String title = req.getParameter("title");
+        String content = req.getParameter("content");
+        
+        if (title != null && title.length() > 100) {
+            ResponseUtils.writeJson(resp, 400, "公告标题长度不能超过100个字符", null);
+            return;
+        }
+        if (content != null && content.length() > 2000) {
+            ResponseUtils.writeJson(resp, 400, "公告内容长度不能超过2000个字符", null);
+            return;
+        }
+
+        a.setTitle(title);
+        a.setContent(content);
         a.setIsActive(Integer.parseInt(req.getParameter("isActive")));
         announcementService.updateAnnouncement(a);
         ResponseUtils.writeJson(resp, 200, "Announcement updated", null);

@@ -68,6 +68,11 @@ public class CommentServlet extends HttpServlet {
             return;
         }
 
+        if (content.length() > 500) {
+            ResponseUtils.writeJson(resp, 400, "评论内容不能超过500个字符", null);
+            return;
+        }
+
         Comment comment = new Comment();
         comment.setNovelId(novelId);
         comment.setUserId(user.getId());
