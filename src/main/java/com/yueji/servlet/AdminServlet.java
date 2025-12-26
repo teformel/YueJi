@@ -72,6 +72,7 @@ public class AdminServlet extends HttpServlet {
             stats.put("users", userService.getUserCount());
             stats.put("novels", novelService.getNovelCount());
             stats.put("activeToday", userService.getActiveUserCountToday());
+            stats.put("pendingAuthors", (long) authorService.getPendingAuthors().size());
             ResponseUtils.writeJson(resp, 200, "Stats", stats);
         } else if ("/chapter/list".equals(path)) {
             int novelId = Integer.parseInt(req.getParameter("novelId"));
