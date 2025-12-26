@@ -24,6 +24,25 @@ public class ChapterPurchaseDaoImpl implements ChapterPurchaseDao {
     }
 
     @Override
+    public java.util.List<Integer> getPurchasedChapterIds(int userId, int novelId) {
+        String sql = "SELECT p.chapter_id FROM t_chapter_purchase p JOIN t_chapter c ON p.chapter_id = c.id WHERE p.user_id = ? AND c.novel_id = ?";
+        java.util.List<Integer> list = new java.util.ArrayList<>();
+        try (Connection conn = DbUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, novelId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getInt("chapter_id"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
     public void create(ChapterPurchase purchase) throws SQLException {
         String sql = "INSERT INTO t_chapter_purchase (user_id, chapter_id, price, create_time) VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
         try (Connection conn = DbUtils.getConnection();

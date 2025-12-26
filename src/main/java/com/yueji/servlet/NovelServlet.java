@@ -103,6 +103,19 @@ public class NovelServlet extends HttpServlet {
                     data.put("lastReadChapterId", null);
                 }
             }
+            
+            // Check purchased chapters
+            if (chapters != null && !chapters.isEmpty()) {
+                com.yueji.dao.ChapterPurchaseDao purchaseDao = BeanFactory.getBean(com.yueji.dao.ChapterPurchaseDao.class);
+                List<Integer> purchasedIds = purchaseDao.getPurchasedChapterIds(user.getId(), id);
+                for (Chapter c : chapters) {
+                    if (c.getIsPaid() != null && c.getIsPaid() == 1) {
+                        c.setIsPurchased(purchasedIds.contains(c.getId()));
+                    } else {
+                        c.setIsPurchased(false);
+                    }
+                }
+            }
         } else {
             data.put("isCollected", false);
         }

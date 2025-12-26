@@ -11,6 +11,7 @@ public class Chapter {
     private BigDecimal price;
     private Integer isPaid; // 0: Free, 1: Paid
     private Timestamp createTime;
+    private Boolean isPurchased; // Transient field for view
 
     public Chapter() {}
 
@@ -68,5 +69,13 @@ public class Chapter {
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    public Boolean getIsPurchased() {
+        return isPurchased;
+    }
+
+    public void setIsPurchased(Boolean isPurchased) {
+        this.isPurchased = isPurchased;
     }
 }
