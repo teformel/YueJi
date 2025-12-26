@@ -18,7 +18,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.value > 9999) e.target.value = 9999;
         });
     }
+    // Load categories dynamically
+    loadCategories();
 });
+
+let globalCategories = [];
+
+async function loadCategories() {
+    try {
+        const res = await fetchJson('../novel/categories');
+        if (res.code === 200 && res.data) {
+            globalCategories = res.data;
+            const options = res.data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            const newSelect = document.getElementById('newCategory');
+            if (newSelect) newSelect.innerHTML = options;
+
+            const editSelect = document.getElementById('editCategory');
+            if (editSelect) editSelect.innerHTML = options;
+        }
+    } catch (e) {
+        console.error('Failed to load categories', e);
+    }
+}
 
 function initCharCounter() {
     const txt = document.getElementById('chapterContent');
@@ -186,7 +208,7 @@ async function loadMyNovels() {
 
 async function createNovel() {
     const title = document.getElementById('newTitle').value;
-    const category = document.getElementById('newCategory').value;
+    const categoryId = document.getElementById('newCategory').value;
     const desc = document.getElementById('newDesc').value;
     const cover = document.getElementById('newCover').value;
 
@@ -194,13 +216,14 @@ async function createNovel() {
         showToast('请填写完整信息', 'error');
         return;
     }
-
-    const catMap = { '玄幻': 1, '都市': 2, '仙侠': 3, '科幻': 4, '历史': 5, '悬疑': 6 };
-    const catId = catMap[category] || 1;
+    if (!categoryId) {
+        showToast('请选择作品分类', 'error');
+        return;
+    }
 
     const formData = new URLSearchParams();
     formData.append('title', title);
-    formData.append('categoryId', catId);
+    formData.append('categoryId', categoryId);
     formData.append('intro', desc);
     formData.append('coverUrl', cover);
 
@@ -225,7 +248,16 @@ async function openEditNovel(id) {
             if (n) {
                 document.getElementById('editNovelId').value = n.id;
                 document.getElementById('editTitle').value = n.name || n.title;
-                document.getElementById('editCategory').value = n.categoryName || '玄幻'; // Needs mapping back if names differ, assuming names match options.
+                // Use categoryId directly if available from list, or try to match name if needed, 
+                // but list usually returns names. We might need a way to get ID.
+                // Assuming backend list returns categoryId or we map name back to ID via globalCategories
+                let catId = n.categoryId;
+                if (!catId && n.categoryName) {
+                    const cat = globalCategories.find(c => c.name === n.categoryName);
+                    if (cat) catId = cat.id;
+                }
+
+                document.getElementById('editCategory').value = catId || '';
                 document.getElementById('editCover').value = n.cover;
                 document.getElementById('editDesc').value = n.description;
                 document.getElementById('editStatus').value = n.status;
@@ -243,17 +275,14 @@ async function openEditNovel(id) {
 async function updateNovel() {
     const id = document.getElementById('editNovelId').value;
     const title = document.getElementById('editTitle').value;
-    const category = document.getElementById('editCategory').value;
+    const categoryId = document.getElementById('editCategory').value;
     const desc = document.getElementById('editDesc').value;
     const cover = document.getElementById('editCover').value;
-
-    const catMap = { '玄幻': 1, '都市': 2, '仙侠': 3, '科幻': 4, '历史': 5, '悬疑': 6 };
-    const catId = catMap[category] || 1;
 
     const formData = new URLSearchParams();
     formData.append('id', id);
     formData.append('title', title);
-    formData.append('categoryId', catId);
+    formData.append('categoryId', categoryId);
     formData.append('intro', desc);
     formData.append('coverUrl', cover);
     formData.append('status', document.getElementById('editStatus').value);

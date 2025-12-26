@@ -102,12 +102,7 @@
                                         <div>
                                             <label class="block text-sm font-bold text-slate-700 mb-2">作品分类</label>
                                             <select id="newCategory" class="form-input">
-                                                <option>玄幻</option>
-                                                <option>都市</option>
-                                                <option>仙侠</option>
-                                                <option>科幻</option>
-                                                <option>历史</option>
-                                                <option>悬疑</option>
+                                                <option value="" disabled selected>加载中...</option>
                                             </select>
                                         </div>
                                         <div>
@@ -240,12 +235,7 @@
                                         <div>
                                             <label class="block text-sm font-bold text-slate-700 mb-2">作品分类</label>
                                             <select id="editCategory" class="form-input">
-                                                <option>玄幻</option>
-                                                <option>都市</option>
-                                                <option>仙侠</option>
-                                                <option>科幻</option>
-                                                <option>历史</option>
-                                                <option>悬疑</option>
+                                                <option value="" disabled selected>加载中...</option>
                                             </select>
                                         </div>
                                         <div>
