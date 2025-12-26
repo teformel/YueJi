@@ -1,12 +1,17 @@
 services:
   app:
-    image: mcr.microsoft.com/devcontainers/java:17
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - ../:/workspace:cached
     command: sleep infinity
-    network_mode: service:db
+    networks:
+      - Yueji_Network
     depends_on:
       - db
+    ports:
+      - "80:8080"
 
   db:
     image: postgres:15
@@ -17,6 +22,11 @@ services:
       POSTGRES_DB: yueji_db
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - Yueji_Network
 
 volumes:
   db-data:
+networks:
+  Yueji_Network:
+    driver: bridge

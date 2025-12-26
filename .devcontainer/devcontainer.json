@@ -8,7 +8,6 @@
             "extensions": [
                 "vscjava.vscode-java-pack",
                 "redhat.vscode-xml",
-                "vmware.vscode-boot-dev-pack",
                 "eamodio.gitlens"
             ]
         }
@@ -23,6 +22,7 @@
             "version": "latest"
         }
     },
-    "postCreateCommand": "bash .devcontainer/init-dev.sh",
+    "updateContentCommand": "npm install --registry=https://registry.npmmirror.com && mvn clean install -DskipTests -s .devcontainer/maven-settings.xml",
+    "postCreateCommand": "echo 'Waiting for DB...' && until pg_isready -h db -p 5432 -U yueji_user; do sleep 2; done && export PGPASSWORD=yueji_password && psql -h db -U yueji_user -d postgres -c \"DROP DATABASE IF EXISTS yueji_db WITH (FORCE);\" && psql -h db -U yueji_user -d postgres -c \"CREATE DATABASE yueji_db;\" && mvn exec:java -Dexec.mainClass=\"com.yueji.tool.DbInit\"",
     "remoteUser": "vscode"
 }
