@@ -12,8 +12,8 @@ public class DbInit {
     public static void main(String[] args) {
         System.out.println("====== Database Initialization Start ======");
         try (Connection conn = DbUtils.getConnection();
-             Statement stmt = conn.createStatement()) {
-            
+                Statement stmt = conn.createStatement()) {
+
             InputStream is = DbInit.class.getClassLoader().getResourceAsStream("init.sql");
             if (is == null) {
                 System.err.println("Error: init.sql not found in classpath!");
@@ -38,9 +38,11 @@ public class DbInit {
             int failCount = 0;
 
             for (String sql : sqls) {
-                if (sql.trim().isEmpty()) continue;
+                if (sql.trim().isEmpty())
+                    continue;
                 try {
-                    // System.out.println("Executing: " + sql.substring(0, Math.min(30, sql.length())).replace("\n", " ") + "...");
+                    // System.out.println("Executing: " + sql.substring(0, Math.min(30,
+                    // sql.length())).replace("\n", " ") + "...");
                     stmt.execute(sql.trim());
                     successCount++;
                 } catch (Exception e) {
@@ -55,6 +57,8 @@ public class DbInit {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            DbUtils.closeDataSource();
         }
     }
 }

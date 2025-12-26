@@ -118,4 +118,10 @@ public class DbUtils {
             }
         }
     }
+
+    public static void closeDataSource() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+    }
 }
