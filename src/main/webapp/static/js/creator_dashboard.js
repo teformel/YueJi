@@ -2,7 +2,26 @@
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     lucide.createIcons();
+    initCharCounter();
 });
+
+function initCharCounter() {
+    const txt = document.getElementById('chapterContent');
+    const display = document.getElementById('editorWordCount');
+    const maxDisplay = document.getElementById('editorMaxCount');
+
+    if (txt && display) {
+        txt.addEventListener('input', () => {
+            const len = txt.value.length;
+            display.innerText = len;
+            if (len > 20000) {
+                display.classList.add('text-red-500', 'font-bold');
+            } else {
+                display.classList.remove('text-red-500', 'font-bold');
+            }
+        });
+    }
+}
 
 let currentUser = null;
 

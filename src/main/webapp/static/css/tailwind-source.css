@@ -239,6 +239,20 @@
     background-color: #242628 !important;
   }
 
+  /* Dark Mode Fixes for Paid Chapter Card */
+  .theme-night .bg-gray-50 {
+    background-color: #2a2c2e !important;
+    border-color: #3d3f41 !important;
+  }
+
+  .theme-night .border-gray-300 {
+    border-color: #3d3f41 !important;
+  }
+
+  .theme-night .text-slate-500 {
+    color: #8b9bb4 !important;
+  }
+
   .reader-content p {
     transition: font-size 0.2s ease;
   }

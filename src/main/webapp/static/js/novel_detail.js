@@ -86,11 +86,27 @@ function checkLogin() {
                         <input type="hidden" id="commentScore" value="5">
                     </div>
                 </div>
-                <textarea id="commentContent" class="form-input w-full h-24 text-sm" placeholder="分享你的阅读感受..."></textarea>
+                <div class="relative">
+                    <textarea id="commentContent" class="form-input w-full h-24 text-sm pb-6" maxlength="500" placeholder="分享你的阅读感受..."></textarea>
+                    <div id="charCounter" class="absolute bottom-2 right-2 text-xs text-slate-400">0/500</div>
+                </div>
                 <button onclick="postComment()" class="btn-primary w-full mt-2 py-2 text-sm font-bold">发表书评</button>
             </div>
         `;
         lucide.createIcons();
+
+        // Attach listener
+        const txt = document.getElementById('commentContent');
+        const counter = document.getElementById('charCounter');
+        txt.addEventListener('input', () => {
+            const len = txt.value.length;
+            counter.innerText = `${len}/500`;
+            if (len >= 500) {
+                counter.classList.add('text-red-500');
+            } else {
+                counter.classList.remove('text-red-500');
+            }
+        });
     }
 }
 

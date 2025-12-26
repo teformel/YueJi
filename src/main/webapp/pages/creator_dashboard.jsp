@@ -146,6 +146,10 @@
                                         <textarea id="chapterContent"
                                             class="form-input h-96 font-serif text-lg leading-relaxed"
                                             placeholder="开始您的创作..."></textarea>
+                                        <div class="text-right text-xs text-slate-400 mt-1">
+                                            当前字数: <span id="editorWordCount">0</span> / <span
+                                                id="editorMaxCount">20000</span>
+                                        </div>
                                     </div>
                                     <div class="grid grid-cols-2 gap-6">
                                         <div>
