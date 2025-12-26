@@ -19,6 +19,7 @@ async function loadStats() {
             document.getElementById('stat-users').innerText = res.data.users;
             document.getElementById('stat-novels').innerText = res.data.novels;
             document.getElementById('stat-active').innerText = res.data.activeToday || 0;
+            document.getElementById('stat-pending').innerText = res.data.pendingAuthors || 0;
         }
     } catch (e) { }
 }

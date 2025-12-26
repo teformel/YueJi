@@ -55,6 +55,10 @@
                             class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all">
                             <i data-lucide="tags" class="w-5 h-5"></i> 分类管理
                         </button>
+                        <button onclick="switchTab('monitor')"
+                            class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all">
+                            <i data-lucide="activity" class="w-5 h-5"></i> 系统监控
+                        </button>
                     </aside>
 
                     <!-- Content -->
@@ -75,6 +79,65 @@
                                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                                     <div class="text-slate-400 text-xs font-bold uppercase mb-2">今日活跃</div>
                                     <div class="text-3xl font-black text-green-600" id="stat-active">0</div>
+                                </div>
+                                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                                    onclick="switchTab('audit')">
+                                    <div class="text-slate-400 text-xs font-bold uppercase mb-2 flex justify-between">
+                                        待审核作者
+                                        <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+                                    </div>
+                                    <div class="text-3xl font-black text-orange-500" id="stat-pending">0</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Quick Actions -->
+                                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                    <h3 class="font-bold text-slate-800 mb-4">快捷操作</h3>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <button onclick="switchTab('audit')"
+                                            class="p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors text-center">
+                                            <i data-lucide="user-check" class="w-6 h-6 mx-auto mb-2 text-blue-600"></i>
+                                            <span class="text-sm font-medium text-slate-600">审核作者</span>
+                                        </button>
+                                        <button onclick="switchTab('settings')"
+                                            class="p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors text-center">
+                                            <i data-lucide="megaphone" class="w-6 h-6 mx-auto mb-2 text-indigo-600"></i>
+                                            <span class="text-sm font-medium text-slate-600">发布公告</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- System Info -->
+                                <div class="bg-slate-900 text-white p-6 rounded-xl shadow-sm">
+                                    <h3 class="font-bold mb-4 flex items-center gap-2">
+                                        <i data-lucide="server" class="w-5 h-5"></i> 服务器状态
+                                    </h3>
+                                    <div class="space-y-3 text-sm text-slate-300">
+                                        <div class="flex justify-between">
+                                            <span>OS:</span>
+                                            <span class="font-mono text-white">
+                                                <%= System.getProperty("os.name") %> (<%= System.getProperty("os.arch")
+                                                        %>)
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Java Version:</span>
+                                            <span class="font-mono text-white">
+                                                <%= System.getProperty("java.version") %>
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Container:</span>
+                                            <span class="font-mono text-white">Apache Tomcat 9.x</span>
+                                        </div>
+                                        <div class="mt-4 pt-4 border-t border-slate-700">
+                                            <div class="flex items-center gap-2 text-green-400">
+                                                <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                                                系统运行正常
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -217,6 +280,16 @@
                                     </thead>
                                     <tbody id="categoryTableBody" class="divide-y divide-gray-100"></tbody>
                                 </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Monitor -->
+                        <div id="tab-monitor" class="tab-content hidden animate-fade-in h-screen max-h-[800px]">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-6">系统实时监控</h2>
+                            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden h-full">
+                                <iframe src="${pageContext.request.contextPath}/druid/index.html"
+                                    class="w-full h-full border-0" style="min-height: 700px;">
+                                </iframe>
                             </div>
                         </div>
 
