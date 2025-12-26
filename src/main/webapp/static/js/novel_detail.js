@@ -248,13 +248,13 @@ function showReplyForm(commentId, username) {
 }
 
 function cancelReply(commentId) {
-    const container = document.getElementById(`replyFormContainer - ${commentId}`);
+    const container = document.getElementById(`replyFormContainer-${commentId}`);
     container.classList.add('hidden');
     container.innerHTML = '';
 }
 
 async function submitReply(commentId) {
-    const content = document.getElementById(`replyContent - ${commentId}`).value;
+    const content = document.getElementById(`replyContent-${commentId}`).value;
     if (!content) return showToast('请输入回复内容', 'warning');
 
     try {
@@ -331,12 +331,12 @@ function renderChapters(chapters) {
         }
 
         return `
-    < a href = "read.jsp?novelId=${novelId}&chapterId=${c.id}" 
-           class= "flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-300 hover:bg-blue-50 transition-colors group" >
+    <a href="read.jsp?novelId=${novelId}&chapterId=${c.id}" 
+           class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-300 hover:bg-blue-50 transition-colors group">
             <span class="text-slate-300 font-bold text-sm w-6">${i + 1}</span>
             <span class="text-sm font-medium text-slate-700 group-hover:text-blue-700 truncate flex-1">${c.title}</span>
             ${statusIcon}
-        </a >
+        </a>
         `}).join('');
     lucide.createIcons();
 }
@@ -344,9 +344,9 @@ function renderChapters(chapters) {
 function startReading() {
     if (currentChapters.length > 0) {
         if (lastReadChapterId) {
-            location.href = `read.jsp ? novelId = ${novelId} & chapterId=${lastReadChapterId}`;
+            location.href = `read.jsp?novelId=${novelId}&chapterId=${lastReadChapterId}`;
         } else {
-            location.href = `read.jsp ? novelId = ${novelId} & chapterId=${currentChapters[0].id}`;
+            location.href = `read.jsp?novelId=${novelId}&chapterId=${currentChapters[0].id}`;
         }
     } else {
         showToast('暂无章节可读', 'info');
@@ -373,7 +373,7 @@ async function toggleShelf() {
     try {
         const formData = new URLSearchParams();
         formData.append('novelId', novelId);
-        const res = await fetchJson(`../ interaction / collection / ${action}`, { method: 'POST', body: formData });
+        const res = await fetchJson(`../interaction/collection/${action}`, { method: 'POST', body: formData });
         if (res.code === 200) {
             showToast(isCollected ? '已移出书架' : '已加入书架', 'success');
             updateShelfBtn(!isCollected);
@@ -396,7 +396,7 @@ async function checkFollowStatus() {
     }
 
     try {
-        const res = await fetchJson(`../ interaction / follow / check ? authorId = ${authorId}`);
+        const res = await fetchJson(`../interaction/follow/check?authorId=${authorId}`);
         if (res.code === 200) {
             document.getElementById('btnFollowAuthor').classList.remove('hidden');
             updateFollowBtn(res.data);
@@ -422,7 +422,7 @@ async function toggleFollow() {
     try {
         const formData = new URLSearchParams();
         formData.append('authorId', authorId);
-        const res = await fetchJson(`../ interaction / follow / ${action}`, { method: 'POST', body: formData });
+        const res = await fetchJson(`../interaction/follow/${action}`, { method: 'POST', body: formData });
         if (res.code === 200) {
             showToast(isFollowing ? '已取消关注' : '已关注作者', 'success');
             updateFollowBtn(!isFollowing);

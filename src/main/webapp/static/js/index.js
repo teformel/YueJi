@@ -5,7 +5,6 @@ lucide.createIcons();
 
 // Bind search counter
 bindCharCounter('searchInput', 'count-searchInput', 50);
-});
 
 async function loadAnnouncements() {
     try {
