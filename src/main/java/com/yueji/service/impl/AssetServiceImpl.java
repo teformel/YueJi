@@ -13,7 +13,7 @@ import com.yueji.model.Chapter;
 import com.yueji.service.AssetService;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
+
 import java.util.List;
 
 public class AssetServiceImpl implements AssetService {
@@ -31,6 +31,7 @@ public class AssetServiceImpl implements AssetService {
         this.novelDao = BeanFactory.getBean(com.yueji.dao.NovelDao.class);
         this.authorDao = BeanFactory.getBean(com.yueji.dao.AuthorDao.class);
     }
+
     private final com.yueji.dao.NovelDao novelDao;
     private final com.yueji.dao.AuthorDao authorDao;
 
@@ -38,20 +39,21 @@ public class AssetServiceImpl implements AssetService {
     public void recharge(int userId, BigDecimal amount) throws Exception {
         try {
             DbUtils.beginTransaction();
-            
+
             User user = userDao.findById(userId);
-            if (user == null) throw new Exception("User not found");
-            
+            if (user == null)
+                throw new Exception("User not found");
+
             user.setCoinBalance(user.getCoinBalance().add(amount));
             userDao.update(user);
-            
+
             CoinLog log = new CoinLog();
             log.setUserId(userId);
             log.setType(0); // Recharge
             log.setAmount(amount);
             log.setRemark("用户充值");
             coinLogDao.create(log);
-            
+
             DbUtils.commitTransaction();
         } catch (Exception e) {
             DbUtils.rollbackTransaction();
@@ -107,7 +109,7 @@ public class AssetServiceImpl implements AssetService {
                     if (authorUser != null) {
                         authorUser.setCoinBalance(authorUser.getCoinBalance().add(price));
                         userDao.update(authorUser);
-                        
+
                         CoinLog incomeLog = new CoinLog();
                         incomeLog.setUserId(authorUser.getId());
                         incomeLog.setType(2); // Author Income (稿费)

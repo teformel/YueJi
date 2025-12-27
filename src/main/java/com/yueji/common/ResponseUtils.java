@@ -31,8 +31,17 @@ public class ResponseUtils {
             this.msg = msg;
             this.data = data;
         }
-        // Getters ... to save checking Gson uses fields directly? No, Gson uses fields.
-        // But for safety let's add no-args and getters if needed.
-        // Gson can serialize private fields.
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public Object getData() {
+            return data;
+        }
     }
 }
