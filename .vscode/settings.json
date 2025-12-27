@@ -1,0 +1,12 @@
+{
+    "files.encoding": "utf8",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/target": true
+    },
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/target/**": true
+    }
+}

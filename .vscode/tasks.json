@@ -1,0 +1,62 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Tailwind Watch",
+            "type": "npm",
+            "script": "watch-css",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "css",
+                "fileLocation": "relative",
+                "pattern": {
+                    "regexp": "^([^\\s].*):(\\d+):(\\d+):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "message": 4
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Rebuilding...",
+                    "endsPattern": "Done in"
+                }
+            },
+            "detail": "持续监控并编译 Tailwind CSS"
+        },
+        {
+            "label": "Run Tomcat",
+            "type": "shell",
+            "command": "mvn cargo:run",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "detail": "启动 Tomcat 服务器"
+        },
+        {
+            "label": "Debug Tomcat (Start)",
+            "type": "shell",
+            "command": "mvn cargo:run",
+            "options": {
+                "env": {
+                    "MAVEN_OPTS": "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^.*Saved container to.*$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*[Cargo].*Starting container.*",
+                    "endsPattern": ".*[Cargo].*Started container.*"
+                }
+            },
+            "detail": "以调试模式启动 Tomcat (端口 8000)"
+        }
+    ]
+}
