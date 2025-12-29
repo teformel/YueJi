@@ -30,12 +30,17 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     public List<Novel> searchNovels(String keyword, Integer categoryId) {
-        return novelDao.search(keyword, categoryId, false);
+        return searchNovels(keyword, categoryId, null, null);
     }
 
     @Override
-    public List<Novel> adminSearchNovels(String keyword, Integer categoryId) {
-        return novelDao.search(keyword, categoryId, true);
+    public List<Novel> searchNovels(String keyword, Integer categoryId, String sortBy, Integer limit) {
+        return novelDao.search(keyword, categoryId, false, sortBy, limit);
+    }
+
+    @Override
+    public List<Novel> adminSearchNovels(String keyword, Integer categoryId, String sortBy, Integer limit) {
+        return novelDao.search(keyword, categoryId, true, sortBy, limit);
     }
 
     @Override

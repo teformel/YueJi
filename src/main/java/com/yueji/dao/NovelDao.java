@@ -7,7 +7,7 @@ import java.util.List;
 public interface NovelDao {
     List<Novel> findAll();
 
-    List<Novel> search(String keyword, Integer categoryId, boolean includeBanned);
+    List<Novel> search(String keyword, Integer categoryId, boolean includeBanned, String sortBy, Integer limit);
 
     Novel findById(int id);
 

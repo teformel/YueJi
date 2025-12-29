@@ -10,6 +10,8 @@ public interface NovelService {
 
     List<Novel> searchNovels(String keyword, Integer categoryId);
 
+    List<Novel> searchNovels(String keyword, Integer categoryId, String sortBy, Integer limit);
+
     Novel getNovelDetails(int id);
 
     List<Chapter> getChapterList(int novelId); // Without content
@@ -27,7 +29,7 @@ public interface NovelService {
 
     void deleteNovel(int id) throws Exception;
 
-    List<Novel> adminSearchNovels(String keyword, Integer categoryId); // New method
+    List<Novel> adminSearchNovels(String keyword, Integer categoryId, String sortBy, Integer limit); // New method
 
     void addChapter(Chapter chapter) throws Exception;
 

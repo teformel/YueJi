@@ -27,11 +27,11 @@ public class NovelDaoImpl implements NovelDao {
 
     @Override
     public List<Novel> findAll() {
-        return search(null, null, false);
+        return search(null, null, false, null, null);
     }
 
     @Override
-    public List<Novel> search(String keyword, Integer categoryId, boolean includeBanned) {
+    public List<Novel> search(String keyword, Integer categoryId, boolean includeBanned, String sortBy, Integer limit) {
         List<Novel> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT n.*, a.penname as author_name, c.name as category_name FROM t_novel n " +
@@ -47,8 +47,18 @@ public class NovelDaoImpl implements NovelDao {
         if (!includeBanned) {
             sql.append("AND n.status != 3 ");
         }
-        sql.append("ORDER BY n.id DESC"); // Use ID or create_time if available (t_novel doesn't have create_time in
-                                          // schema, using ID)
+
+        // Sorting
+        if ("hot".equals(sortBy)) {
+            sql.append("ORDER BY n.view_count DESC ");
+        } else {
+            sql.append("ORDER BY n.id DESC ");
+        }
+
+        // Limit
+        if (limit != null && limit > 0) {
+            sql.append("LIMIT ? ");
+        }
 
         try (Connection conn = DbUtils.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
@@ -61,6 +71,9 @@ public class NovelDaoImpl implements NovelDao {
             }
             if (categoryId != null) {
                 stmt.setInt(paramIndex++, categoryId);
+            }
+            if (limit != null && limit > 0) {
+                stmt.setInt(paramIndex++, limit);
             }
 
             try (ResultSet rs = stmt.executeQuery()) {

@@ -60,6 +60,9 @@ public class NovelServlet extends HttpServlet {
         String keyword = req.getParameter("keyword");
         String categoryIdStr = req.getParameter("categoryId");
         String manageStr = req.getParameter("manage");
+        String sort = req.getParameter("sort");
+        String limitStr = req.getParameter("limit");
+
         Integer categoryId = null;
         if (categoryIdStr != null && !categoryIdStr.isEmpty()) {
             try {
@@ -68,12 +71,22 @@ public class NovelServlet extends HttpServlet {
             }
         }
 
+        Integer limit = null;
+        if (limitStr != null && !limitStr.isEmpty()) {
+            try {
+                limit = Integer.parseInt(limitStr);
+            } catch (NumberFormatException e) {
+            }
+        }
+
         List<Novel> novels;
         User user = (User) req.getSession().getAttribute("user");
         if ("true".equals(manageStr) && user != null && user.getRole() == 1) {
-            novels = novelService.adminSearchNovels(keyword, categoryId);
+            // Admin search usually doesn't need sort/limit for now unless specified, but
+            // let's support it if needed or pass null
+            novels = novelService.adminSearchNovels(keyword, categoryId, sort, limit);
         } else {
-            novels = novelService.searchNovels(keyword, categoryId);
+            novels = novelService.searchNovels(keyword, categoryId, sort, limit);
         }
         ResponseUtils.writeJson(resp, 200, "Success", novels);
     }
