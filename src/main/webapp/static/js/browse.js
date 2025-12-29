@@ -77,7 +77,12 @@ async function loadBooks() {
     try {
         // Fetch all novels from backend
         // Note: Production apps should filter on backend, but for this scale client-side is fine or we can pass params
-        const result = await fetchJson("../novel/list");
+        let url = "../novel/list";
+        const sort = getQueryParam('sort');
+        if (sort) {
+            url += `?sort=${encodeURIComponent(sort)}`;
+        }
+        const result = await fetchJson(url);
         if (!result || result.code !== 200) {
             container.innerHTML = '<div class="col-span-full py-20 text-center text-red-500">加载失败</div>';
             return;
