@@ -52,9 +52,21 @@ let allChapters = [];
 async function loadContent() {
     if (!novelId || !chapterId) return;
 
+    // Check Login
+    if (!Auth.getUser()) {
+        showToast('请先登录', 'error');
+        setTimeout(() => location.href = "login.jsp", 1000);
+        return;
+    }
+
     // Load Chapter Detail (Real Backend)
     try {
         const res = await fetchJson(`../read/content?chapterId=${chapterId}`);
+        if (res.code === 401) {
+            showToast('请登录阅读', 'error');
+            setTimeout(() => location.href = "login.jsp", 1000);
+            return;
+        }
         if (res.code === 200) {
             const ch = res.data;
             document.title = `${ch.title} - 阅读`;
