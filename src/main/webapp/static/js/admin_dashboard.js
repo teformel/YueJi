@@ -41,6 +41,7 @@ function switchTab(tab) {
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
     if (tab === 'users') loadUsers();
+    if (tab === 'novels') loadNovels();
     if (tab === 'audit') loadPendingAuthors();
     if (tab === 'settings') loadAnnouncements();
     if (tab === 'categories') loadCategories();
@@ -395,5 +396,89 @@ function resetSystem() {
     if (confirm('确定要清空本地缓存吗？')) {
         localStorage.clear();
         location.reload();
+    }
+}
+
+async function loadNovels() {
+    const keyword = document.getElementById('novelSearchInput') ? document.getElementById('novelSearchInput').value : '';
+    try {
+        const url = `../novel/list?manage=true&keyword=${encodeURIComponent(keyword)}`;
+        const res = await fetchJson(url);
+        if (res.code === 200) {
+            renderNovelTable(res.data);
+        }
+    } catch (e) {
+        console.error(e);
+        showToast('加载作品列表失败', 'error');
+    }
+}
+
+function renderNovelTable(novels = []) {
+    const tbody = document.getElementById('novelTableBody');
+    if (!tbody) return;
+
+    if (novels.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400">暂无作品数据</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = novels.map(n => {
+        const isBanned = n.status === 3;
+        const statusBadge = isBanned
+            ? '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">已封禁</span>'
+            : '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">正常</span>';
+
+        const actionBtn = isBanned
+            ? `<button onclick="toggleNovelStatus(${n.id}, 3)" class="text-xs font-bold text-green-600 hover:underline">解封/上架</button>`
+            : `<button onclick="toggleNovelStatus(${n.id}, 1)" class="text-xs font-bold text-red-500 hover:underline">封禁/下架</button>`;
+
+        return `
+            <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 font-mono text-slate-400">${n.id}</td>
+                <td class="px-6 py-4">
+                     <img src="${n.cover || '../static/images/cover_placeholder.jpg'}" class="w-10 h-14 object-cover rounded shadow-sm">
+                </td>
+                <td class="px-6 py-4">
+                    <div class="font-bold text-slate-900">${n.name}</div>
+                    <div class="text-xs text-slate-400">${n.categoryName || '未分类'} · ${n.viewCount || 0} 阅读</div>
+                </td>
+                <td class="px-6 py-4 text-slate-600">${n.authorName || '未知'}</td>
+                <td class="px-6 py-4">${statusBadge}</td>
+                <td class="px-6 py-4 text-right flex justify-end gap-2 items-center h-full pt-8">
+                    ${actionBtn}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function toggleNovelStatus(id, currentStatus) {
+    let nextStatus = 3;
+    let msg = "确定要封禁下架该小说吗？";
+
+    if (currentStatus === 3) {
+        nextStatus = 1; // Restore to Serializing.
+        msg = "确定要解封上架该小说吗？";
+    }
+
+    if (!confirm(msg)) return;
+
+    const formData = new URLSearchParams();
+    formData.append('id', id);
+    formData.append('status', nextStatus);
+
+    try {
+        const res = await fetchJson('../novel/updateStatus', {
+            method: 'POST',
+            body: formData
+        });
+        if (res.code === 200) {
+            showToast('操作成功', 'success');
+            loadNovels();
+        } else {
+            showToast(res.msg, 'error');
+        }
+    } catch (e) {
+        showToast('请求失败', 'error');
     }
 }

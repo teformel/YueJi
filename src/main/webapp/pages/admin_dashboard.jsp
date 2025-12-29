@@ -43,6 +43,10 @@
                             class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all">
                             <i data-lucide="users" class="w-5 h-5"></i> 用户管理
                         </button>
+                        <button onclick="switchTab('novels')"
+                            class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all">
+                            <i data-lucide="book-open" class="w-5 h-5"></i> 小说管理
+                        </button>
                         <button onclick="switchTab('settings')"
                             class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-bold text-slate-700 hover:bg-white hover:shadow-sm transition-all">
                             <i data-lucide="settings" class="w-5 h-5"></i> 系统设置
@@ -260,6 +264,39 @@
                                         </tr>
                                     </thead>
                                     <tbody id="auditTableBody" class="divide-y divide-gray-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Novels -->
+                        <div id="tab-novels" class="tab-content hidden animate-fade-in">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-6 flex justify-between items-center">
+                                小说管理
+                                <div class="flex gap-2">
+                                    <input type="text" id="novelSearchInput" placeholder="搜索小说名/作者..."
+                                        class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <button
+                                        class="text-sm px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                                        onclick="loadNovels()">刷新/搜索</button>
+                                </div>
+                            </h2>
+
+                            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                                <table class="w-full text-left text-sm">
+                                    <thead
+                                        class="bg-gray-50 text-slate-500 font-bold uppercase border-b border-gray-200">
+                                        <tr>
+                                            <th class="px-6 py-4">ID</th>
+                                            <th class="px-6 py-4">封面</th>
+                                            <th class="px-6 py-4">小说信息</th>
+                                            <th class="px-6 py-4">作者</th>
+                                            <th class="px-6 py-4">状态</th>
+                                            <th class="px-6 py-4 text-right">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="novelTableBody" class="divide-y divide-gray-100">
+                                        <!-- Injected -->
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
