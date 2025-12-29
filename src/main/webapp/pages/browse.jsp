@@ -50,17 +50,9 @@
                     </div>
 
                     <!-- Pagination (Mock) -->
-                    <div class="flex justify-center mt-12 gap-2">
-                        <button
-                            class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-slate-400 cursor-not-allowed">上一页</button>
-                        <button class="px-4 py-2 bg-slate-900 text-white rounded-lg font-bold">1</button>
-                        <button
-                            class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-slate-600 hover:bg-gray-50">2</button>
-                        <button
-                            class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-slate-600 hover:bg-gray-50">3</button>
-                        <span class="px-2 py-2 text-slate-400">...</span>
-                        <button
-                            class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-slate-600 hover:bg-gray-50">下一页</button>
+                    <!-- Pagination (Dynamic) -->
+                    <div id="paginationContainer" class="flex justify-center mt-12 gap-2">
+                        <!-- Injected by JS -->
                     </div>
 
                 </div>

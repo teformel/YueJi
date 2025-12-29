@@ -56,6 +56,7 @@ function initFilters() {
 
 function setFilter(type, val) {
     currentFilters[type] = val;
+    currentPage = 1; // Reset to first page
 
     // Update UI
     document.querySelectorAll(`.filter-btn[data-type="${type}"]`).forEach(b => {
@@ -71,12 +72,16 @@ function setFilter(type, val) {
     loadBooks();
 }
 
+// Pagination State
+let currentPage = 1;
+const pageSize = 12; // 4x3 or 2x6 grid
+let currentFilteredBooks = [];
+
 async function loadBooks() {
     const container = document.getElementById('browseGrid');
 
     try {
         // Fetch all novels from backend
-        // Note: Production apps should filter on backend, but for this scale client-side is fine or we can pass params
         let url = "../novel/list";
         const sort = getQueryParam('sort');
         if (sort) {
@@ -90,23 +95,39 @@ async function loadBooks() {
 
         const allNovels = result.data;
 
-        let filtered = allNovels.filter(n => {
+        // Filter
+        currentFilteredBooks = allNovels.filter(n => {
             const statusVal = n.status === 2 ? '已完结' : '连载中';
 
             if (currentFilters.category !== 'all') {
-                // n.categoryId is what backend returns
                 if (String(n.categoryId) !== String(currentFilters.category)) return false;
             }
             if (currentFilters.status !== 'all' && statusVal !== currentFilters.status) return false;
             return true;
         });
 
-        if (filtered.length === 0) {
+        if (currentFilteredBooks.length === 0) {
             container.innerHTML = `<div class="col-span-full py-20 text-center text-slate-400">暂无符合条件的书籍</div>`;
+            renderPagination(0);
             return;
         }
 
-        container.innerHTML = filtered.map(n => `
+        renderCurrentPage();
+
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<div class="col-span-full py-20 text-center text-red-500">加载出错</div>';
+    }
+}
+
+function renderCurrentPage() {
+    const container = document.getElementById('browseGrid');
+
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    const pageData = currentFilteredBooks.slice(start, end);
+
+    container.innerHTML = pageData.map(n => `
 <div class="standard-card group cursor-pointer" onclick="location.href='novel_detail.jsp?id=${n.id}'">
     <div class="aspect-[2/3] overflow-hidden bg-gray-100 relative rounded-t-lg">
         <img src="${n.cover || '../static/images/cover_placeholder.jpg'}" 
@@ -125,9 +146,53 @@ async function loadBooks() {
     </div>
 </div>
 `).join('');
-        lucide.createIcons();
-    } catch (e) {
-        console.error(e);
-        container.innerHTML = '<div class="col-span-full py-20 text-center text-red-500">加载出错</div>';
+
+    lucide.createIcons();
+    const totalPages = Math.ceil(currentFilteredBooks.length / pageSize);
+    renderPagination(totalPages);
+
+    // Scroll to top of grid
+    if (container.parentElement) {
+        container.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+}
+
+function renderPagination(totalPages) {
+    const container = document.getElementById('paginationContainer');
+    if (!container) return;
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+
+    // Prev
+    html += `<button onclick="changePage(${currentPage - 1})" 
+        class="px-4 py-2 border border-gray-200 rounded-lg ${currentPage === 1 ? 'bg-gray-50 text-slate-300 cursor-not-allowed' : 'bg-white text-slate-600 hover:bg-gray-50'}">上一页</button>`;
+
+    // Page Numbers (Simple: 1 ... current ... last)
+    for (let i = 1; i <= totalPages; i++) {
+        // Show first, last, current, and adjacent to current
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            const activeClass = i === currentPage ? 'bg-slate-900 text-white font-bold' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50';
+            html += `<button onclick="changePage(${i})" class="px-4 py-2 rounded-lg ${activeClass}">${i}</button>`;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+            html += `<span class="px-2 py-2 text-slate-400">...</span>`;
+        }
+    }
+
+    // Next
+    html += `<button onclick="changePage(${currentPage + 1})" 
+        class="px-4 py-2 border border-gray-200 rounded-lg ${currentPage === totalPages ? 'bg-gray-50 text-slate-300 cursor-not-allowed' : 'bg-white text-slate-600 hover:bg-gray-50'}">下一页</button>`;
+
+    container.innerHTML = html;
+}
+
+function changePage(page) {
+    const totalPages = Math.ceil(currentFilteredBooks.length / pageSize);
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderCurrentPage();
 }
