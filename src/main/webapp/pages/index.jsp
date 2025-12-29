@@ -24,7 +24,7 @@
 
                     <!-- Announcement Bar -->
                     <div id="announcementBar"
-                        class="hidden bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-3 overflow-hidden animate-fade-in">
+                        class="hidden bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 items-center gap-3 overflow-hidden animate-fade-in">
                         <div class="flex items-center gap-1.5 text-blue-600 font-bold shrink-0">
                             <i data-lucide="megaphone" class="w-4 h-4"></i>
                             <span class="text-xs uppercase tracking-wider">站内公告</span>

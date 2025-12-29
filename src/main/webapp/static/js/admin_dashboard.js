@@ -77,7 +77,9 @@ function showAnnouncementModal() {
     document.getElementById('annTitle').value = '';
     document.getElementById('annContent').value = '';
     document.getElementById('annIsActive').checked = true;
-    document.getElementById('announcementModal').classList.remove('hidden');
+    const modal = document.getElementById('announcementModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 
     bindCharCounter('annTitle', 'count-annTitle', 100);
     bindCharCounter('annContent', 'count-annContent', 2000);
@@ -89,7 +91,9 @@ function editAnnouncement(a) {
     document.getElementById('annTitle').value = a.title;
     document.getElementById('annContent').value = a.content;
     document.getElementById('annIsActive').checked = a.isActive === 1;
-    document.getElementById('announcementModal').classList.remove('hidden');
+    const modal = document.getElementById('announcementModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 
     bindCharCounter('annTitle', 'count-annTitle', 100);
     bindCharCounter('annContent', 'count-annContent', 2000);
@@ -99,7 +103,9 @@ function editAnnouncement(a) {
 }
 
 function closeAnnouncementModal() {
-    document.getElementById('announcementModal').classList.add('hidden');
+    const modal = document.getElementById('announcementModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
 async function saveAnnouncement() {
@@ -340,18 +346,24 @@ function showCategoryModal() {
     document.getElementById('catModalTitle').innerText = '添加新分类';
     document.getElementById('catId').value = '';
     document.getElementById('catName').value = '';
-    document.getElementById('categoryModal').classList.remove('hidden');
+    const modal = document.getElementById('categoryModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 }
 
 function editCategory(c) {
     document.getElementById('catModalTitle').innerText = '修改分类';
     document.getElementById('catId').value = c.id;
     document.getElementById('catName').value = c.name;
-    document.getElementById('categoryModal').classList.remove('hidden');
+    const modal = document.getElementById('categoryModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 }
 
 function closeCategoryModal() {
-    document.getElementById('categoryModal').classList.add('hidden');
+    const modal = document.getElementById('categoryModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
 async function saveCategory() {

@@ -204,9 +204,8 @@
                                 </div>
                             </div>
 
-                            <!-- Modal for Announcement -->
                             <div id="announcementModal"
-                                class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center p-4">
+                                class="fixed inset-0 bg-slate-900/50 hidden z-50 items-center justify-center p-4">
                                 <div
                                     class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-zoom-in">
                                     <div
@@ -343,7 +342,7 @@
 
                             <!-- Modal for Category -->
                             <div id="categoryModal"
-                                class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center p-4">
+                                class="fixed inset-0 bg-slate-900/50 hidden z-50 items-center justify-center p-4">
                                 <div
                                     class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-zoom-in">
                                     <div

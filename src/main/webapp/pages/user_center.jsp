@@ -73,7 +73,7 @@
 
                                 <!-- Author Apply Button (Hidden by default) -->
                                 <button id="btnApplyAuthor" onclick="openApplyModal()"
-                                    class="hidden w-full flex items-center gap-3 px-6 py-4 text-left font-bold text-purple-600 hover:bg-purple-50 border-l-4 border-transparent transition-all">
+                                    class="hidden w-full items-center gap-3 px-6 py-4 text-left font-bold text-purple-600 hover:bg-purple-50 border-l-4 border-transparent transition-all">
                                     <i data-lucide="pen-tool" class="w-5 h-5"></i> 申请成为作者
                                 </button>
                             </nav>
@@ -203,9 +203,10 @@
 
             <!-- Apply Modal -->
             <div id="applyModal"
-                class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center backdrop-blur-sm">
+                class="fixed inset-0 bg-black/50 hidden z-50 items-center justify-center backdrop-blur-sm">
                 <div class="bg-white rounded-xl shadow-2xl p-8 max-w-lg w-full mx-4 animate-fade-in relative">
-                    <button onclick="document.getElementById('applyModal').classList.add('hidden')"
+                    <button
+                        onclick="const m=document.getElementById('applyModal');m.classList.add('hidden');m.classList.remove('flex')"
                         class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
                         <i data-lucide="x" class="w-6 h-6"></i>
                     </button>

@@ -13,6 +13,7 @@ async function loadAnnouncements() {
             const bar = document.getElementById('announcementBar');
             const scroll = document.getElementById('announcementScroll');
             bar.classList.remove('hidden');
+            bar.classList.add('flex');
 
             // Render announcements
             scroll.innerHTML = res.data.map(a => `

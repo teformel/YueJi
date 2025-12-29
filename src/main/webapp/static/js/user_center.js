@@ -38,12 +38,17 @@ function renderUserInfo(user) {
 
     // Show Apply Button if Role is 0 (Reader)
     if (user.role === 0) {
-        document.getElementById('btnApplyAuthor').classList.remove('hidden');
+        const btn = document.getElementById('btnApplyAuthor');
+        btn.classList.remove('hidden');
+        btn.classList.add('flex');
     }
 }
 
 function openApplyModal() {
-    document.getElementById('applyModal').classList.remove('hidden');
+    const modal = document.getElementById('applyModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
     document.getElementById('stepAgreement').classList.remove('hidden');
     document.getElementById('stepForm').classList.add('hidden');
     document.getElementById('agreeCheck').checked = false;
@@ -75,7 +80,9 @@ async function submitApply() {
         const res = await fetchJson('../author/apply', { method: 'POST', body: formData });
         if (res.code === 200) {
             showToast('申请提交成功，请等待审核', 'success');
-            document.getElementById('applyModal').classList.add('hidden');
+            const modal = document.getElementById('applyModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         } else {
             showToast(res.msg, 'error');
         }
