@@ -39,23 +39,69 @@ public class NovelServlet extends HttpServlet {
             handleAnnouncements(req, resp);
         } else if ("/categories".equals(path)) {
             handleCategories(req, resp);
+        } else if ("/updateStatus".equals(path)) {
+            handleUpdateStatus(req, resp);
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String path = req.getPathInfo();
+        if ("/updateStatus".equals(path)) {
+            handleUpdateStatus(req, resp);
+        } else {
+            doGet(req, resp); // Fallback or error
         }
     }
 
     private void handleList(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String keyword = req.getParameter("keyword");
         String categoryIdStr = req.getParameter("categoryId");
+        String manageStr = req.getParameter("manage");
         Integer categoryId = null;
         if (categoryIdStr != null && !categoryIdStr.isEmpty()) {
             try {
                 categoryId = Integer.parseInt(categoryIdStr);
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException e) {
+            }
         }
 
-        List<Novel> novels = novelService.searchNovels(keyword, categoryId);
+        List<Novel> novels;
+        User user = (User) req.getSession().getAttribute("user");
+        if ("true".equals(manageStr) && user != null && user.getRole() == 1) {
+            novels = novelService.adminSearchNovels(keyword, categoryId);
+        } else {
+            novels = novelService.searchNovels(keyword, categoryId);
+        }
         ResponseUtils.writeJson(resp, 200, "Success", novels);
+    }
+
+    private void handleUpdateStatus(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User user = (User) req.getSession().getAttribute("user");
+        if (user == null || user.getRole() != 1) {
+            ResponseUtils.writeJson(resp, 403, "Permission Confined", null);
+            return;
+        }
+
+        String idStr = req.getParameter("id");
+        String statusStr = req.getParameter("status");
+
+        if (idStr == null || statusStr == null) {
+            ResponseUtils.writeJson(resp, 400, "Missing id or status", null);
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(idStr);
+            int status = Integer.parseInt(statusStr);
+            novelService.updateNovelStatus(id, status);
+            ResponseUtils.writeJson(resp, 200, "Success", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ResponseUtils.writeJson(resp, 500, "Error: " + e.getMessage(), null);
+        }
     }
 
     private void handleDetail(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -103,10 +149,11 @@ public class NovelServlet extends HttpServlet {
                     data.put("lastReadChapterId", null);
                 }
             }
-            
+
             // Check purchased chapters
             if (chapters != null && !chapters.isEmpty()) {
-                com.yueji.dao.ChapterPurchaseDao purchaseDao = BeanFactory.getBean(com.yueji.dao.ChapterPurchaseDao.class);
+                com.yueji.dao.ChapterPurchaseDao purchaseDao = BeanFactory
+                        .getBean(com.yueji.dao.ChapterPurchaseDao.class);
                 List<Integer> purchasedIds = purchaseDao.getPurchasedChapterIds(user.getId(), id);
                 for (Chapter c : chapters) {
                     if (c.getIsPaid() != null && c.getIsPaid() == 1) {
@@ -124,7 +171,8 @@ public class NovelServlet extends HttpServlet {
     }
 
     private void handleAnnouncements(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        com.yueji.service.AnnouncementService announcementService = BeanFactory.getBean(com.yueji.service.AnnouncementService.class);
+        com.yueji.service.AnnouncementService announcementService = BeanFactory
+                .getBean(com.yueji.service.AnnouncementService.class);
         List<com.yueji.model.Announcement> list = announcementService.getActiveAnnouncements();
         ResponseUtils.writeJson(resp, 200, "Success", list);
     }

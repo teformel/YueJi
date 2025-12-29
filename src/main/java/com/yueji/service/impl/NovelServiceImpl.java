@@ -30,7 +30,12 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     public List<Novel> searchNovels(String keyword, Integer categoryId) {
-        return novelDao.search(keyword, categoryId);
+        return novelDao.search(keyword, categoryId, false);
+    }
+
+    @Override
+    public List<Novel> adminSearchNovels(String keyword, Integer categoryId) {
+        return novelDao.search(keyword, categoryId, true);
     }
 
     @Override
@@ -46,14 +51,16 @@ public class NovelServiceImpl implements NovelService {
     @Override
     public Chapter getChapterContent(int userId, int chapterId) {
         Chapter chapter = chapterDao.findById(chapterId);
-        if (chapter == null) return null;
+        if (chapter == null)
+            return null;
 
         // Check permission if paid
         if (chapter.getIsPaid() == 1) {
             // Check if purchased
             boolean purchased = chapterPurchaseDao.isPurchased(userId, chapterId);
             if (!purchased) {
-                // Remove content for unauthorized access if implementation requires strict security
+                // Remove content for unauthorized access if implementation requires strict
+                // security
                 // Or throw exception. For now, we return empty content or handle in Controller
                 chapter.setContent("此章节为付费章节，请购买后阅读。");
             }
@@ -68,8 +75,10 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     public void createNovel(Novel novel) throws Exception {
-        if (novel.getStatus() == null) novel.setStatus(1); // Default to Serializing
-        if (novel.getTotalChapters() == null) novel.setTotalChapters(0); // Default to 0
+        if (novel.getStatus() == null)
+            novel.setStatus(1); // Default to Serializing
+        if (novel.getTotalChapters() == null)
+            novel.setTotalChapters(0); // Default to 0
         novelDao.create(novel);
     }
 
@@ -79,13 +88,19 @@ public class NovelServiceImpl implements NovelService {
     }
 
     @Override
+    public void updateNovelStatus(int id, int status) throws Exception {
+        novelDao.updateStatus(id, status);
+    }
+
+    @Override
     public void deleteNovel(int id) throws Exception {
         novelDao.delete(id);
     }
 
     @Override
     public void addChapter(Chapter chapter) throws Exception {
-        if (chapter.getIsPaid() == null) chapter.setIsPaid(0); // Default to Free
+        if (chapter.getIsPaid() == null)
+            chapter.setIsPaid(0); // Default to Free
         chapterDao.create(chapter);
         // Sync count
         int count = chapterDao.countByNovelId(chapter.getNovelId());
