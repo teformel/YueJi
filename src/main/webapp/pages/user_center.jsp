@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" trimDirectiveWhitespaces="true" %>
+    <jsp:useBean id="now" class="java.util.Date" />
     <!DOCTYPE html>
     <html lang="zh-CN">
 
@@ -6,10 +7,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>个人中心 - 阅己 YueJi</title>
-        <link rel="stylesheet"
-            href="${pageContext.request.contextPath}/static/css/style.css?v=${System.currentTimeMillis()}">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css?v=${now.time}">
         <script src="${pageContext.request.contextPath}/static/js/lucide.js"></script>
-        <script src="${pageContext.request.contextPath}/static/js/script.js?v=${System.currentTimeMillis()}"></script>
+        <script src="${pageContext.request.contextPath}/static/js/script.js?v=${now.time}"></script>
     </head>
 
     <body class="bg-gray-50 min-h-screen flex flex-col">
@@ -254,8 +254,7 @@
 
             <%@ include file="footer.jsp" %>
 
-                <script
-                    src="${pageContext.request.contextPath}/static/js/user_center.js?v=${System.currentTimeMillis()}"></script>
+                <script src="${pageContext.request.contextPath}/static/js/user_center.js?v=${now.time}"></script>
                 <script>
                     // Any JSP variable injection if needed in future can go here
                 </script>
