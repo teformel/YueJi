@@ -13,6 +13,12 @@ async function register() {
         return;
     }
 
+    const pwdError = validatePassword(password);
+    if (pwdError) {
+        showToast(pwdError, 'error');
+        return;
+    }
+
     try {
         const formData = new URLSearchParams();
         formData.append('realname', realname);
@@ -36,4 +42,12 @@ async function register() {
         console.error(e);
         showToast('网络错误，请重试', 'error');
     }
+}
+
+function validatePassword(password) {
+    if (password.length < 8) return "密码长度不能少于8位";
+    if (!/[A-Za-z]/.test(password)) return "密码必须包含字母";
+    if (!/[0-9]/.test(password)) return "密码必须包含数字";
+    if (!/[^A-Za-z0-9]/.test(password)) return "密码必须包含特殊字符";
+    return null;
 }
