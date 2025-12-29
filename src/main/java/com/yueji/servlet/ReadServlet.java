@@ -42,12 +42,16 @@ public class ReadServlet extends HttpServlet {
             return;
         }
         int chapterId = Integer.parseInt(chapterIdStr);
-        
+
         User user = getUser(req);
-        int userId = (user != null) ? user.getId() : 0; // 0 for guest (if logic supports it)
-        
+        if (user == null) {
+            ResponseUtils.writeJson(resp, 401, "Unauthorized", null);
+            return;
+        }
+        int userId = user.getId();
+
         Chapter chapter = novelService.getChapterContent(userId, chapterId);
-        
+
         if (chapter == null) {
             ResponseUtils.writeJson(resp, 404, "Chapter not found", null);
             return;
@@ -67,14 +71,15 @@ public class ReadServlet extends HttpServlet {
 
         // Logic handled in Service: content is set to special message if not paid
         // But we might want to send 402 if it's paid and not purchased.
-        // Determining "Paid but not purchased" from just object is tricky if Service masked it.
+        // Determining "Paid but not purchased" from just object is tricky if Service
+        // masked it.
         // Assuming Service behavior: if not authorized, content is masked string.
         // We can check if isPaid==1 and content starts with "此章节...". Or simpler:
         // Let frontend handle the display message.
         // But if we want 402 status:
         // We could check `isPaid` here? But `isPurchased` check is in Service.
         // For now, return 200 with the masked content is safe for simple UI.
-        
+
         ResponseUtils.writeJson(resp, 200, "Success", chapter);
     }
 
